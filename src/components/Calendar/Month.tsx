@@ -7,7 +7,6 @@ import {
   Pressable,
   Dimensions,
 } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import uuid from 'react-native-uuid';
 
 interface CalendarData {
@@ -16,16 +15,12 @@ interface CalendarData {
   data: string;
 }
 
-const Calendar: React.FC<{}> = ({}) => {
-  const [today, setToday] = React.useState<Date>(new Date());
-  const [selectedMonth, setSelectedMonth] = React.useState<Date>(new Date());
+interface MonthProps {
+  today: Date;
+  selectedMonth: Date;
+}
 
-  React.useEffect(() => {
-    const date = new Date();
-    setToday(date);
-    setSelectedMonth(date);
-  }, []);
-
+const Month: React.FC<MonthProps> = ({ today, selectedMonth }) => {
   const calendar: CalendarData[] = React.useMemo(() => {
     let data: CalendarData[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(day => {
       return {
@@ -91,50 +86,22 @@ const Calendar: React.FC<{}> = ({}) => {
   };
 
   return (
-    <View>
-      <View style={styles.header}>
-        <View>
-          <MaterialCommunityIcons
-            name={'arrow-left-bold'}
-            size={32}
-            color={'#000'}
-          />
-        </View>
-        <View>
-          <Text style={styles.monthName}>
-            {selectedMonth.toLocaleString('default', { month: 'long' })}
-          </Text>
-        </View>
-        <View>
-          <MaterialCommunityIcons
-            name={'arrow-right-bold'}
-            size={32}
-            color={'#000'}
-          />
-        </View>
-      </View>
-      <FlatList
-        data={calendar}
-        renderItem={renderItem}
-        numColumns={7}
-        getItemLayout={(_, index) => ({
-          length: width * 0.1,
-          offset: (width * 0.24 + 18) * index,
-          index,
-        })}
-      />
-    </View>
+    <FlatList
+      data={calendar}
+      renderItem={renderItem}
+      numColumns={7}
+      getItemLayout={(_, index) => ({
+        length: width * 0.1,
+        offset: (width * 0.24 + 18) * index,
+        index,
+      })}
+    />
   );
 };
 
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
-  },
   item: {
     width: width * 0.1,
     height: 40,
@@ -143,10 +110,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  monthName: {
-    textAlign: 'center',
-    fontSize: 18,
-  },
 });
 
-export default Calendar;
+export default Month;

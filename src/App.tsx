@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import CalendarScreen from './CalendarScreen';
-import ExerciseScreen from './ExerciseScreen';
-import AccountScreen from './AccountScreen';
-import NavIcon from './NavIcon';
+import CalendarScreen from 'src/screens/CalendarScreen';
+import ExerciseScreen from 'src/screens/ExerciseScreen';
+import AccountScreen from 'src/screens/AccountScreen';
+import NavIcon from 'src/components/NavIcon';
 
 const Tab = createBottomTabNavigator();
 
