@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CalendarScreen from './CalendarScreen';
 import ExerciseScreen from './ExerciseScreen';
 import AccountScreen from './AccountScreen';
+import NavIcon from './NavIcon';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,6 +18,9 @@ const App = () => {
           options={{
             tabBarShowLabel: false,
             header: () => null,
+            tabBarIcon: ({ focused }) => (
+              <NavIcon focused={focused} name="calendar-month" />
+            ),
           }}
         />
         <Tab.Screen
@@ -25,6 +29,9 @@ const App = () => {
           options={{
             tabBarShowLabel: false,
             header: () => null,
+            tabBarIcon: ({ focused }) => (
+              <NavIcon focused={focused} name="weight-lifter" />
+            ),
           }}
         />
         <Tab.Screen
@@ -33,6 +40,9 @@ const App = () => {
           options={{
             tabBarShowLabel: false,
             header: () => null,
+            tabBarIcon: ({ focused }) => (
+              <NavIcon focused={focused} name="account" />
+            ),
           }}
         />
       </Tab.Navigator>
