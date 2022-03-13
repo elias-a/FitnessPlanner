@@ -1,12 +1,27 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import Calendar from './Calendar';
 
 const CalendarScreen: React.FC<{}> = ({}) => {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>{'Calendar'}</Text>
+    <View style={styles.container}>
+      <View style={styles.calendarContainer}>
+        <Calendar />
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 64,
+    padding: 8,
+  },
+  calendarContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default CalendarScreen;
