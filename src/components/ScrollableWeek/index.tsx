@@ -25,9 +25,11 @@ const ScrollableWeek: React.FC<ScrollableWeekProps> = ({
 }) => {
   const dates: WeekData[] = React.useMemo(() => {
     let week: WeekData[] = [];
-    const selectedDayOfWeek = selectedDate.getDay();
+    let selectedDayOfWeek = selectedDate.getDay();
+    // Change the number for Sunday from 0 to 7.
+    selectedDayOfWeek = selectedDayOfWeek === 0 ? 7 : selectedDayOfWeek;
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 1; i <= 7; i++) {
       const date = new Date(selectedDate);
       date.setDate(date.getDate() + i - selectedDayOfWeek);
 

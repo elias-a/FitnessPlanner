@@ -34,7 +34,9 @@ const Month: React.FC<MonthProps> = ({ today, selectedMonth }) => {
       selectedMonth.getFullYear(),
       selectedMonth.getMonth(),
     );
-    const startDay = firstOfMonth.getDay();
+    let startDay = firstOfMonth.getDay();
+    // Start each week on Monday, not Sunday.
+    startDay = startDay === 0 ? 6 : startDay - 1;
 
     for (let i = 0; i < startDay; i++) {
       data.push({
