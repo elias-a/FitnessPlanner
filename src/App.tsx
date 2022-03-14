@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CalendarScreen from './screens/CalendarScreen';
 import ExerciseScreen from './screens/ExerciseScreen';
+import GlossaryScreen from './screens/GlossaryScreen';
 import AccountScreen from './screens/AccountScreen';
 import NavIcon from './components/NavIcon';
 
@@ -31,6 +32,17 @@ const App = () => {
             header: () => null,
             tabBarIcon: ({ focused }) => (
               <NavIcon focused={focused} name="weight-lifter" />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Glossary"
+          component={GlossaryScreen}
+          options={{
+            tabBarShowLabel: false,
+            header: () => null,
+            tabBarIcon: ({ focused }) => (
+              <NavIcon focused={focused} name="format-list-bulleted" />
             ),
           }}
         />
