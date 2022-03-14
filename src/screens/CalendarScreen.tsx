@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Calendar from 'src/components/Calendar';
+import Calendar from '../components/Calendar';
 
 const CalendarScreen: React.FC<{}> = ({}) => {
   return (
