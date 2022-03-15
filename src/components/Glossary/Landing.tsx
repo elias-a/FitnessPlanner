@@ -1,27 +1,27 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { Stack } from './index';
 
-interface LandingProps {
-  navigation: any;
-}
+type LandingProps = NativeStackScreenProps<Stack, 'Landing'>;
 
 const Landing: React.FC<LandingProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Pressable
-        onPress={() => navigation.push('ViewExercises')}
+        onPress={() => navigation.push('ViewExercises', 'ViewExercises')}
         style={styles.button}
       >
         <Text>{'View Exercises'}</Text>
       </Pressable>
       <Pressable
-        onPress={() => navigation.push('AddExercise')}
+        onPress={() => navigation.push('AddExercise', 'AddExercise')}
         style={styles.button}
       >
         <Text>{'Add Exercise'}</Text>
       </Pressable>
       <Pressable
-        onPress={() => navigation.push('AddCategory')}
+        onPress={() => navigation.push('AddCategory', 'AddCategory')}
         style={styles.button}
       >
         <Text>{'Add Category'}</Text>
