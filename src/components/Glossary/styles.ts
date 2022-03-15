@@ -29,6 +29,22 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: '600',
   },
+  textInput: {
+    width: 300,
+    height: 40,
+    margin: 32,
+    borderWidth: 1,
+    padding: 10,
+  },
+  addButton: {
+    width: 350,
+    height: 50,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+    backgroundColor: '#909090',
+  },
 });
 
 export default styles;
