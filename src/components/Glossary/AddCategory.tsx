@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,7 +12,7 @@ type AddCategoryProps = NativeStackScreenProps<Stack, 'AddCategory'>;
 
 const AddCategory: React.FC<AddCategoryProps> = ({ navigation }) => {
   const [category, setCategory] = React.useState('');
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const add = () => {
     dispatch(

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
-import store from './store';
+import { store } from './store';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CalendarScreen from './screens/CalendarScreen';
 import ExerciseScreen from './screens/ExerciseScreen';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -13,19 +13,32 @@ type AddExerciseProps = NativeStackScreenProps<Stack, 'AddExercise'>;
 
 const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
   const [exercise, setExercise] = React.useState('');
-  const [categories, setCategories] = React.useState<string[]>([]);
-  const dispatch = useDispatch();
+  const [selectedCategories, setSelectedCategories] = React.useState<string[]>(
+    [],
+  );
+  const dispatch = useAppDispatch();
+  const { categories } = useAppSelector(state => state.category);
 
   const add = () => {
     dispatch(
       addExercise({
         id: uuid.v4().toString(),
         name: exercise,
-        categories,
+        categories: selectedCategories,
       }),
     );
 
     navigation.goBack();
+  };
+
+  const selectItem = (item: string) => {
+    if (selectedCategories.includes(item)) {
+      setSelectedCategories(
+        selectedCategories.filter(selected => selected !== item),
+      );
+    } else {
+      setSelectedCategories([...selectedCategories, item]);
+    }
   };
 
   return (
@@ -45,7 +58,11 @@ const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
         placeholder={'Enter exercise name...'}
         style={styles.textInput}
       />
-      <MultiSelect />
+      <MultiSelect
+        items={categories}
+        selectedItems={selectedCategories}
+        onSelectedChange={selectItem}
+      />
       <Pressable onPress={add} style={styles.addButton}>
         <Text>{'Add Exercise'}</Text>
       </Pressable>
