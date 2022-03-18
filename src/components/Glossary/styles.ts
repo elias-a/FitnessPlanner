@@ -45,6 +45,21 @@ const styles = StyleSheet.create({
     marginRight: 8,
     backgroundColor: '#909090',
   },
+  listContainer: {
+    marginTop: 20,
+  },
+  listItem: {
+    width: 350,
+    height: 50,
+    justifyContent: 'center',
+    marginRight: 8,
+    paddingLeft: 20,
+    marginTop: 5,
+    backgroundColor: '#b8b8b8',
+  },
+  itemText: {
+    fontSize: 30,
+  },
 });
 
 export default styles;
