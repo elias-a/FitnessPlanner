@@ -26,6 +26,12 @@ const Landing: React.FC<LandingProps> = ({ navigation }) => {
       >
         <Text>{'Add Category'}</Text>
       </Pressable>
+      <Pressable
+        onPress={() => navigation.push('StartSplit', 'StartSplit')}
+        style={styles.button}
+      >
+        <Text>{'Start Split'}</Text>
+      </Pressable>
     </View>
   );
 };
