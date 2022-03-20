@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import type { Category } from '../../types/category';
 
 interface MenuProps {
   items: { id: string; name: string }[];
@@ -14,27 +13,21 @@ const Menu: React.FC<MenuProps> = ({
   selectedItems,
   onSelectedChange,
 }) => {
-  const renderItem = ({ item }: { item: Category }) => {
-    return (
-      <View key={item.id} style={styles.menuItem}>
-        <CheckBox
-          value={selectedItems.includes(item.id)}
-          onValueChange={_value => onSelectedChange(item.id)}
-          style={styles.checkbox}
-          tintColor={'#fff'}
-        />
-        <Text style={styles.menuItemText}>{item.name}</Text>
-      </View>
-    );
-  };
-
   return (
     <View style={styles.menu}>
-      <FlatList
-        data={items}
-        renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
-      />
+      {items.map(item => {
+        return (
+          <View key={item.id} style={styles.menuItem}>
+            <CheckBox
+              value={selectedItems.includes(item.id)}
+              onValueChange={_value => onSelectedChange(item.id)}
+              style={styles.checkbox}
+              tintColor={'#fff'}
+            />
+            <Text style={styles.menuItemText}>{item.name}</Text>
+          </View>
+        );
+      })}
     </View>
   );
 };
