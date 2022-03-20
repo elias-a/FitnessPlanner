@@ -1,34 +1,36 @@
 import React from 'react';
 import { View, Text, Pressable, TextInput, ScrollView } from 'react-native';
-import { useAppSelector } from '../../hooks';
+import { useAppSelector, useAppDispatch } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import { Picker } from '@react-native-picker/picker';
 import MultiSelect from '../MultiSelect';
+import { createSplit } from '../../slices/split';
 
 type StartSplitProps = NativeStackScreenProps<Stack, 'StartSplit'>;
 
 const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
-  const [page, setPage] = React.useState('1');
-  const [selectedDays, setSelectedDays] = React.useState('6');
+  const [page, setPage] = React.useState(1);
+  const [selectedDays, setSelectedDays] = React.useState(6);
   const [selectedWeeks, setSelectedWeeks] = React.useState('6');
   const [selectedCategories, setSelectedCategories] = React.useState<{
     [key: string]: string[];
   }>({});
   const { categories } = useAppSelector(state => state.category);
+  const dispatch = useAppDispatch();
 
   const initializeCategories = () => {
     const newCategories: { [key: string]: string[] } = {};
-    [...Array(parseInt(selectedDays, 10))].forEach((_day, index) => {
+    [...Array(selectedDays)].forEach((_day, index) => {
       newCategories[index + 1] = [];
     });
     setSelectedCategories(newCategories);
   };
 
   const next = () => {
-    setPage((parseInt(page, 10) + 1).toString());
+    setPage(page + 1);
   };
 
   const selectCategories = (item: string, day: number) => {
@@ -46,6 +48,14 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
   };
 
   const start = () => {
+    dispatch(
+      createSplit({
+        days: selectedDays,
+        weeks: parseInt(selectedWeeks, 10),
+        categories: selectedCategories,
+      }),
+    );
+
     navigation.goBack();
   };
 
@@ -66,15 +76,21 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
       </View>
 
       <ScrollView>
-        {page === '1' && (
+        {page === 1 && (
           <React.Fragment>
             <Text style={styles.label}>{'Enter number of days:'}</Text>
             <Picker
               selectedValue={selectedDays}
               onValueChange={days => setSelectedDays(days)}
             >
-              {['1', '2', '3', '4', '5', '6', '7'].map(days => {
-                return <Picker.Item key={days} label={days} value={days} />;
+              {[1, 2, 3, 4, 5, 6, 7].map(days => {
+                return (
+                  <Picker.Item
+                    key={days}
+                    label={days.toString()}
+                    value={days}
+                  />
+                );
               })}
             </Picker>
             <Pressable
@@ -88,7 +104,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
             </Pressable>
           </React.Fragment>
         )}
-        {page === '2' && (
+        {page === 2 && (
           <React.Fragment>
             <Text style={styles.label}>{'Enter number of weeks:'}</Text>
             <TextInput
@@ -102,9 +118,9 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
             </Pressable>
           </React.Fragment>
         )}
-        {page === '3' && (
+        {page === 3 && (
           <React.Fragment>
-            {[...Array(parseInt(selectedDays, 10))].map((_day, index) => {
+            {[...Array(selectedDays)].map((_day, index) => {
               return (
                 <React.Fragment key={index}>
                   <Text style={styles.label}>{`Pick categories for day ${
