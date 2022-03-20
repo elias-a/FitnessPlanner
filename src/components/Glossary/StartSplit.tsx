@@ -8,6 +8,7 @@ import styles from './styles';
 import { Picker } from '@react-native-picker/picker';
 import MultiSelect from '../MultiSelect';
 import { createSplit } from '../../slices/split';
+import { buildSplit } from '../../algorithms/buildSplit';
 
 type StartSplitProps = NativeStackScreenProps<Stack, 'StartSplit'>;
 
@@ -19,6 +20,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
     [key: string]: string[];
   }>({});
   const { categories } = useAppSelector(state => state.category);
+  const { exercises } = useAppSelector(state => state.exercise);
   const dispatch = useAppDispatch();
 
   const initializeCategories = () => {
@@ -48,14 +50,17 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
   };
 
   const start = () => {
-    dispatch(
-      createSplit({
-        days: selectedDays,
-        weeks: parseInt(selectedWeeks, 10),
-        categories: selectedCategories,
-      }),
-    );
+    const newSplit = {
+      days: selectedDays,
+      weeks: parseInt(selectedWeeks, 10),
+      categories: selectedCategories,
+      exercises: {},
+    };
 
+    const selectedExercises = buildSplit(newSplit, exercises);
+    newSplit.exercises = selectedExercises;
+
+    dispatch(createSplit(newSplit));
     navigation.goBack();
   };
 

@@ -5,6 +5,7 @@ const initialSplit: Split = {
   days: 0,
   weeks: 0,
   categories: {},
+  exercises: {},
 };
 
 export const splitSplice = createSlice({
@@ -12,7 +13,6 @@ export const splitSplice = createSlice({
   initialState: initialSplit,
   reducers: {
     createSplit: (state, action: { payload: Split }) => {
-      console.log(action.payload);
       state = action.payload;
     },
   },
