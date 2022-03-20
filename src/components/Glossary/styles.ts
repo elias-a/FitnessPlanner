@@ -36,6 +36,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
+  label: {
+    marginTop: 30,
+    fontSize: 20,
+  },
   addButton: {
     width: 350,
     height: 50,
