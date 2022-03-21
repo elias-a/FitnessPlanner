@@ -13,7 +13,12 @@ export const splitSplice = createSlice({
   initialState: initialSplit,
   reducers: {
     createSplit: (state, action: { payload: Split }) => {
-      state = action.payload;
+      const { days, weeks, categories, exercises } = action.payload;
+
+      state.days = days;
+      state.weeks = weeks;
+      state.categories = categories;
+      state.exercises = exercises;
     },
   },
 });
