@@ -19,9 +19,12 @@ const Header: React.FC<HeaderProps> = ({ selectedMonth, changeMonth }) => {
           />
         </Pressable>
       </View>
-      <View>
+      <View style={styles.dateText}>
         <Text style={styles.monthName}>
           {selectedMonth.toLocaleString('default', { month: 'long' })}
+        </Text>
+        <Text style={styles.year}>
+          {selectedMonth.toLocaleString('default', { year: 'numeric' })}
         </Text>
       </View>
       <View>
@@ -43,9 +46,15 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-evenly',
   },
+  dateText: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   monthName: {
-    textAlign: 'center',
     fontSize: 18,
+  },
+  year: {
+    fontSize: 14,
   },
 });
 
