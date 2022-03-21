@@ -13,9 +13,15 @@ const Calendar: React.FC<{}> = ({}) => {
     setSelectedMonth(date);
   }, []);
 
+  const changeMonth = (change: number) => {
+    const date = new Date(selectedMonth);
+    date.setMonth(date.getMonth() + change);
+    setSelectedMonth(date);
+  };
+
   return (
     <View>
-      <Header selectedMonth={selectedMonth} />
+      <Header selectedMonth={selectedMonth} changeMonth={changeMonth} />
       <Month today={today} selectedMonth={selectedMonth} />
     </View>
   );

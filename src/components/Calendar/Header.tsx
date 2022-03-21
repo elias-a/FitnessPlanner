@@ -1,20 +1,23 @@
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, Pressable } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface HeaderProps {
   selectedMonth: Date;
+  changeMonth: (change: number) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ selectedMonth }) => {
+const Header: React.FC<HeaderProps> = ({ selectedMonth, changeMonth }) => {
   return (
     <View style={styles.header}>
       <View>
-        <MaterialCommunityIcons
-          name={'arrow-left-bold'}
-          size={32}
-          color={'#000'}
-        />
+        <Pressable onPress={() => changeMonth(-1)}>
+          <MaterialCommunityIcons
+            name={'arrow-left-bold'}
+            size={32}
+            color={'#000'}
+          />
+        </Pressable>
       </View>
       <View>
         <Text style={styles.monthName}>
@@ -22,11 +25,13 @@ const Header: React.FC<HeaderProps> = ({ selectedMonth }) => {
         </Text>
       </View>
       <View>
-        <MaterialCommunityIcons
-          name={'arrow-right-bold'}
-          size={32}
-          color={'#000'}
-        />
+        <Pressable onPress={() => changeMonth(1)}>
+          <MaterialCommunityIcons
+            name={'arrow-right-bold'}
+            size={32}
+            color={'#000'}
+          />
+        </Pressable>
       </View>
     </View>
   );

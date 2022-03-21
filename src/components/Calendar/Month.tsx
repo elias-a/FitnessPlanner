@@ -21,7 +21,9 @@ interface MonthProps {
 }
 
 const Month: React.FC<MonthProps> = ({ today, selectedMonth }) => {
-  const calendar: CalendarData[] = React.useMemo(() => {
+  const [calendar, setCalendar] = React.useState<CalendarData[]>([]);
+
+  React.useEffect(() => {
     let data: CalendarData[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(day => {
       return {
         key: uuid.v4().toString(),
@@ -55,7 +57,7 @@ const Month: React.FC<MonthProps> = ({ today, selectedMonth }) => {
       });
     }
 
-    return data;
+    setCalendar(data);
   }, [today, selectedMonth]);
 
   const renderItem = ({ item }: { item: CalendarData }) => {
