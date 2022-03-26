@@ -1,42 +1,52 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import SelectBar from './SelectBar';
-import Menu from './Menu';
+import SectionedMultiSelect from 'react-native-sectioned-multi-select';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import type { Category } from '../../types/category';
 
 interface MultiSelectProps {
-  items: { id: string; name: string }[];
-  selectedItems: string[];
-  onSelectedChange: (item: string) => void;
+  items: Category[];
+  selectedItems: Category[];
+  onSelectedItemsChange: (categories: Category[]) => void;
+  isSingle: boolean;
+  subKey?: string;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
   items,
   selectedItems,
-  onSelectedChange,
+  onSelectedItemsChange,
+  isSingle,
+  subKey,
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-
   return (
-    <View style={styles.selectBar}>
-      <SelectBar isOpen={isOpen} setIsOpen={setIsOpen} />
-      {isOpen && (
-        <Menu
-          items={items}
-          selectedItems={selectedItems}
-          onSelectedChange={onSelectedChange}
-        />
-      )}
-    </View>
+    <SectionedMultiSelect
+      items={items}
+      IconRenderer={Icon}
+      uniqueKey="id"
+      subKey={subKey ?? ''}
+      selectText="Choose parent category..."
+      single={isSingle}
+      showDropDowns={false}
+      readOnlyHeadings={false}
+      onSelectedItemsChange={onSelectedItemsChange}
+      selectedItems={selectedItems}
+      styles={{
+        container: {
+          marginTop: 100,
+          maxHeight: 600,
+        },
+        selectToggle: {
+          backgroundColor: '#d0d0d0',
+          width: 300,
+          height: 40,
+          marginBottom: 32,
+          marginLeft: 32,
+          borderWidth: 1,
+          padding: 10,
+        },
+      }}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  selectBar: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
-    marginBottom: 32,
-  },
-});
 
 export default MultiSelect;

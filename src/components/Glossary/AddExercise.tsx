@@ -8,14 +8,15 @@ import styles from './styles';
 import { addExercise } from '../../slices/exercise';
 import uuid from 'react-native-uuid';
 import MultiSelect from '../MultiSelect';
+import type { Category } from '../../types/category';
 
 type AddExerciseProps = NativeStackScreenProps<Stack, 'AddExercise'>;
 
 const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
   const [exercise, setExercise] = React.useState('');
-  const [selectedCategories, setSelectedCategories] = React.useState<string[]>(
-    [],
-  );
+  const [selectedCategories, setSelectedCategories] = React.useState<
+    Category[]
+  >([]);
   const dispatch = useAppDispatch();
   const { categories } = useAppSelector(state => state.category);
 
@@ -24,21 +25,11 @@ const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
       addExercise({
         id: uuid.v4().toString(),
         name: exercise,
-        categories: selectedCategories,
+        categories: selectedCategories.map(item => item.id),
       }),
     );
 
     navigation.goBack();
-  };
-
-  const selectItem = (item: string) => {
-    if (selectedCategories.includes(item)) {
-      setSelectedCategories(
-        selectedCategories.filter(selected => selected !== item),
-      );
-    } else {
-      setSelectedCategories([...selectedCategories, item]);
-    }
   };
 
   return (
@@ -61,7 +52,9 @@ const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
       <MultiSelect
         items={categories}
         selectedItems={selectedCategories}
-        onSelectedChange={selectItem}
+        onSelectedItemsChange={items => setSelectedCategories(items)}
+        isSingle={false}
+        subKey={'subCategories'}
       />
       <Pressable onPress={add} style={styles.addButton}>
         <Text>{'Add Exercise'}</Text>
