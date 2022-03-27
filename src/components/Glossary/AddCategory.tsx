@@ -44,7 +44,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ navigation }) => {
 
   return (
     <React.Fragment>
-      <View style={styles.header}>
+      <View style={styles.container}>
         <Pressable
           onPress={() => navigation.goBack()}
           style={styles.backButton}
@@ -58,7 +58,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ navigation }) => {
         <Text style={styles.title}>{'Add Category'}</Text>
       </View>
 
-      <View>
+      <View style={styles.container}>
         <TextInput
           value={category}
           onChangeText={setCategory}
@@ -70,6 +70,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ navigation }) => {
           selectedItems={selectedParent}
           onSelectedItemsChange={item => setSelectedParent(item)}
           isSingle={true}
+          selectText={'Choose parent category...'}
         />
         <Pressable onPress={add} style={styles.addButton}>
           <Text>{'Add Category'}</Text>

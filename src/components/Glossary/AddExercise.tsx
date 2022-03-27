@@ -33,33 +33,41 @@ const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.header}>
-      <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-        <MaterialCommunityIcons
-          name={'arrow-left-bold'}
-          size={32}
-          color={'#000'}
-        />
-      </Pressable>
-      <Text style={styles.title}>{'Add Exercise'}</Text>
+    <React.Fragment>
+      <View style={styles.container}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <MaterialCommunityIcons
+            name={'arrow-left-bold'}
+            size={32}
+            color={'#000'}
+          />
+        </Pressable>
+        <Text style={styles.title}>{'Add Exercise'}</Text>
+      </View>
 
-      <TextInput
-        value={exercise}
-        onChangeText={setExercise}
-        placeholder={'Enter exercise name...'}
-        style={styles.textInput}
-      />
-      <MultiSelect
-        items={categories}
-        selectedItems={selectedCategories}
-        onSelectedItemsChange={items => setSelectedCategories(items)}
-        isSingle={false}
-        subKey={'subCategories'}
-      />
-      <Pressable onPress={add} style={styles.addButton}>
-        <Text>{'Add Exercise'}</Text>
-      </Pressable>
-    </View>
+      <View style={styles.container}>
+        <TextInput
+          value={exercise}
+          onChangeText={setExercise}
+          placeholder={'Enter exercise name...'}
+          style={styles.textInput}
+        />
+        <MultiSelect
+          items={categories}
+          selectedItems={selectedCategories}
+          onSelectedItemsChange={items => setSelectedCategories(items)}
+          isSingle={false}
+          subKey={'subCategories'}
+          selectText={'Choose categories...'}
+        />
+        <Pressable onPress={add} style={styles.addButton}>
+          <Text>{'Add Exercise'}</Text>
+        </Pressable>
+      </View>
+    </React.Fragment>
   );
 };
 

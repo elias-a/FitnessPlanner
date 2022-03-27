@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     backgroundColor: '#909090',
   },
-  header: {
+  container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-evenly',
