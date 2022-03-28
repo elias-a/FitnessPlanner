@@ -18,6 +18,7 @@ interface CalendarData {
 const Calendar: React.FC<{}> = ({}) => {
   const [today, setToday] = React.useState<Date>(new Date());
   const [calendar, setCalendar] = React.useState<CalendarData[]>([]);
+  const [initialScrollIndex, setInitialScrollIndex] = React.useState(0);
   const daysOfWeek: CalendarData[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(
     day => {
       return {
@@ -34,8 +35,9 @@ const Calendar: React.FC<{}> = ({}) => {
 
   React.useEffect(() => {
     const data: CalendarData[] = [];
+    let todayIndex = 0;
 
-    for (let i = -2; i <= 2; i++) {
+    for (let i = -4; i <= 4; i++) {
       const firstOfMonth = new Date(today.getFullYear(), today.getMonth() + i);
       let startDay = firstOfMonth.getDay();
       // Start each week on Monday, not Sunday.
@@ -68,10 +70,16 @@ const Calendar: React.FC<{}> = ({}) => {
         0,
       );
       for (let j = 1; j <= endOfMonth.getDate(); j++) {
+        const day = new Date(
+          firstOfMonth.getFullYear(),
+          firstOfMonth.getMonth(),
+          firstOfMonth.getDate() + j - 1,
+        );
+
         data.push({
           key: uuid.v4().toString(),
           type: 'date',
-          data: j.toString(),
+          data: day,
         });
       }
 
@@ -84,14 +92,17 @@ const Calendar: React.FC<{}> = ({}) => {
           data: '',
         });
       }
+
+      if (i >= 0) {
+        todayIndex++;
+      }
     }
 
     setCalendar(data);
+    setInitialScrollIndex(todayIndex);
   }, [today]);
 
   const renderItem = ({ item }: { item: CalendarData }) => {
-    const isToday = false;
-
     if (item.type === 'header') {
       return (
         <View style={[styles.item]}>
@@ -112,6 +123,12 @@ const Calendar: React.FC<{}> = ({}) => {
     } else if (item.type === 'monthYearFiller') {
       return <View style={{ width: 0 }} />;
     } else {
+      const itemData = item.data as Date;
+      const isToday =
+        today.getFullYear() === itemData.getFullYear() &&
+        today.getMonth() === itemData.getMonth() &&
+        today.getDate() === itemData.getDate();
+
       return (
         <Pressable
           onPress={() => {}}
@@ -120,7 +137,9 @@ const Calendar: React.FC<{}> = ({}) => {
             isToday && { backgroundColor: '#484848', borderRadius: 30 },
           ]}
         >
-          <Text style={[isToday && { color: '#fff' }]}>{item.data}</Text>
+          <Text style={[isToday && { color: '#fff' }]}>
+            {itemData.getDate().toString()}
+          </Text>
         </Pressable>
       );
     }
@@ -142,11 +161,13 @@ const Calendar: React.FC<{}> = ({}) => {
         data={calendar}
         renderItem={renderItem}
         numColumns={7}
+        initialScrollIndex={initialScrollIndex}
         getItemLayout={(_, index) => ({
           length: width * 0.1,
           offset: (width * 0.24 + 18) * index,
           index,
         })}
+        bounces={false}
       />
     </View>
   );
@@ -170,7 +191,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   monthYear: {
-    //alignItems: 'center',
     width: width,
     marginLeft: 120,
   },
