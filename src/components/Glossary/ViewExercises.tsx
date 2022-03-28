@@ -21,7 +21,7 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.header}>
+    <View style={styles.container}>
       <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
         <MaterialCommunityIcons
           name={'arrow-left-bold'}

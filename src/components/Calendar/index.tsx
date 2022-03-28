@@ -15,10 +15,19 @@ interface CalendarData {
   data: string | Date;
 }
 
+const compareDates = (date1: Date, date2: Date) => {
+  const areEqual =
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate();
+  return areEqual;
+};
+
 const Calendar: React.FC<{}> = ({}) => {
   const [today, setToday] = React.useState<Date>(new Date());
   const [calendar, setCalendar] = React.useState<CalendarData[]>([]);
   const [initialScrollIndex, setInitialScrollIndex] = React.useState(0);
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
   const daysOfWeek: CalendarData[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(
     day => {
       return {
@@ -124,20 +133,26 @@ const Calendar: React.FC<{}> = ({}) => {
       return <View style={{ width: 0 }} />;
     } else {
       const itemData = item.data as Date;
-      const isToday =
-        today.getFullYear() === itemData.getFullYear() &&
-        today.getMonth() === itemData.getMonth() &&
-        today.getDate() === itemData.getDate();
+      const isToday = compareDates(today, itemData);
+      const isSelected = compareDates(selectedDate, itemData);
 
       return (
         <Pressable
-          onPress={() => {}}
+          onPress={() => setSelectedDate(itemData)}
           style={[
             styles.item,
-            isToday && { backgroundColor: '#484848', borderRadius: 30 },
+            isSelected && {
+              backgroundColor: '#484848',
+              borderRadius: 30,
+            },
           ]}
         >
-          <Text style={[isToday && { color: '#fff' }]}>
+          <Text
+            style={[
+              isSelected && { color: '#fff' },
+              isToday && { fontWeight: '900' },
+            ]}
+          >
             {itemData.getDate().toString()}
           </Text>
         </Pressable>
@@ -168,6 +183,7 @@ const Calendar: React.FC<{}> = ({}) => {
           index,
         })}
         bounces={false}
+        extraData={selectedDate}
       />
     </View>
   );
