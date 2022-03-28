@@ -127,7 +127,7 @@ const Calendar: React.FC<{}> = ({}) => {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
         data={daysOfWeek}
         renderItem={renderItem}
@@ -155,6 +155,12 @@ const Calendar: React.FC<{}> = ({}) => {
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  container: {
+    width: width * 0.95,
+    paddingLeft: width * 0.025,
+    height: 450,
+    backgroundColor: '#d0d0d0',
+  },
   item: {
     width: width * 0.1,
     height: 40,
@@ -164,8 +170,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   monthYear: {
-    alignItems: 'center',
+    //alignItems: 'center',
     width: width,
+    marginLeft: 120,
   },
   monthYearText: {
     fontSize: 18,
