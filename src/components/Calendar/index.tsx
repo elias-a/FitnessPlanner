@@ -31,7 +31,8 @@ const Calendar: React.FC<CalendarProps> = ({ canSelectDateRange }) => {
   const [today, setToday] = React.useState<Date>(new Date());
   const [calendar, setCalendar] = React.useState<CalendarData[]>([]);
   const [initialScrollIndex, setInitialScrollIndex] = React.useState(0);
-  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = React.useState<Date>();
+  const [selectedEndDate, setSelectedEndDate] = React.useState<Date>();
   const daysOfWeek: CalendarData[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(
     day => {
       return {
@@ -45,6 +46,12 @@ const Calendar: React.FC<CalendarProps> = ({ canSelectDateRange }) => {
   React.useEffect(() => {
     setToday(new Date());
   }, []);
+
+  React.useEffect(() => {
+    if (!canSelectDateRange) {
+      setSelectedDate(new Date());
+    }
+  }, [canSelectDateRange]);
 
   React.useEffect(() => {
     const data: CalendarData[] = [];
@@ -116,7 +123,26 @@ const Calendar: React.FC<CalendarProps> = ({ canSelectDateRange }) => {
   }, [today]);
 
   const onSelect = (data: Date) => {
-    setSelectedDate(data);
+    // If a start date but not an end date is selected,
+    // select an end date, or select a new start date.
+    if (selectedDate && !selectedEndDate) {
+      if (data < selectedDate) {
+        setSelectedDate(data);
+        setSelectedEndDate(undefined);
+      } else {
+        setSelectedEndDate(data);
+      }
+    }
+    // If both a start and end date are selected,
+    // select a start date.
+    else if (selectedDate && selectedEndDate) {
+      setSelectedDate(data);
+      setSelectedEndDate(undefined);
+    }
+    // If no dates are selected, select a start date.
+    else {
+      setSelectedDate(data);
+    }
   };
 
   const renderItem = ({ item }: { item: CalendarData }) => {
@@ -142,22 +168,36 @@ const Calendar: React.FC<CalendarProps> = ({ canSelectDateRange }) => {
     } else {
       const itemData = item.data as Date;
       const isToday = compareDates(today, itemData);
-      const isSelected = compareDates(selectedDate, itemData);
+      const isSelected =
+        selectedDate !== undefined
+          ? compareDates(selectedDate, itemData)
+          : false;
+      const isSelectedEnd =
+        selectedEndDate !== undefined
+          ? compareDates(selectedEndDate, itemData)
+          : false;
+      let isInRange = false;
+      if (selectedDate !== undefined && selectedEndDate !== undefined) {
+        if (itemData > selectedDate && itemData < selectedEndDate) {
+          isInRange = true;
+        }
+      }
 
       return (
         <Pressable
           onPress={() => onSelect(itemData)}
           style={[
             styles.item,
-            isSelected && {
+            (isSelected || isSelectedEnd) && {
               backgroundColor: '#484848',
               borderRadius: 30,
             },
+            isInRange && { backgroundColor: '#909090' },
           ]}
         >
           <Text
             style={[
-              isSelected && { color: '#fff' },
+              (isSelected || isSelectedEnd) && { color: '#fff' },
               isToday && { fontWeight: '900' },
             ]}
           >

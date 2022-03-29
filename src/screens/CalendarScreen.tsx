@@ -6,7 +6,7 @@ const CalendarScreen: React.FC<{}> = ({}) => {
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
-        <Calendar />
+        <Calendar canSelectDateRange={false} />
       </View>
     </View>
   );

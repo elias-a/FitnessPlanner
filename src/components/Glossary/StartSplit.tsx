@@ -68,7 +68,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
 
       {page === 1 && (
         <React.Fragment>
-          <Calendar />
+          <Calendar canSelectDateRange={true} />
 
           <Pressable
             onPress={() => {
