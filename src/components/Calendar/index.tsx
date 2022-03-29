@@ -23,11 +23,15 @@ const compareDates = (date1: Date, date2: Date) => {
   return areEqual;
 };
 
-const Calendar: React.FC<{}> = ({}) => {
+interface CalendarProps {
+  canSelectDateRange: boolean;
+}
+
+const Calendar: React.FC<CalendarProps> = ({ canSelectDateRange }) => {
   const [today, setToday] = React.useState<Date>(new Date());
   const [calendar, setCalendar] = React.useState<CalendarData[]>([]);
   const [initialScrollIndex, setInitialScrollIndex] = React.useState(0);
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
   const daysOfWeek: CalendarData[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(
     day => {
       return {
@@ -111,6 +115,10 @@ const Calendar: React.FC<{}> = ({}) => {
     setInitialScrollIndex(todayIndex);
   }, [today]);
 
+  const onSelect = (data: Date) => {
+    setSelectedDate(data);
+  };
+
   const renderItem = ({ item }: { item: CalendarData }) => {
     if (item.type === 'header') {
       return (
@@ -138,7 +146,7 @@ const Calendar: React.FC<{}> = ({}) => {
 
       return (
         <Pressable
-          onPress={() => setSelectedDate(itemData)}
+          onPress={() => onSelect(itemData)}
           style={[
             styles.item,
             isSelected && {
@@ -171,6 +179,7 @@ const Calendar: React.FC<{}> = ({}) => {
           offset: (width * 0.24 + 18) * index,
           index,
         })}
+        scrollEnabled={false}
       />
       <FlatList
         data={calendar}
