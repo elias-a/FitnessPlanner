@@ -5,6 +5,17 @@ import ExerciseList from '../components/ExerciseList';
 import { useAppSelector } from '../hooks';
 import type { Exercise } from '../types/exercise';
 
+const getDayKey = (date1: Date, date2: Date) => {
+  const dayDifference = Math.ceil(
+    (date1.getTime() - date2.getTime()) / 1000 / 86400,
+  );
+
+  let day = dayDifference % 7;
+  day = day === 0 ? 7 : day;
+
+  return day.toString();
+};
+
 const ExerciseScreen: React.FC<{}> = ({}) => {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [splitExercises, setSplitExercises] = React.useState<Exercise[]>([]);
@@ -16,8 +27,13 @@ const ExerciseScreen: React.FC<{}> = ({}) => {
       return;
     }
 
+    const key = getDayKey(selectedDate, new Date(split.startDate));
+    if (!Object.keys(split.exercises).includes(key)) {
+      return;
+    }
+
     const selectedExercises: Exercise[] = [];
-    split.exercises['1'].forEach(id => {
+    split.exercises[key].forEach(id => {
       const exercise = exercises.find(item => item.id === id);
 
       if (exercise) {
@@ -26,7 +42,7 @@ const ExerciseScreen: React.FC<{}> = ({}) => {
     });
 
     setSplitExercises(selectedExercises);
-  }, [split, exercises]);
+  }, [split, exercises, selectedDate]);
 
   return (
     <View style={styles.container}>
