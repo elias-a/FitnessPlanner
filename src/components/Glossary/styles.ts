@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 8,
+    marginTop: 8,
     backgroundColor: '#909090',
   },
   listContainer: {

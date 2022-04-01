@@ -1,6 +1,8 @@
+import type { Category } from './category';
+
 export interface Split {
-  days: number;
-  weeks: number;
-  categories: { [key: string]: string[] };
+  startDate: string;
+  endDate: string;
+  categories: { [key: string]: Category[] };
   exercises: { [key: string]: string[] };
 }

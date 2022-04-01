@@ -7,7 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import styles from './styles';
 import MultiSelect from '../MultiSelect';
 import Calendar from '../Calendar';
-import ScrollableWeek from '../ScrollableWeek';
+import ScrollableDays from '../ScrollableWeek/ScrollableDays';
 import { createSplit } from '../../slices/split';
 import { buildSplit } from '../../algorithms/buildSplit';
 import type { Category } from '../../types/category';
@@ -16,6 +16,8 @@ type StartSplitProps = NativeStackScreenProps<Stack, 'StartSplit'>;
 
 const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
   const [page, setPage] = React.useState(1);
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [selectedDay, setSelectedDay] = React.useState(1);
   const [selectedCategories, setSelectedCategories] = React.useState<{
     [key: string]: Category[];
   }>({});
@@ -25,11 +27,18 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
 
   /*const initializeCategories = () => {
     const newCategories: { [key: string]: Category[] } = {};
-    [...Array(selectedDays)].forEach((_day, index) => {
+    [...Array(7)].forEach((_day, index) => {
       newCategories[index + 1] = [];
     });
     setSelectedCategories(newCategories);
   };*/
+
+  const changeSelectedItems = (items: Category[]) => {
+    setSelectedCategories(prevState => ({
+      ...prevState,
+      [selectedDay]: items,
+    }));
+  };
 
   const next = () => {
     setPage(page + 1);
@@ -37,8 +46,8 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
 
   /*const start = () => {
     const newSplit = {
-      days: selectedDays,
-      weeks: parseInt(selectedWeeks, 10),
+      startDate: startDate ? startDate.toString() : '',
+      endDate: endDate ? endDate.toString() : '',
       categories: selectedCategories,
       exercises: {},
     };
@@ -50,13 +59,18 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
     navigation.goBack();
   };*/
 
+  const goBack = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    } else {
+      navigation.goBack();
+    }
+  };
+
   return (
     <React.Fragment>
       <View style={styles.container}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
+        <Pressable onPress={goBack} style={styles.backButton}>
           <MaterialCommunityIcons
             name={'arrow-left-bold'}
             size={32}
@@ -67,7 +81,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
       </View>
 
       {page === 1 && (
-        <React.Fragment>
+        <View style={styles.container}>
           <Calendar canSelectDateRange={true} />
 
           <Pressable
@@ -79,15 +93,31 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
           >
             <Text>{'Continue'}</Text>
           </Pressable>
-        </React.Fragment>
+        </View>
       )}
       {page === 2 && (
-        <React.Fragment>
-          <ScrollableWeek
-            selectedDate={new Date()}
-            setSelectedDate={() => {}}
+        <View style={styles.container}>
+          <ScrollableDays
+            numDays={7}
+            selectedDay={selectedDay}
+            setSelectedDay={day => setSelectedDay(day)}
           />
-        </React.Fragment>
+
+          <View style={{ marginTop: 32 }}>
+            <MultiSelect
+              items={categories}
+              selectedItems={selectedCategories[selectedDay]}
+              onSelectedItemsChange={changeSelectedItems}
+              isSingle={false}
+              subKey={'subCategories'}
+              selectText={'Choose categories...'}
+            />
+          </View>
+
+          {/*<Pressable onPress={start} style={styles.addButton}>
+            <Text>{'Start Split'}</Text>
+          </Pressable>*/}
+        </View>
       )}
     </React.Fragment>
   );
