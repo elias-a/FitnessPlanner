@@ -6,8 +6,8 @@ import type { Category } from '../../types/category';
 
 interface MultiSelectProps {
   items: Category[];
-  selectedItems: Category[];
-  onSelectedItemsChange: (categories: Category[]) => void;
+  selectedItems: string[];
+  onSelectedItemsChange: (categories: string[]) => void;
   isSingle: boolean;
   subKey?: string;
   selectText: string;

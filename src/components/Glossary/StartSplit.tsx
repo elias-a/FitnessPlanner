@@ -10,7 +10,6 @@ import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays from '../ScrollableWeek/ScrollableDays';
 import { createSplit } from '../../slices/split';
 import { buildSplit } from '../../algorithms/buildSplit';
-import type { Category } from '../../types/category';
 
 type StartSplitProps = NativeStackScreenProps<Stack, 'StartSplit'>;
 
@@ -20,21 +19,21 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
   const [endDate, setEndDate] = React.useState<Date | undefined>();
   const [selectedDay, setSelectedDay] = React.useState(1);
   const [selectedCategories, setSelectedCategories] = React.useState<{
-    [key: string]: Category[];
+    [key: string]: string[];
   }>({});
   const { categories } = useAppSelector(state => state.category);
   const { exercises } = useAppSelector(state => state.exercise);
   const dispatch = useAppDispatch();
 
-  /*const initializeCategories = () => {
-    const newCategories: { [key: string]: Category[] } = {};
+  const initializeCategories = () => {
+    const newCategories: { [key: string]: string[] } = {};
     [...Array(7)].forEach((_day, index) => {
       newCategories[index + 1] = [];
     });
     setSelectedCategories(newCategories);
-  };*/
+  };
 
-  const changeSelectedItems = (items: Category[]) => {
+  const changeSelectedItems = (items: string[]) => {
     setSelectedCategories(prevState => ({
       ...prevState,
       [selectedDay]: items,
@@ -45,7 +44,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
     setPage(page + 1);
   };
 
-  /*const start = () => {
+  const start = () => {
     const newSplit = {
       startDate: startDate ? startDate.toString() : '',
       endDate: endDate ? endDate.toString() : '',
@@ -58,7 +57,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
 
     dispatch(createSplit(newSplit));
     navigation.goBack();
-  };*/
+  };
 
   const goBack = () => {
     if (page > 1) {
@@ -92,7 +91,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
 
           <Pressable
             onPress={() => {
-              //initializeCategories();
+              initializeCategories();
               next();
             }}
             style={styles.addButton}
@@ -120,9 +119,9 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
             />
           </View>
 
-          {/*<Pressable onPress={start} style={styles.addButton}>
+          <Pressable onPress={start} style={styles.addButton}>
             <Text>{'Start Split'}</Text>
-          </Pressable>*/}
+          </Pressable>
         </View>
       )}
     </React.Fragment>

@@ -8,15 +8,14 @@ import styles from './styles';
 import { addExercise } from '../../slices/exercise';
 import uuid from 'react-native-uuid';
 import MultiSelect from '../MultiSelect';
-import type { Category } from '../../types/category';
 
 type AddExerciseProps = NativeStackScreenProps<Stack, 'AddExercise'>;
 
 const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
   const [exercise, setExercise] = React.useState('');
-  const [selectedCategories, setSelectedCategories] = React.useState<
-    Category[]
-  >([]);
+  const [selectedCategories, setSelectedCategories] = React.useState<string[]>(
+    [],
+  );
   const dispatch = useAppDispatch();
   const { categories } = useAppSelector(state => state.category);
 
@@ -25,7 +24,7 @@ const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
       addExercise({
         id: uuid.v4().toString(),
         name: exercise,
-        categories: selectedCategories.map(item => item.id),
+        categories: selectedCategories,
       }),
     );
 

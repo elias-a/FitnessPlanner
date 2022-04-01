@@ -16,7 +16,7 @@ type AddCategoryProps = NativeStackScreenProps<Stack, 'AddCategory'>;
 const AddCategory: React.FC<AddCategoryProps> = ({ navigation }) => {
   const [category, setCategory] = React.useState('');
   const [parentOptions, setParentOptions] = React.useState<Category[]>([]);
-  const [selectedParent, setSelectedParent] = React.useState<Category[]>([]);
+  const [selectedParent, setSelectedParent] = React.useState<string[]>([]);
   const dispatch = useAppDispatch();
   const { categories } = useAppSelector(state => state.category);
 
