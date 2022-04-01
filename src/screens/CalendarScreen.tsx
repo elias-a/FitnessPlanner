@@ -3,10 +3,15 @@ import { View, StyleSheet } from 'react-native';
 import Calendar from '../components/Calendar';
 
 const CalendarScreen: React.FC<{}> = ({}) => {
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
-        <Calendar canSelectDateRange={false} />
+        <Calendar
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+        />
       </View>
     </View>
   );

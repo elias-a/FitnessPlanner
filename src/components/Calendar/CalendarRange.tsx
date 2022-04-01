@@ -23,14 +23,18 @@ const compareDates = (date1: Date, date2: Date) => {
   return areEqual;
 };
 
-interface CalendarProps {
-  selectedDate: Date;
-  setSelectedDate: (date: Date) => void;
+interface CalendarRangeProps {
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  setStartDate: (date: Date | undefined) => void;
+  setEndDate: (date: Date | undefined) => void;
 }
 
-const Calendar: React.FC<CalendarProps> = ({
-  selectedDate,
-  setSelectedDate,
+const CalendarRange: React.FC<CalendarRangeProps> = ({
+  startDate,
+  endDate,
+  setStartDate,
+  setEndDate,
 }) => {
   const [today, setToday] = React.useState<Date>(new Date());
   const [calendar, setCalendar] = React.useState<CalendarData[]>([]);
@@ -118,6 +122,29 @@ const Calendar: React.FC<CalendarProps> = ({
     setInitialScrollIndex(todayIndex);
   }, [today]);
 
+  const onSelect = (data: Date) => {
+    // If a start date but not an end date is selected,
+    // select an end date, or select a new start date.
+    if (startDate && !endDate) {
+      if (data < startDate) {
+        setStartDate(data);
+        setEndDate(undefined);
+      } else {
+        setEndDate(data);
+      }
+    }
+    // If both a start and end date are selected,
+    // select a start date.
+    else if (startDate && endDate) {
+      setStartDate(data);
+      setEndDate(undefined);
+    }
+    // If no dates are selected, select a start date.
+    else {
+      setStartDate(data);
+    }
+  };
+
   const renderItem = ({ item }: { item: CalendarData }) => {
     if (item.type === 'header') {
       return (
@@ -141,22 +168,32 @@ const Calendar: React.FC<CalendarProps> = ({
     } else {
       const itemData = item.data as Date;
       const isToday = compareDates(today, itemData);
-      const isSelected = compareDates(selectedDate, itemData);
+      const isSelected =
+        startDate !== undefined ? compareDates(startDate, itemData) : false;
+      const isSelectedEnd =
+        endDate !== undefined ? compareDates(endDate, itemData) : false;
+      let isInRange = false;
+      if (startDate !== undefined && endDate !== undefined) {
+        if (itemData > startDate && itemData < endDate) {
+          isInRange = true;
+        }
+      }
 
       return (
         <Pressable
-          onPress={() => setSelectedDate(itemData)}
+          onPress={() => onSelect(itemData)}
           style={[
             styles.item,
-            isSelected && {
+            (isSelected || isSelectedEnd) && {
               backgroundColor: '#484848',
               borderRadius: 30,
             },
+            isInRange && { backgroundColor: '#909090' },
           ]}
         >
           <Text
             style={[
-              isSelected && { color: '#fff' },
+              (isSelected || isSelectedEnd) && { color: '#fff' },
               isToday && { fontWeight: '900' },
             ]}
           >
@@ -191,7 +228,7 @@ const Calendar: React.FC<CalendarProps> = ({
           index,
         })}
         bounces={false}
-        extraData={selectedDate}
+        extraData={[startDate, endDate]}
       />
     </View>
   );
@@ -223,4 +260,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Calendar;
+export default CalendarRange;

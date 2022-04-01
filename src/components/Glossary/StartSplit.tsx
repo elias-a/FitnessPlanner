@@ -6,7 +6,7 @@ import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import MultiSelect from '../MultiSelect';
-import Calendar from '../Calendar';
+import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays from '../ScrollableWeek/ScrollableDays';
 import { createSplit } from '../../slices/split';
 import { buildSplit } from '../../algorithms/buildSplit';
@@ -16,7 +16,8 @@ type StartSplitProps = NativeStackScreenProps<Stack, 'StartSplit'>;
 
 const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
   const [page, setPage] = React.useState(1);
-  const [startDate, setStartDate] = React.useState<Date>();
+  const [startDate, setStartDate] = React.useState<Date | undefined>();
+  const [endDate, setEndDate] = React.useState<Date | undefined>();
   const [selectedDay, setSelectedDay] = React.useState(1);
   const [selectedCategories, setSelectedCategories] = React.useState<{
     [key: string]: Category[];
@@ -82,7 +83,12 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
 
       {page === 1 && (
         <View style={styles.container}>
-          <Calendar canSelectDateRange={true} />
+          <Calendar
+            startDate={startDate}
+            endDate={endDate}
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+          />
 
           <Pressable
             onPress={() => {
