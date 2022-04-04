@@ -25,11 +25,15 @@ const compareDates = (date1: Date, date2: Date) => {
 
 interface CalendarProps {
   selectedDate: Date;
+  startRange: Date | undefined;
+  endRange: Date | undefined;
   setSelectedDate: (date: Date) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   selectedDate,
+  startRange,
+  endRange,
   setSelectedDate,
 }) => {
   const [today, setToday] = React.useState<Date>(new Date());
@@ -142,6 +146,12 @@ const Calendar: React.FC<CalendarProps> = ({
       const itemData = item.data as Date;
       const isToday = compareDates(today, itemData);
       const isSelected = compareDates(selectedDate, itemData);
+      let isInRange = false;
+      if (startRange !== undefined && endRange !== undefined) {
+        if (itemData > startRange && itemData <= endRange) {
+          isInRange = true;
+        }
+      }
 
       return (
         <Pressable
@@ -152,6 +162,7 @@ const Calendar: React.FC<CalendarProps> = ({
               backgroundColor: '#484848',
               borderRadius: 30,
             },
+            isInRange && { backgroundColor: '#909090' },
           ]}
         >
           <Text
