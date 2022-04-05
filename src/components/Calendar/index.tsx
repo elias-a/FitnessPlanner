@@ -148,7 +148,7 @@ const Calendar: React.FC<CalendarProps> = ({
       const isSelected = compareDates(selectedDate, itemData);
       let isInRange = false;
       if (startRange !== undefined && endRange !== undefined) {
-        if (itemData > startRange && itemData <= endRange) {
+        if (itemData >= startRange && itemData <= endRange) {
           isInRange = true;
         }
       }
