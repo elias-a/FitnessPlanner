@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useAppSelector } from '../hooks';
 import Calendar from '../components/Calendar';
+import { getDayKey } from '../utils/getDayKey';
 
 const formatDate = (date: Date) => {
   const month = date.toLocaleString('default', { month: 'long' });
@@ -16,7 +17,9 @@ const CalendarScreen: React.FC<{}> = ({}) => {
   const [formattedStartDate, setFormattedStartDate] = React.useState('');
   const [formattedEndDate, setFormattedEndDate] = React.useState('');
   const [splitLength, setSplitLength] = React.useState(0);
+  const [dayCategories, setDayCategories] = React.useState<string[]>([]);
   const split = useAppSelector(state => state.split);
+  const { categories } = useAppSelector(state => state.category);
 
   React.useEffect(() => {
     if (split.startDate !== '' && split.endDate !== '') {
@@ -38,6 +41,23 @@ const CalendarScreen: React.FC<{}> = ({}) => {
     }
   }, [split]);
 
+  React.useEffect(() => {
+    const key = getDayKey(selectedDate, new Date(split.startDate));
+    if (!Object.keys(split.exercises).includes(key)) {
+      return;
+    }
+
+    const newCategories: string[] = [];
+    split.categories[key].forEach(category => {
+      const categoryName = categories.find(el => el.id === category);
+      if (categoryName !== undefined) {
+        newCategories.push(categoryName.name);
+      }
+    });
+
+    setDayCategories(newCategories);
+  }, [selectedDate, split, categories]);
+
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
@@ -47,6 +67,17 @@ const CalendarScreen: React.FC<{}> = ({}) => {
           endRange={endDate}
           setSelectedDate={setSelectedDate}
         />
+      </View>
+      <View style={styles.exercisesContainer}>
+        <View style={styles.exercises}>
+          {dayCategories.length > 0 ? (
+            <Text style={styles.exercisesText}>{dayCategories.join(', ')}</Text>
+          ) : (
+            <Text style={styles.exercisesText}>
+              {'No exercises planned for today'}
+            </Text>
+          )}
+        </View>
       </View>
       {startDate && (
         <View style={styles.splitContainer}>
@@ -75,6 +106,17 @@ const styles = StyleSheet.create({
   calendarContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  exercisesContainer: {
+    marginTop: 50,
+  },
+  exercises: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  exercisesText: {
+    fontSize: 22,
+    fontWeight: '300',
   },
   splitContainer: {
     marginTop: 50,

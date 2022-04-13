@@ -4,17 +4,7 @@ import ScrollableWeek from '../components/ScrollableWeek';
 import ExerciseList from '../components/ExerciseList';
 import { useAppSelector } from '../hooks';
 import type { Exercise } from '../types/exercise';
-
-const getDayKey = (date1: Date, date2: Date) => {
-  const dayDifference = Math.ceil(
-    (date1.getTime() - date2.getTime()) / 1000 / 86400,
-  );
-
-  let day = dayDifference % 7;
-  day = day === 0 ? 7 : day;
-
-  return day.toString();
-};
+import { getDayKey } from '../utils/getDayKey';
 
 const ExerciseScreen: React.FC<{}> = ({}) => {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
