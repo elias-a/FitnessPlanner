@@ -47,8 +47,22 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
   }, [split]);
 
   React.useEffect(() => {
+    if (!split.startDate || !split.endDate) {
+      setDayCategories([]);
+      return;
+    }
+
+    if (
+      selectedDate < new Date(split.startDate) ||
+      selectedDate > new Date(split.endDate)
+    ) {
+      setDayCategories([]);
+      return;
+    }
+
     const key = getDayKey(selectedDate, new Date(split.startDate));
     if (!Object.keys(split.exercises).includes(key)) {
+      setDayCategories([]);
       return;
     }
 

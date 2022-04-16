@@ -23,12 +23,22 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   }, [route.params]);
 
   React.useEffect(() => {
-    if (Object.keys(split.exercises).length === 0) {
+    if (!split.startDate || !split.endDate) {
+      setSplitExercises([]);
+      return;
+    }
+
+    if (
+      selectedDate < new Date(split.startDate) ||
+      selectedDate > new Date(split.endDate)
+    ) {
+      setSplitExercises([]);
       return;
     }
 
     const key = getDayKey(selectedDate, new Date(split.startDate));
     if (!Object.keys(split.exercises).includes(key)) {
+      setSplitExercises([]);
       return;
     }
 
