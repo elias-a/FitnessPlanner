@@ -5,12 +5,22 @@ import ExerciseList from '../components/ExerciseList';
 import { useAppSelector } from '../hooks';
 import type { Exercise } from '../types/exercise';
 import { getDayKey } from '../utils/getDayKey';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { Tab } from '../App';
 
-const ExerciseScreen: React.FC<{}> = ({}) => {
+type ExerciseScreenProps = BottomTabScreenProps<Tab, 'Exercises'>;
+
+const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [splitExercises, setSplitExercises] = React.useState<Exercise[]>([]);
   const split = useAppSelector(state => state.split);
   const { exercises } = useAppSelector(state => state.exercise);
+
+  React.useEffect(() => {
+    if (route.params && Object.keys(route.params).includes('selectedDate')) {
+      setSelectedDate(new Date(route.params.selectedDate));
+    }
+  }, [route.params]);
 
   React.useEffect(() => {
     if (Object.keys(split.exercises).length === 0) {

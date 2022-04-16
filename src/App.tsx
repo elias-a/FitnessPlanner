@@ -11,7 +11,7 @@ import NavIcon from './components/NavIcon';
 
 export type Tab = {
   Calendar: undefined;
-  Exercises: undefined;
+  Exercises: { selectedDate: string };
   Glossary: undefined;
   Account: undefined;
 };

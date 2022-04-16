@@ -84,7 +84,10 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
           )}
           <Pressable
             onPress={() =>
-              navigation.navigate({ name: 'Exercises', params: undefined })
+              navigation.navigate({
+                name: 'Exercises',
+                params: { selectedDate: selectedDate.toString() },
+              })
             }
             style={styles.navButton}
           >
