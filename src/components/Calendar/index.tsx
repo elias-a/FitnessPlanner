@@ -158,11 +158,11 @@ const Calendar: React.FC<CalendarProps> = ({
           onPress={() => setSelectedDate(itemData)}
           style={[
             styles.item,
+            isInRange && { backgroundColor: '#909090' },
             isSelected && {
               backgroundColor: '#484848',
               borderRadius: 30,
             },
-            isInRange && { backgroundColor: '#909090' },
           ]}
         >
           <Text
