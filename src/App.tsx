@@ -9,6 +9,13 @@ import GlossaryScreen from './screens/GlossaryScreen';
 import AccountScreen from './screens/AccountScreen';
 import NavIcon from './components/NavIcon';
 
+export type Tab = {
+  Calendar: undefined;
+  Exercises: undefined;
+  Glossary: undefined;
+  Account: undefined;
+};
+
 const Tab = createBottomTabNavigator();
 
 const App = () => {

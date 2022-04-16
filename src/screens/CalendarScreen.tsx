@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useAppSelector } from '../hooks';
 import Calendar from '../components/Calendar';
 import { getDayKey } from '../utils/getDayKey';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { Tab } from '../App';
 
 const formatDate = (date: Date) => {
   const month = date.toLocaleString('default', { month: 'long' });
@@ -10,7 +13,9 @@ const formatDate = (date: Date) => {
   return `${month} ${day}`;
 };
 
-const CalendarScreen: React.FC<{}> = ({}) => {
+type CalendarScreenProps = BottomTabScreenProps<Tab, 'Calendar'>;
+
+const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [startDate, setStartDate] = React.useState<Date | undefined>();
   const [endDate, setEndDate] = React.useState<Date | undefined>();
@@ -77,6 +82,18 @@ const CalendarScreen: React.FC<{}> = ({}) => {
               {'No exercises planned for today'}
             </Text>
           )}
+          <Pressable
+            onPress={() =>
+              navigation.navigate({ name: 'Exercises', params: undefined })
+            }
+            style={styles.navButton}
+          >
+            <MaterialCommunityIcons
+              name={'arrow-right-bold'}
+              size={32}
+              color={'#000'}
+            />
+          </Pressable>
         </View>
       </View>
       {startDate && (
@@ -111,12 +128,15 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   exercises: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   exercisesText: {
     fontSize: 22,
     fontWeight: '300',
+  },
+  navButton: {
+    marginLeft: 8,
   },
   splitContainer: {
     marginTop: 50,
