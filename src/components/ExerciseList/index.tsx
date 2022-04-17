@@ -5,15 +5,19 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 interface ExerciseListProps {
   exercises: SplitExercise[];
+  toggleIsCompleted: (id: string) => void;
 }
 
-const ExerciseList: React.FC<ExerciseListProps> = ({ exercises }) => {
+const ExerciseList: React.FC<ExerciseListProps> = ({
+  exercises,
+  toggleIsCompleted,
+}) => {
   return (
     <ScrollView>
       {exercises.map(exercise => {
         return (
           <View key={exercise.exercise.id} style={styles.exercise}>
-            <Pressable onPress={() => {}}>
+            <Pressable onPress={() => toggleIsCompleted(exercise.exercise.id)}>
               {exercise.isCompleted ? (
                 <MaterialCommunityIcons
                   name={'checkbox-marked-circle'}

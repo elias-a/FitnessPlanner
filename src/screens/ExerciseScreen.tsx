@@ -48,6 +48,23 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
     setSplitExercises(split.exercises[key]);
   }, [split, exercises, selectedDate]);
 
+  const toggleIsCompleted = (id: string) => {
+    const updatedSplitExercises: SplitExercise[] = [];
+
+    splitExercises.forEach(exercise => {
+      if (exercise.exercise.id === id) {
+        updatedSplitExercises.push({
+          ...exercise,
+          isCompleted: !exercise.isCompleted,
+        });
+      } else {
+        updatedSplitExercises.push({ ...exercise });
+      }
+    });
+
+    setSplitExercises(updatedSplitExercises);
+  };
+
   return (
     <View style={styles.container}>
       <View>
@@ -56,7 +73,10 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
           setSelectedDate={setSelectedDate}
         />
       </View>
-      <ExerciseList exercises={splitExercises} />
+      <ExerciseList
+        exercises={splitExercises}
+        toggleIsCompleted={toggleIsCompleted}
+      />
     </View>
   );
 };
