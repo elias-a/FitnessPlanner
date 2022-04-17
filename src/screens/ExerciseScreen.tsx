@@ -2,8 +2,8 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import ScrollableWeek from '../components/ScrollableWeek';
 import ExerciseList from '../components/ExerciseList';
-import { useAppSelector } from '../hooks';
-import type { Exercise } from '../types/exercise';
+import { useAppSelector, useAppDispatch } from '../hooks';
+import { updateExercises } from '../slices/split';
 import type { SplitExercise } from '../types/split';
 import { getDayKey } from '../utils/getDayKey';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -13,11 +13,13 @@ type ExerciseScreenProps = BottomTabScreenProps<Tab, 'Exercises'>;
 
 const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [dayKey, setDayKey] = React.useState('');
   const [splitExercises, setSplitExercises] = React.useState<SplitExercise[]>(
     [],
   );
   const split = useAppSelector(state => state.split);
   const { exercises } = useAppSelector(state => state.exercise);
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     if (route.params && Object.keys(route.params).includes('selectedDate')) {
@@ -46,6 +48,7 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
     }
 
     setSplitExercises(split.exercises[key]);
+    setDayKey(key);
   }, [split, exercises, selectedDate]);
 
   const toggleIsCompleted = (id: string) => {
@@ -62,6 +65,12 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
       }
     });
 
+    dispatch(
+      updateExercises({
+        ...split.exercises,
+        [dayKey]: updatedSplitExercises,
+      }),
+    );
     setSplitExercises(updatedSplitExercises);
   };
 

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { Split } from '../types/split';
+import type { Split, SplitExercise } from '../types/split';
 
 const initialSplit: Split = {
   startDate: '',
@@ -20,8 +20,16 @@ export const splitSplice = createSlice({
       state.categories = categories;
       state.exercises = exercises;
     },
+    updateExercises: (
+      state,
+      action: { payload: { [key: string]: SplitExercise[] } },
+    ) => {
+      const splitExercises = action.payload;
+
+      state.exercises = splitExercises;
+    },
   },
 });
 
-export const { createSplit } = splitSplice.actions;
+export const { createSplit, updateExercises } = splitSplice.actions;
 export default splitSplice.reducer;
