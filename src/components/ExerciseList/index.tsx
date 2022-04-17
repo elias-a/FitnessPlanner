@@ -1,9 +1,10 @@
 import React from 'react';
-import { Pressable, Text, StyleSheet, ScrollView } from 'react-native';
-import type { Exercise } from '../../types/exercise';
+import { View, Pressable, Text, StyleSheet, ScrollView } from 'react-native';
+import type { SplitExercise } from '../../types/split';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface ExerciseListProps {
-  exercises: Exercise[];
+  exercises: SplitExercise[];
 }
 
 const ExerciseList: React.FC<ExerciseListProps> = ({ exercises }) => {
@@ -11,13 +12,24 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ exercises }) => {
     <ScrollView>
       {exercises.map(exercise => {
         return (
-          <Pressable
-            key={exercise.id}
-            onPress={() => {}}
-            style={styles.exercise}
-          >
-            <Text style={{ color: '#fff' }}>{exercise.name}</Text>
-          </Pressable>
+          <View key={exercise.exercise.id} style={styles.exercise}>
+            <Pressable onPress={() => {}}>
+              {exercise.isCompleted ? (
+                <MaterialCommunityIcons
+                  name={'checkbox-marked-circle'}
+                  size={32}
+                  color={'#000'}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name={'checkbox-blank-circle-outline'}
+                  size={32}
+                  color={'#000'}
+                />
+              )}
+            </Pressable>
+            <Text style={{ color: '#fff' }}>{exercise.exercise.name}</Text>
+          </View>
         );
       })}
     </ScrollView>

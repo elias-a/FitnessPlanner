@@ -3,6 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
+import type { Split } from '../../types/split';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import MultiSelect from '../MultiSelect';
@@ -45,7 +46,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
   };
 
   const start = () => {
-    const newSplit = {
+    const newSplit: Split = {
       startDate: startDate ? startDate.toString() : '',
       endDate: endDate ? endDate.toString() : '',
       categories: selectedCategories,

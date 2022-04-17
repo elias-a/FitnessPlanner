@@ -4,6 +4,7 @@ import ScrollableWeek from '../components/ScrollableWeek';
 import ExerciseList from '../components/ExerciseList';
 import { useAppSelector } from '../hooks';
 import type { Exercise } from '../types/exercise';
+import type { SplitExercise } from '../types/split';
 import { getDayKey } from '../utils/getDayKey';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Tab } from '../App';
@@ -12,7 +13,9 @@ type ExerciseScreenProps = BottomTabScreenProps<Tab, 'Exercises'>;
 
 const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
-  const [splitExercises, setSplitExercises] = React.useState<Exercise[]>([]);
+  const [splitExercises, setSplitExercises] = React.useState<SplitExercise[]>(
+    [],
+  );
   const split = useAppSelector(state => state.split);
   const { exercises } = useAppSelector(state => state.exercise);
 
@@ -42,16 +45,7 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
       return;
     }
 
-    const selectedExercises: Exercise[] = [];
-    split.exercises[key].forEach(id => {
-      const exercise = exercises.find(item => item.id === id);
-
-      if (exercise) {
-        selectedExercises.push(exercise);
-      }
-    });
-
-    setSplitExercises(selectedExercises);
+    setSplitExercises(split.exercises[key]);
   }, [split, exercises, selectedDate]);
 
   return (
