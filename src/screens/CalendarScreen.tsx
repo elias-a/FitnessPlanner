@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useAppSelector } from '../hooks';
+import { useAppSelector, useAppDispatch } from '../hooks';
+import { getCategories } from '../slices/category';
 import Calendar from '../components/Calendar';
 import { getDayKey } from '../utils/getDayKey';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -25,6 +26,11 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
   const [dayCategories, setDayCategories] = React.useState<string[]>([]);
   const split = useAppSelector(state => state.split);
   const { categories } = useAppSelector(state => state.category);
+  const dispatch = useAppDispatch();
+
+  React.useEffect(() => {
+    dispatch(getCategories());
+  }, [dispatch]);
 
   React.useEffect(() => {
     if (split.startDate !== '' && split.endDate !== '') {

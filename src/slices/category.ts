@@ -1,6 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { Category } from '../types/category';
 import { initialCategories } from '../data/category';
+import {
+  getCategories as getCategoriesTask,
+  addCategory as addCategoryTask,
+} from '../models/tasks';
 
 export const categorySlice = createSlice({
   name: 'category',
@@ -8,11 +12,15 @@ export const categorySlice = createSlice({
     categories: initialCategories,
   },
   reducers: {
+    getCategories: (state, _action: {}) => {
+      state.categories = getCategoriesTask();
+    },
     addCategory: (state, action: { payload: Category }) => {
-      state.categories.push(action.payload);
+      const category = addCategoryTask(action.payload);
+      state.categories.push(category);
     },
   },
 });
 
-export const { addCategory } = categorySlice.actions;
+export const { addCategory, getCategories } = categorySlice.actions;
 export default categorySlice.reducer;
