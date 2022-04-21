@@ -7,7 +7,7 @@ import { updateExercises } from '../slices/split';
 import type { SplitExercise } from '../types/split';
 import { getDayKey } from '../utils/getDayKey';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { Tab } from '../App';
+import { Tab } from '../Navigation';
 
 type ExerciseScreenProps = BottomTabScreenProps<Tab, 'Exercises'>;
 

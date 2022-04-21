@@ -5,7 +5,7 @@ import Calendar from '../components/Calendar';
 import { getDayKey } from '../utils/getDayKey';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { Tab } from '../App';
+import { Tab } from '../Navigation';
 
 const formatDate = (date: Date) => {
   const month = date.toLocaleString('default', { month: 'long' });
