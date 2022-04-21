@@ -15,6 +15,12 @@ const Landing: React.FC<LandingProps> = ({ navigation }) => {
         <Text>{'View Exercises'}</Text>
       </Pressable>
       <Pressable
+        onPress={() => navigation.push('ViewCategories', 'ViewCategories')}
+        style={styles.button}
+      >
+        <Text>{'View Categories'}</Text>
+      </Pressable>
+      <Pressable
         onPress={() => navigation.push('AddExercise', 'AddExercise')}
         style={styles.button}
       >
