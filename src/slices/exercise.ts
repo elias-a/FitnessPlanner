@@ -22,7 +22,7 @@ export const exerciseSlice = createSlice({
     },
     deleteExercise: (state, action: { payload: Exercise }) => {
       const exercise = deleteExerciseTask(action.payload);
-      state.exercises.filter(el => el.id === exercise.id);
+      state.exercises = state.exercises.filter(el => el.id !== exercise.id);
     },
   },
 });

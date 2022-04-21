@@ -54,6 +54,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   listItem: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     width: 350,
     height: 50,
     justifyContent: 'center',
@@ -63,7 +65,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#b8b8b8',
   },
   itemText: {
+    position: 'absolute',
+    left: 20,
+    top: 5,
     fontSize: 30,
+  },
+  deleteButton: {
+    position: 'absolute',
+    right: 20,
+    top: 5,
   },
 });
 

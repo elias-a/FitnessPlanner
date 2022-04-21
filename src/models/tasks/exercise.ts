@@ -27,7 +27,8 @@ export const addExercise = (exercise: Exercise): Exercise => {
 
 export const deleteExercise = (exercise: Exercise): Exercise => {
   realm.write(() => {
-    realm.delete(exercise);
+    const exerciseObject = realm.objectForPrimaryKey('Exercise', exercise.id);
+    realm.delete(exerciseObject);
   });
 
   // TODO: Get verification the object was deleted.

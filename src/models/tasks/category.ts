@@ -27,7 +27,8 @@ export const addCategory = (category: Category): Category => {
 
 export const deleteCategory = (category: Category): Category => {
   realm.write(() => {
-    realm.delete(category);
+    const categoryObject = realm.objectForPrimaryKey('Category', category.id);
+    realm.delete(categoryObject);
   });
 
   // TODO: Get verification the object was deleted.
