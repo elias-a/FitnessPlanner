@@ -4,7 +4,8 @@ import { initialCategories } from '../data/category';
 import {
   getCategories as getCategoriesTask,
   addCategory as addCategoryTask,
-} from '../models/tasks';
+  deleteCategory as deleteCategoryTask,
+} from '../models/tasks/category';
 
 export const categorySlice = createSlice({
   name: 'category',
@@ -19,8 +20,13 @@ export const categorySlice = createSlice({
       const category = addCategoryTask(action.payload);
       state.categories.push(category);
     },
+    deleteCategory: (state, action: { payload: Category }) => {
+      const category = deleteCategoryTask(action.payload);
+      state.categories.filter(el => el.id === category.id);
+    },
   },
 });
 
-export const { addCategory, getCategories } = categorySlice.actions;
+export const { addCategory, getCategories, deleteCategory } =
+  categorySlice.actions;
 export default categorySlice.reducer;

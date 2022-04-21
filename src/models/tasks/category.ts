@@ -1,5 +1,5 @@
-import realm from './realm';
-import { Category } from '../types/category';
+import realm from '../realm';
+import { Category } from '../../types/category';
 
 export const getCategories = (): Category[] => {
   const categories = JSON.parse(JSON.stringify(realm.objects('Category')));
@@ -23,4 +23,13 @@ export const addCategory = (category: Category): Category => {
     name: newCategory.name,
     subCategories: JSON.parse(JSON.stringify(newCategory.subCategories)),
   };
+};
+
+export const deleteCategory = (category: Category): Category => {
+  realm.write(() => {
+    realm.delete(category);
+  });
+
+  // TODO: Get verification the object was deleted.
+  return category;
 };
