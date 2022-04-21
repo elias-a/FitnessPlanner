@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { Exercise } from '../types/exercise';
-import { initialExercises } from '../data/exercise';
 import {
   getExercises as getExercisesTask,
   addExercise as addExerciseTask,
   deleteExercise as deleteExerciseTask,
 } from '../models/tasks/exercise';
+
+const initialExercises: Exercise[] = [];
 
 export const exerciseSlice = createSlice({
   name: 'exercise',

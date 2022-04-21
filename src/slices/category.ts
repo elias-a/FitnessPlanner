@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { Category } from '../types/category';
-import { initialCategories } from '../data/category';
 import {
   getCategories as getCategoriesTask,
   addCategory as addCategoryTask,
   deleteCategory as deleteCategoryTask,
 } from '../models/tasks/category';
+
+const initialCategories: Category[] = [];
 
 export const categorySlice = createSlice({
   name: 'category',
