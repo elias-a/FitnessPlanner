@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Landing from './Landing';
 import ViewExercises from './ViewExercises';
 import ViewCategories from './ViewCategories';
+import ViewSplits from './ViewSplits';
 import AddExercise from './AddExercise';
 import AddCategory from './AddCategory';
 import StartSplit from './StartSplit';
@@ -11,6 +12,7 @@ export type Stack = {
   Landing: undefined;
   ViewExercises: undefined;
   ViewCategories: undefined;
+  ViewSplits: undefined;
   AddExercise: undefined;
   AddCategory: undefined;
   StartSplit: undefined;
@@ -38,6 +40,13 @@ const Glossary: React.FC<{}> = ({}) => {
       <Stack.Screen
         name="ViewCategories"
         component={ViewCategories}
+        options={{
+          header: () => null,
+        }}
+      />
+      <Stack.Screen
+        name="ViewSplits"
+        component={ViewSplits}
         options={{
           header: () => null,
         }}

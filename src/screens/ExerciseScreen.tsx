@@ -17,7 +17,7 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   const [splitExercises, setSplitExercises] = React.useState<SplitExercise[]>(
     [],
   );
-  const split = useAppSelector(state => state.split);
+  const { currentSplit } = useAppSelector(state => state.split);
   const { exercises } = useAppSelector(state => state.exercise);
   const dispatch = useAppDispatch();
 
@@ -28,28 +28,28 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   }, [route.params]);
 
   React.useEffect(() => {
-    if (!split.startDate || !split.endDate) {
+    if (!currentSplit.startDate || !currentSplit.endDate) {
       setSplitExercises([]);
       return;
     }
 
     if (
-      selectedDate < new Date(split.startDate) ||
-      selectedDate > new Date(split.endDate)
+      selectedDate < new Date(currentSplit.startDate) ||
+      selectedDate > new Date(currentSplit.endDate)
     ) {
       setSplitExercises([]);
       return;
     }
 
-    const key = getDayKey(selectedDate, new Date(split.startDate));
-    if (!Object.keys(split.exercises).includes(key)) {
+    const key = getDayKey(selectedDate, new Date(currentSplit.startDate));
+    if (!Object.keys(currentSplit.exercises).includes(key)) {
       setSplitExercises([]);
       return;
     }
 
-    setSplitExercises(split.exercises[key]);
+    setSplitExercises(currentSplit.exercises[key]);
     setDayKey(key);
-  }, [split, exercises, selectedDate]);
+  }, [currentSplit, exercises, selectedDate]);
 
   const toggleIsCompleted = (id: string) => {
     const updatedSplitExercises: SplitExercise[] = [];
@@ -67,7 +67,7 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
 
     dispatch(
       updateExercises({
-        ...split.exercises,
+        ...currentSplit.exercises,
         [dayKey]: updatedSplitExercises,
       }),
     );

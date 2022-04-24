@@ -21,6 +21,12 @@ const Landing: React.FC<LandingProps> = ({ navigation }) => {
         <Text>{'View Categories'}</Text>
       </Pressable>
       <Pressable
+        onPress={() => navigation.push('ViewSplits', 'ViewSplits')}
+        style={styles.button}
+      >
+        <Text>{'View Splits'}</Text>
+      </Pressable>
+      <Pressable
         onPress={() => navigation.push('AddExercise', 'AddExercise')}
         style={styles.button}
       >

@@ -75,6 +75,16 @@ const styles = StyleSheet.create({
     right: 20,
     top: 5,
   },
+  splitDetails: {
+    position: 'absolute',
+    left: 15,
+    top: 10,
+    height: 50,
+  },
+  splitDetailsText: {
+    fontSize: 26,
+    fontWeight: '700',
+  },
 });
 
 export default styles;

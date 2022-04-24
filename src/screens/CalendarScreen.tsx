@@ -6,12 +6,7 @@ import { getDayKey } from '../utils/getDayKey';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Tab } from '../Navigation';
-
-const formatDate = (date: Date) => {
-  const month = date.toLocaleString('default', { month: 'long' });
-  const day = date.getDate();
-  return `${month} ${day}`;
-};
+import { formatDate } from '../utils/dates';
 
 type CalendarScreenProps = BottomTabScreenProps<Tab, 'Calendar'>;
 
@@ -23,16 +18,16 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
   const [formattedEndDate, setFormattedEndDate] = React.useState('');
   const [splitLength, setSplitLength] = React.useState(0);
   const [dayCategories, setDayCategories] = React.useState<string[]>([]);
-  const split = useAppSelector(state => state.split);
+  const { currentSplit } = useAppSelector(state => state.split);
   const { categories } = useAppSelector(state => state.category);
 
   React.useEffect(() => {
-    if (split.startDate !== '' && split.endDate !== '') {
-      const newStartDate = new Date(split.startDate);
+    if (currentSplit.startDate !== '' && currentSplit.endDate !== '') {
+      const newStartDate = new Date(currentSplit.startDate);
       setStartDate(newStartDate);
       setFormattedStartDate(formatDate(newStartDate));
 
-      const newEndDate = new Date(split.endDate);
+      const newEndDate = new Date(currentSplit.endDate);
       setEndDate(newEndDate);
       setFormattedEndDate(formatDate(newEndDate));
 
@@ -44,30 +39,30 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
       setStartDate(undefined);
       setFormattedEndDate('');
     }
-  }, [split]);
+  }, [currentSplit]);
 
   React.useEffect(() => {
-    if (!split.startDate || !split.endDate) {
+    if (!currentSplit.startDate || !currentSplit.endDate) {
       setDayCategories([]);
       return;
     }
 
     if (
-      selectedDate < new Date(split.startDate) ||
-      selectedDate > new Date(split.endDate)
+      selectedDate < new Date(currentSplit.startDate) ||
+      selectedDate > new Date(currentSplit.endDate)
     ) {
       setDayCategories([]);
       return;
     }
 
-    const key = getDayKey(selectedDate, new Date(split.startDate));
-    if (!Object.keys(split.exercises).includes(key)) {
+    const key = getDayKey(selectedDate, new Date(currentSplit.startDate));
+    if (!Object.keys(currentSplit.exercises).includes(key)) {
       setDayCategories([]);
       return;
     }
 
     const newCategories: string[] = [];
-    split.categories[key].forEach(category => {
+    currentSplit.categories[key].forEach(category => {
       const categoryName = categories.find(el => el.id === category);
       if (categoryName !== undefined) {
         newCategories.push(categoryName.name);
@@ -75,7 +70,7 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
     });
 
     setDayCategories(newCategories);
-  }, [selectedDate, split, categories]);
+  }, [selectedDate, currentSplit, categories]);
 
   return (
     <View style={styles.container}>
