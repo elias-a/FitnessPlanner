@@ -3,13 +3,12 @@ import { View, Text, Pressable, TextInput } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import { addCategory } from '../../slices/category';
 import uuid from 'react-native-uuid';
 import MultiSelect from '../MultiSelect';
-
 import type { Category } from '../../types/category';
+import Header from './Header';
 
 type AddCategoryProps = NativeStackScreenProps<Stack, 'AddCategory'>;
 
@@ -44,19 +43,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ navigation }) => {
 
   return (
     <React.Fragment>
-      <View style={styles.container}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <MaterialCommunityIcons
-            name={'arrow-left-bold'}
-            size={32}
-            color={'#000'}
-          />
-        </Pressable>
-        <Text style={styles.title}>{'Add Category'}</Text>
-      </View>
+      <Header title={'Add Category'} goBack={() => navigation.goBack()} />
 
       <View style={styles.container}>
         <TextInput

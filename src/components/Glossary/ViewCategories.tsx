@@ -6,6 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import styles from './styles';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { deleteCategory } from '../../slices/category';
+import Header from './Header';
 
 type ViewCategoriesProps = NativeStackScreenProps<Stack, 'ViewExercises'>;
 
@@ -14,40 +15,35 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-        <MaterialCommunityIcons
-          name={'arrow-left-bold'}
-          size={32}
-          color={'#000'}
-        />
-      </Pressable>
-      <Text style={styles.title}>{'View Categories'}</Text>
+    <React.Fragment>
+      <Header title={'View Categories'} goBack={() => navigation.goBack()} />
 
-      <View style={styles.listContainer}>
-        {categories.map(category => {
-          return (
-            <Pressable
-              key={category.id}
-              onPress={() => {}}
-              style={styles.listItem}
-            >
-              <Text style={styles.itemText}>{category.name}</Text>
+      <View style={styles.container}>
+        <View style={styles.listContainer}>
+          {categories.map(category => {
+            return (
               <Pressable
-                onPress={() => dispatch(deleteCategory(category))}
-                style={styles.deleteButton}
+                key={category.id}
+                onPress={() => {}}
+                style={styles.listItem}
               >
-                <MaterialCommunityIcons
-                  name={'delete'}
-                  size={32}
-                  color={'#000'}
-                />
+                <Text style={styles.itemText}>{category.name}</Text>
+                <Pressable
+                  onPress={() => dispatch(deleteCategory(category))}
+                  style={styles.deleteButton}
+                >
+                  <MaterialCommunityIcons
+                    name={'delete'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
               </Pressable>
-            </Pressable>
-          );
-        })}
+            );
+          })}
+        </View>
       </View>
-    </View>
+    </React.Fragment>
   );
 };
 

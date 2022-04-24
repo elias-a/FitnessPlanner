@@ -4,11 +4,11 @@ import { useAppSelector, useAppDispatch } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import type { Split } from '../../types/split';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import MultiSelect from '../MultiSelect';
 import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays from '../ScrollableWeek/ScrollableDays';
+import Header from './Header';
 import { createSplit } from '../../slices/split';
 import { buildSplit } from '../../algorithms/buildSplit';
 import uuid from 'react-native-uuid';
@@ -72,16 +72,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
 
   return (
     <React.Fragment>
-      <View style={styles.container}>
-        <Pressable onPress={goBack} style={styles.backButton}>
-          <MaterialCommunityIcons
-            name={'arrow-left-bold'}
-            size={32}
-            color={'#000'}
-          />
-        </Pressable>
-        <Text style={styles.title}>{'Start Split'}</Text>
-      </View>
+      <Header title={'Start Split'} goBack={goBack} />
 
       {page === 1 && (
         <View style={styles.container}>

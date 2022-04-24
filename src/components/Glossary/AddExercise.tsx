@@ -3,11 +3,11 @@ import { View, Text, Pressable, TextInput } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import { addExercise } from '../../slices/exercise';
 import uuid from 'react-native-uuid';
 import MultiSelect from '../MultiSelect';
+import Header from './Header';
 
 type AddExerciseProps = NativeStackScreenProps<Stack, 'AddExercise'>;
 
@@ -33,19 +33,7 @@ const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
 
   return (
     <React.Fragment>
-      <View style={styles.container}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <MaterialCommunityIcons
-            name={'arrow-left-bold'}
-            size={32}
-            color={'#000'}
-          />
-        </Pressable>
-        <Text style={styles.title}>{'Add Exercise'}</Text>
-      </View>
+      <Header title={'Add Exercise'} goBack={() => navigation.goBack()} />
 
       <View style={styles.container}>
         <TextInput
