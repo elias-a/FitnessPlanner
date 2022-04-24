@@ -1,9 +1,9 @@
 import realm from '../realm';
 import { Category } from '../../types/category';
+import { parseJson } from '../../utils/parseJson';
 
 export const getCategories = (): Category[] => {
-  const categories = JSON.parse(JSON.stringify(realm.objects('Category')));
-  console.log(categories);
+  const categories = parseJson(realm.objects('Category'));
   return categories;
 };
 
@@ -21,7 +21,7 @@ export const addCategory = (category: Category): Category => {
   return {
     id: newCategory.id,
     name: newCategory.name,
-    subCategories: JSON.parse(JSON.stringify(newCategory.subCategories)),
+    subCategories: parseJson(newCategory.subCategories),
   };
 };
 

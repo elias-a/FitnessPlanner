@@ -11,6 +11,7 @@ import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays from '../ScrollableWeek/ScrollableDays';
 import { createSplit } from '../../slices/split';
 import { buildSplit } from '../../algorithms/buildSplit';
+import uuid from 'react-native-uuid';
 
 type StartSplitProps = NativeStackScreenProps<Stack, 'StartSplit'>;
 
@@ -47,6 +48,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
 
   const start = () => {
     const newSplit: Split = {
+      id: uuid.v4().toString(),
       startDate: startDate ? startDate.toString() : '',
       endDate: endDate ? endDate.toString() : '',
       categories: selectedCategories,

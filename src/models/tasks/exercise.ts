@@ -1,9 +1,9 @@
 import realm from '../realm';
 import { Exercise } from '../../types/exercise';
+import { parseJson } from '../../utils/parseJson';
 
 export const getExercises = (): Exercise[] => {
-  const exercises = JSON.parse(JSON.stringify(realm.objects('Exercise')));
-  console.log(exercises);
+  const exercises = parseJson(realm.objects('Exercise'));
   return exercises;
 };
 
@@ -21,7 +21,7 @@ export const addExercise = (exercise: Exercise): Exercise => {
   return {
     id: newExercise.id,
     name: newExercise.name,
-    categories: JSON.parse(JSON.stringify(newExercise.categories)),
+    categories: parseJson(newExercise.categories),
   };
 };
 
