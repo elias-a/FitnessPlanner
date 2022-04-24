@@ -83,6 +83,16 @@ export const createSplit = (split: Split): Split => {
   };
 };
 
+export const deleteSplit = (split: Split): Split => {
+  realm.write(() => {
+    const splitObject = realm.objectForPrimaryKey('Split', split.id);
+    realm.delete(splitObject);
+  });
+
+  // TODO: Get verification the object was deleted.
+  return split;
+};
+
 const convertSplit = (split: SplitObject) => {
   const categories: { [key: string]: string[] } = {};
   const newStringArrayMap: StringArrayMap[] = parseJson(split.categories);

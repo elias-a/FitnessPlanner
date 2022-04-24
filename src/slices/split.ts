@@ -3,6 +3,7 @@ import type { Split, SplitExercise } from '../types/split';
 import {
   getSplits as getSplitsTask,
   createSplit as createSplitTask,
+  deleteSplit as deleteSplitTask,
 } from '../models/tasks/split';
 
 const initialCurrentSplit: Split = {
@@ -77,8 +78,21 @@ export const splitSplice = createSlice({
 
       state.currentSplit.exercises = splitExercises;
     },
+    deleteSplit: (state, action: { payload: Split }) => {
+      const split = deleteSplitTask(action.payload);
+      state.splits = state.splits.filter(el => el.id !== split.id);
+
+      if (split.id === state.currentSplit.id) {
+        state.currentSplit.id = initialCurrentSplit.id;
+        state.currentSplit.startDate = initialCurrentSplit.startDate;
+        state.currentSplit.endDate = initialCurrentSplit.endDate;
+        state.currentSplit.categories = initialCurrentSplit.categories;
+        state.currentSplit.exercises = initialCurrentSplit.exercises;
+      }
+    },
   },
 });
 
-export const { getSplits, createSplit, updateExercises } = splitSplice.actions;
+export const { getSplits, createSplit, updateExercises, deleteSplit } =
+  splitSplice.actions;
 export default splitSplice.reducer;

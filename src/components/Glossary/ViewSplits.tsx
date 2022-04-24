@@ -5,6 +5,7 @@ import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import { useAppSelector, useAppDispatch } from '../../hooks';
+import { deleteSplit } from '../../slices/split';
 import Header from './Header';
 import { formatDate } from '../../utils/dates';
 
@@ -34,7 +35,10 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
                     )}`}
                   </Text>
                 </View>
-                <Pressable onPress={() => {}} style={styles.deleteButton}>
+                <Pressable
+                  onPress={() => dispatch(deleteSplit(split))}
+                  style={styles.deleteButton}
+                >
                   <MaterialCommunityIcons
                     name={'delete'}
                     size={32}
