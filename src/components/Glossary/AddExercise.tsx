@@ -8,23 +8,42 @@ import { addExercise } from '../../slices/exercise';
 import uuid from 'react-native-uuid';
 import MultiSelect from '../MultiSelect';
 import Header from './Header';
+import type { Exercise } from '../../types/exercise';
+
+const initialExercise: Exercise = {
+  id: '',
+  name: '',
+  categories: [],
+};
 
 type AddExerciseProps = NativeStackScreenProps<Stack, 'AddExercise'>;
 
-const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
-  const [exercise, setExercise] = React.useState('');
-  const [selectedCategories, setSelectedCategories] = React.useState<string[]>(
-    [],
-  );
+const AddExercise: React.FC<AddExerciseProps> = ({ route, navigation }) => {
+  const [exercise, setExercise] = React.useState(initialExercise);
   const dispatch = useAppDispatch();
   const { categories } = useAppSelector(state => state.category);
+
+  React.useEffect(() => {
+    if (route.params.exercise) {
+      setExercise(route.params.exercise);
+    } else {
+      setExercise(initialExercise);
+    }
+  }, [route.params.exercise]);
+
+  const updateExercise = <T,>(name: string, value: T) => {
+    setExercise(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   const add = () => {
     dispatch(
       addExercise({
         id: uuid.v4().toString(),
-        name: exercise,
-        categories: selectedCategories,
+        name: exercise.name,
+        categories: exercise.categories,
       }),
     );
 
@@ -37,15 +56,15 @@ const AddExercise: React.FC<AddExerciseProps> = ({ navigation }) => {
 
       <View style={styles.container}>
         <TextInput
-          value={exercise}
-          onChangeText={setExercise}
+          value={exercise.name}
+          onChangeText={name => updateExercise('name', name)}
           placeholder={'Enter exercise name...'}
           style={styles.textInput}
         />
         <MultiSelect
           items={categories}
-          selectedItems={selectedCategories}
-          onSelectedItemsChange={items => setSelectedCategories(items)}
+          selectedItems={exercise.categories}
+          onSelectedItemsChange={items => updateExercise('categories', items)}
           isSingle={false}
           subKey={'subCategories'}
           selectText={'Choose categories...'}

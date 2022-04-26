@@ -29,6 +29,21 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
               >
                 <Text style={styles.itemText}>{category.name}</Text>
                 <Pressable
+                  onPress={() =>
+                    navigation.navigate({
+                      name: 'AddCategory',
+                      params: { category: category },
+                    })
+                  }
+                  style={styles.editButton}
+                >
+                  <MaterialCommunityIcons
+                    name={'pencil'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
+                <Pressable
                   onPress={() => dispatch(deleteCategory(category))}
                   style={styles.deleteButton}
                 >

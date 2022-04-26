@@ -27,13 +27,23 @@ const Landing: React.FC<LandingProps> = ({ navigation }) => {
         <Text>{'View Splits'}</Text>
       </Pressable>
       <Pressable
-        onPress={() => navigation.push('AddExercise', 'AddExercise')}
+        onPress={() =>
+          navigation.navigate({
+            name: 'AddExercise',
+            params: { exercise: undefined },
+          })
+        }
         style={styles.button}
       >
         <Text>{'Add Exercise'}</Text>
       </Pressable>
       <Pressable
-        onPress={() => navigation.push('AddCategory', 'AddCategory')}
+        onPress={() =>
+          navigation.navigate({
+            name: 'AddCategory',
+            params: { category: undefined },
+          })
+        }
         style={styles.button}
       >
         <Text>{'Add Category'}</Text>

@@ -7,14 +7,16 @@ import ViewSplits from './ViewSplits';
 import AddExercise from './AddExercise';
 import AddCategory from './AddCategory';
 import StartSplit from './StartSplit';
+import type { Category } from '../../types/category';
+import type { Exercise } from '../../types/exercise';
 
 export type Stack = {
   Landing: undefined;
   ViewExercises: undefined;
   ViewCategories: undefined;
   ViewSplits: undefined;
-  AddExercise: undefined;
-  AddCategory: undefined;
+  AddExercise: { exercise: Exercise | undefined };
+  AddCategory: { category: Category | undefined };
   StartSplit: undefined;
 };
 

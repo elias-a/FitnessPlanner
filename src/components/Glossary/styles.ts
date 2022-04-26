@@ -70,6 +70,11 @@ const styles = StyleSheet.create({
     top: 5,
     fontSize: 30,
   },
+  editButton: {
+    position: 'absolute',
+    right: 60,
+    top: 5,
+  },
   deleteButton: {
     position: 'absolute',
     right: 20,

@@ -29,6 +29,21 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
               >
                 <Text style={styles.itemText}>{exercise.name}</Text>
                 <Pressable
+                  onPress={() =>
+                    navigation.navigate({
+                      name: 'AddExercise',
+                      params: { exercise: exercise },
+                    })
+                  }
+                  style={styles.editButton}
+                >
+                  <MaterialCommunityIcons
+                    name={'pencil'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
+                <Pressable
                   onPress={() => dispatch(deleteExercise(exercise))}
                   style={styles.deleteButton}
                 >
