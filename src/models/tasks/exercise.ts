@@ -7,13 +7,19 @@ export const getExercises = (): Exercise[] => {
   return exercises;
 };
 
-export const addExercise = (exercise: Exercise): Exercise => {
+export const addExercise = (exercise: Exercise, editing: boolean): Exercise => {
   const newExercise = realm.write(() => {
-    const createdExercise: Exercise = realm.create('Exercise', {
-      id: exercise.id,
-      name: exercise.name,
-      categories: exercise.categories,
-    });
+    const createdExercise: Exercise = realm.create(
+      // This seems to be an issue with `realm.create` types.
+      // @ts-ignore
+      'Exercise',
+      {
+        id: exercise.id,
+        name: exercise.name,
+        categories: exercise.categories,
+      },
+      editing ? Realm.UpdateMode.Modified : Realm.UpdateMode.Never,
+    );
 
     return createdExercise;
   });

@@ -7,13 +7,19 @@ export const getCategories = (): Category[] => {
   return categories;
 };
 
-export const addCategory = (category: Category): Category => {
+export const addCategory = (category: Category, editing: boolean): Category => {
   const newCategory = realm.write(() => {
-    const createdCategory: Category = realm.create('Category', {
-      id: category.id,
-      name: category.name,
-      subCategories: category.subCategories,
-    });
+    const createdCategory: Category = realm.create(
+      // This seems to be an issue with `realm.create` types.
+      // @ts-ignore
+      'Category',
+      {
+        id: category.id,
+        name: category.name,
+        subCategories: category.subCategories,
+      },
+      editing ? Realm.UpdateMode.Modified : Realm.UpdateMode.Never,
+    );
 
     return createdCategory;
   });

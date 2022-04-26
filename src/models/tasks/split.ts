@@ -61,13 +61,17 @@ export const createSplit = (split: Split): Split => {
       };
     });
 
-    const createdSplit: SplitObject = realm.create('Split', {
-      id: split.id,
-      startDate: split.startDate,
-      endDate: split.endDate,
-      categories: stringArrayMap,
-      exercises: splitExerciseArrayMap,
-    });
+    const createdSplit: SplitObject = realm.create(
+      'Split',
+      {
+        id: split.id,
+        startDate: split.startDate,
+        endDate: split.endDate,
+        categories: stringArrayMap,
+        exercises: splitExerciseArrayMap,
+      },
+      Realm.UpdateMode.Modified,
+    );
 
     return createdSplit;
   });

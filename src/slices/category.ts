@@ -17,9 +17,24 @@ export const categorySlice = createSlice({
     getCategories: (state, _action: {}) => {
       state.categories = getCategoriesTask();
     },
-    addCategory: (state, action: { payload: Category }) => {
-      const category = addCategoryTask(action.payload);
-      state.categories.push(category);
+    addCategory: (
+      state,
+      action: { payload: { category: Category; editing: boolean } },
+    ) => {
+      const { category, editing } = action.payload;
+      const newCategory = addCategoryTask(category, editing);
+
+      if (editing) {
+        state.categories = state.categories.map(el => {
+          if (el.id === newCategory.id) {
+            return { ...newCategory };
+          } else {
+            return { ...el };
+          }
+        });
+      } else {
+        state.categories.push(newCategory);
+      }
     },
     deleteCategory: (state, action: { payload: Category }) => {
       const category = deleteCategoryTask(action.payload);

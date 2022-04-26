@@ -17,9 +17,24 @@ export const exerciseSlice = createSlice({
     getExercises: (state, _action: {}) => {
       state.exercises = getExercisesTask();
     },
-    addExercise: (state, action: { payload: Exercise }) => {
-      const exercise = addExerciseTask(action.payload);
-      state.exercises.push(exercise);
+    addExercise: (
+      state,
+      action: { payload: { exercise: Exercise; editing: boolean } },
+    ) => {
+      const { exercise, editing } = action.payload;
+      const newExercise = addExerciseTask(exercise, editing);
+
+      if (editing) {
+        state.exercises = state.exercises.map(el => {
+          if (el.id === newExercise.id) {
+            return { ...newExercise };
+          } else {
+            return { ...el };
+          }
+        });
+      } else {
+        state.exercises.push(newExercise);
+      }
     },
     deleteExercise: (state, action: { payload: Exercise }) => {
       const exercise = deleteExerciseTask(action.payload);

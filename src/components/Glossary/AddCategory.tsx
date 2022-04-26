@@ -52,11 +52,16 @@ const AddCategory: React.FC<AddCategoryProps> = ({ route, navigation }) => {
   };
 
   const add = () => {
+    const editing = !!route.params.category;
+
     dispatch(
       addCategory({
-        id: uuid.v4().toString(),
-        name: category.name,
-        subCategories: category.subCategories,
+        category: {
+          id: editing ? category.id : uuid.v4().toString(),
+          name: category.name,
+          subCategories: category.subCategories,
+        },
+        editing: editing,
       }),
     );
 

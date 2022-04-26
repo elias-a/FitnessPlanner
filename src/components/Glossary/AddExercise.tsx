@@ -39,11 +39,15 @@ const AddExercise: React.FC<AddExerciseProps> = ({ route, navigation }) => {
   };
 
   const add = () => {
+    const editing = !!route.params.exercise;
     dispatch(
       addExercise({
-        id: uuid.v4().toString(),
-        name: exercise.name,
-        categories: exercise.categories,
+        exercise: {
+          id: editing ? exercise.id : uuid.v4().toString(),
+          name: exercise.name,
+          categories: exercise.categories,
+        },
+        editing: editing,
       }),
     );
 
