@@ -9,9 +9,12 @@ import MultiSelect from '../MultiSelect';
 import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays from '../ScrollableWeek/ScrollableDays';
 import Header from './Header';
+import ErrorModal from '../Modals/Error';
+import ConfirmModal from '../Modals/Confirm';
 import { createSplit } from '../../slices/split';
 import { buildSplit } from '../../algorithms/buildSplit';
 import uuid from 'react-native-uuid';
+import { checkDateOverlap } from '../../utils/checkDateOverlap';
 
 type StartSplitProps = NativeStackScreenProps<Stack, 'StartSplit'>;
 
@@ -27,8 +30,12 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
   const [splitExercises, setSplitExercises] = React.useState<{
     [key: string]: SplitExercise[];
   }>({});
+  const [existingSplit, setExistingSplit] = React.useState<Split | undefined>();
+  const [error, setError] = React.useState('');
+  const [confirm, setConfirm] = React.useState('');
   const { categories } = useAppSelector(state => state.category);
   const { exercises } = useAppSelector(state => state.exercise);
+  const { splits } = useAppSelector(state => state.split);
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
@@ -91,7 +98,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
     dispatch(
       createSplit({
         split: newSplit,
-        editing: editing,
+        editing: !!route.params.split,
       }),
     );
     navigation.goBack();
@@ -102,6 +109,15 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
       setPage(page - 1);
     } else {
       navigation.goBack();
+    }
+  };
+
+  const editSplit = () => {
+    if (existingSplit) {
+      loadSplit(existingSplit);
+      setConfirm('');
+    } else {
+      setError('No overlapping split found');
     }
   };
 
@@ -120,6 +136,24 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
 
           <Pressable
             onPress={() => {
+              if (!startDate || !endDate) {
+                setError('Select a start and end date');
+                return;
+              }
+
+              const overlappingSplit = checkDateOverlap(
+                startDate,
+                endDate,
+                splits,
+              );
+              if (overlappingSplit && !editing) {
+                setExistingSplit(overlappingSplit);
+                setConfirm(
+                  "The dates you've selected overlap an existing split. Would you like to edit that split now?",
+                );
+                return;
+              }
+
               if (Object.keys(selectedCategories).length === 0) {
                 initializeCategories();
               }
@@ -155,6 +189,17 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
           </Pressable>
         </View>
       )}
+      <ErrorModal
+        isOpen={!!error}
+        onClose={() => setError('')}
+        message={error}
+      />
+      <ConfirmModal
+        isOpen={!!confirm}
+        onCancel={() => setConfirm('')}
+        onConfirm={editSplit}
+        message={confirm}
+      />
     </React.Fragment>
   );
 };

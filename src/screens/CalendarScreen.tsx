@@ -6,7 +6,7 @@ import { getDayKey } from '../utils/getDayKey';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Tab } from '../Navigation';
-import { formatDate } from '../utils/dates';
+import { formatDate } from '../utils/formatDate';
 
 type CalendarScreenProps = BottomTabScreenProps<Tab, 'Calendar'>;
 

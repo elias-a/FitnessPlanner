@@ -7,7 +7,7 @@ import styles from './styles';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { deleteSplit } from '../../slices/split';
 import Header from './Header';
-import { formatDate } from '../../utils/dates';
+import { formatDate } from '../../utils/formatDate';
 
 type ViewSplitsProps = NativeStackScreenProps<Stack, 'ViewSplits'>;
 
