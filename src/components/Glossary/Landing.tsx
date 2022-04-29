@@ -49,7 +49,12 @@ const Landing: React.FC<LandingProps> = ({ navigation }) => {
         <Text>{'Add Category'}</Text>
       </Pressable>
       <Pressable
-        onPress={() => navigation.push('StartSplit', 'StartSplit')}
+        onPress={() =>
+          navigation.navigate({
+            name: 'StartSplit',
+            params: { split: undefined },
+          })
+        }
         style={styles.button}
       >
         <Text>{'Start Split'}</Text>

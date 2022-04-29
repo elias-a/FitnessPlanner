@@ -27,7 +27,7 @@ export const getSplits = (): Split[] => {
   return splits;
 };
 
-export const createSplit = (split: Split): Split => {
+export const createSplit = (split: Split, editing: boolean): Split => {
   const newSplit = realm.write(() => {
     const stringArrayMap: StringArrayMap[] = Object.keys(split.categories).map(
       day => {
@@ -62,6 +62,8 @@ export const createSplit = (split: Split): Split => {
     });
 
     const createdSplit: SplitObject = realm.create(
+      // This seems to be an issue with `realm.create` types.
+      // @ts-ignore
       'Split',
       {
         id: split.id,
@@ -70,7 +72,7 @@ export const createSplit = (split: Split): Split => {
         categories: stringArrayMap,
         exercises: splitExerciseArrayMap,
       },
-      Realm.UpdateMode.Modified,
+      editing ? Realm.UpdateMode.Modified : Realm.UpdateMode.Never,
     );
 
     return createdSplit;

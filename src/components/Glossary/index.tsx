@@ -9,6 +9,7 @@ import AddCategory from './AddCategory';
 import StartSplit from './StartSplit';
 import type { Category } from '../../types/category';
 import type { Exercise } from '../../types/exercise';
+import { Split } from '../../types/split';
 
 export type Stack = {
   Landing: undefined;
@@ -17,7 +18,7 @@ export type Stack = {
   ViewSplits: undefined;
   AddExercise: { exercise: Exercise | undefined };
   AddCategory: { category: Category | undefined };
-  StartSplit: undefined;
+  StartSplit: { split: Split | undefined };
 };
 
 const Stack = createNativeStackNavigator();

@@ -48,26 +48,37 @@ export const splitSplice = createSlice({
         state.currentSplit.exercises = initialCurrentSplit.exercises;
       }
     },
-    createSplit: (state, action: { payload: Split }) => {
-      const { id, startDate, endDate, categories, exercises } = createSplitTask(
-        action.payload,
-      );
+    createSplit: (
+      state,
+      action: { payload: { split: Split; editing: boolean } },
+    ) => {
+      const { split, editing } = action.payload;
+      const newSplit = createSplitTask(split, editing);
 
-      state.splits.push({ id, startDate, endDate, categories, exercises });
+      if (editing) {
+        state.splits = state.splits.map(item => {
+          if (item.id === newSplit.id) {
+            return { ...newSplit };
+          } else {
+            return { ...item };
+          }
+        });
+      } else {
+        state.splits.push(newSplit);
+      }
 
       const today = new Date();
       const currentSplit = state.splits.find(
-        split =>
-          today >= new Date(split.startDate) &&
-          today <= new Date(split.endDate),
+        item =>
+          today >= new Date(item.startDate) && today <= new Date(item.endDate),
       );
 
       if (currentSplit) {
-        state.currentSplit.id = id;
-        state.currentSplit.startDate = startDate;
-        state.currentSplit.endDate = endDate;
-        state.currentSplit.categories = categories;
-        state.currentSplit.exercises = exercises;
+        state.currentSplit.id = currentSplit.id;
+        state.currentSplit.startDate = currentSplit.startDate;
+        state.currentSplit.endDate = currentSplit.endDate;
+        state.currentSplit.categories = currentSplit.categories;
+        state.currentSplit.exercises = currentSplit.exercises;
       }
     },
     updateExercises: (

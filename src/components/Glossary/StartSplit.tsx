@@ -3,7 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
-import type { Split } from '../../types/split';
+import type { Split, SplitExercise } from '../../types/split';
 import styles from './styles';
 import MultiSelect from '../MultiSelect';
 import Calendar from '../Calendar/CalendarRange';
@@ -15,7 +15,8 @@ import uuid from 'react-native-uuid';
 
 type StartSplitProps = NativeStackScreenProps<Stack, 'StartSplit'>;
 
-const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
+const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
+  const [editing, setEditing] = React.useState(false);
   const [page, setPage] = React.useState(1);
   const [startDate, setStartDate] = React.useState<Date | undefined>();
   const [endDate, setEndDate] = React.useState<Date | undefined>();
@@ -23,9 +24,27 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
   const [selectedCategories, setSelectedCategories] = React.useState<{
     [key: string]: string[];
   }>({});
+  const [splitExercises, setSplitExercises] = React.useState<{
+    [key: string]: SplitExercise[];
+  }>({});
   const { categories } = useAppSelector(state => state.category);
   const { exercises } = useAppSelector(state => state.exercise);
   const dispatch = useAppDispatch();
+
+  React.useEffect(() => {
+    if (route.params.split) {
+      loadSplit(route.params.split);
+    }
+  }, [route.params.split]);
+
+  const loadSplit = (split: Split) => {
+    setEditing(true);
+
+    setStartDate(new Date(split.startDate));
+    setEndDate(new Date(split.endDate));
+    setSelectedCategories(split.categories);
+    setSplitExercises(split.exercises);
+  };
 
   const initializeCategories = () => {
     const newCategories: { [key: string]: string[] } = {};
@@ -47,18 +66,34 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
   };
 
   const start = () => {
+    let id: string;
+    if (route.params.split) {
+      id = route.params.split.id;
+    } else {
+      id = uuid.v4().toString();
+    }
+
     const newSplit: Split = {
-      id: uuid.v4().toString(),
+      id: id,
       startDate: startDate ? startDate.toString() : '',
       endDate: endDate ? endDate.toString() : '',
       categories: selectedCategories,
       exercises: {},
     };
 
-    const selectedExercises = buildSplit(newSplit, exercises);
-    newSplit.exercises = selectedExercises;
+    if (route.params.split) {
+      newSplit.exercises = splitExercises;
+    } else {
+      const selectedExercises = buildSplit(newSplit, exercises);
+      newSplit.exercises = selectedExercises;
+    }
 
-    dispatch(createSplit(newSplit));
+    dispatch(
+      createSplit({
+        split: newSplit,
+        editing: editing,
+      }),
+    );
     navigation.goBack();
   };
 
@@ -85,7 +120,9 @@ const StartSplit: React.FC<StartSplitProps> = ({ navigation }) => {
 
           <Pressable
             onPress={() => {
-              initializeCategories();
+              if (Object.keys(selectedCategories).length === 0) {
+                initializeCategories();
+              }
               next();
             }}
             style={styles.addButton}

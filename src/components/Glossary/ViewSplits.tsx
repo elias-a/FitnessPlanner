@@ -36,6 +36,21 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
                   </Text>
                 </View>
                 <Pressable
+                  onPress={() =>
+                    navigation.navigate({
+                      name: 'StartSplit',
+                      params: { split: split },
+                    })
+                  }
+                  style={styles.editButton}
+                >
+                  <MaterialCommunityIcons
+                    name={'pencil'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
+                <Pressable
                   onPress={() => dispatch(deleteSplit(split))}
                   style={styles.deleteButton}
                 >
