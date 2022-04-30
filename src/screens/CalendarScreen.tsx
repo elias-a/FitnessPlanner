@@ -7,28 +7,38 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Tab } from '../Navigation';
 import { formatDate } from '../utils/formatDate';
+import type { CalendarRange } from '../types/calendar';
 
 type CalendarScreenProps = BottomTabScreenProps<Tab, 'Calendar'>;
 
 const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
-  const [startDate, setStartDate] = React.useState<Date | undefined>();
-  const [endDate, setEndDate] = React.useState<Date | undefined>();
+  const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
   const [formattedStartDate, setFormattedStartDate] = React.useState('');
   const [formattedEndDate, setFormattedEndDate] = React.useState('');
   const [splitLength, setSplitLength] = React.useState(0);
   const [dayCategories, setDayCategories] = React.useState<string[]>([]);
-  const { currentSplit } = useAppSelector(state => state.split);
+  const { currentSplit, splits } = useAppSelector(state => state.split);
   const { categories } = useAppSelector(state => state.category);
+
+  React.useEffect(() => {
+    const newRanges: CalendarRange[] = splits.map(split => {
+      return {
+        startRange: new Date(split.startDate),
+        endRange: new Date(split.endDate),
+        color: split.color,
+      };
+    });
+
+    setRanges(newRanges);
+  }, [splits]);
 
   React.useEffect(() => {
     if (currentSplit.startDate !== '' && currentSplit.endDate !== '') {
       const newStartDate = new Date(currentSplit.startDate);
-      setStartDate(newStartDate);
       setFormattedStartDate(formatDate(newStartDate));
 
       const newEndDate = new Date(currentSplit.endDate);
-      setEndDate(newEndDate);
       setFormattedEndDate(formatDate(newEndDate));
 
       const numWeeks = Math.ceil(
@@ -36,7 +46,6 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
       );
       setSplitLength(numWeeks);
     } else {
-      setStartDate(undefined);
       setFormattedEndDate('');
     }
   }, [currentSplit]);
@@ -77,9 +86,8 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
       <View style={styles.calendarContainer}>
         <Calendar
           selectedDate={selectedDate}
-          startRange={startDate}
-          endRange={endDate}
           setSelectedDate={setSelectedDate}
+          ranges={ranges}
         />
       </View>
       <View style={styles.exercisesContainer}>
@@ -108,7 +116,7 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
           </Pressable>
         </View>
       </View>
-      {startDate && (
+      {currentSplit.startDate && (
         <View style={styles.splitContainer}>
           <View style={[styles.splitDetails, styles.splitLength]}>
             <Text style={styles.splitDetailsText}>

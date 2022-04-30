@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import uuid from 'react-native-uuid';
+import type { CalendarRange } from '../../types/calendar';
 
 interface CalendarData {
   key: string;
@@ -23,17 +24,26 @@ const compareDates = (date1: Date, date2: Date) => {
   return areEqual;
 };
 
+const isDateInRange = (date: Date, ranges: CalendarRange[]): string => {
+  for (const range of ranges) {
+    const { startRange, endRange, color } = range;
+    if (date >= startRange && date <= endRange) {
+      return color;
+    }
+  }
+
+  return '';
+};
+
 interface CalendarProps {
   selectedDate: Date;
-  startRange: Date | undefined;
-  endRange: Date | undefined;
   setSelectedDate: (date: Date) => void;
+  ranges: CalendarRange[];
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   selectedDate,
-  startRange,
-  endRange,
+  ranges,
   setSelectedDate,
 }) => {
   const [today, setToday] = React.useState<Date>(new Date());
@@ -146,11 +156,11 @@ const Calendar: React.FC<CalendarProps> = ({
       const itemData = item.data as Date;
       const isToday = compareDates(today, itemData);
       const isSelected = compareDates(selectedDate, itemData);
+
+      let splitColor = isDateInRange(itemData, ranges);
       let isInRange = false;
-      if (startRange !== undefined && endRange !== undefined) {
-        if (itemData >= startRange && itemData <= endRange) {
-          isInRange = true;
-        }
+      if (splitColor) {
+        isInRange = true;
       }
 
       return (
@@ -158,7 +168,7 @@ const Calendar: React.FC<CalendarProps> = ({
           onPress={() => setSelectedDate(itemData)}
           style={[
             styles.item,
-            isInRange && { backgroundColor: '#909090' },
+            isInRange && { backgroundColor: splitColor },
             isSelected && {
               backgroundColor: '#484848',
               borderRadius: 30,

@@ -56,6 +56,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
     setEndDate(new Date(split.endDate));
     setSelectedCategories(split.categories);
     setSplitExercises(split.exercises);
+    setColor(split.color);
   };
 
   const initializeCategories = () => {
