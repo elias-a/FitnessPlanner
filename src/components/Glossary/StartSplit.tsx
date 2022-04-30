@@ -4,6 +4,7 @@ import { useAppSelector, useAppDispatch } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import type { Split, SplitExercise } from '../../types/split';
+import type { CalendarRange } from '../../types/calendar';
 import styles from './styles';
 import MultiSelect from '../MultiSelect';
 import Calendar from '../Calendar/CalendarRange';
@@ -38,6 +39,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
   const [existingSplit, setExistingSplit] = React.useState<Split | undefined>();
   const [error, setError] = React.useState('');
   const [confirm, setConfirm] = React.useState('');
+  const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
   const { categories } = useAppSelector(state => state.category);
   const { exercises } = useAppSelector(state => state.exercise);
   const { splits } = useAppSelector(state => state.split);
@@ -48,6 +50,18 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
       loadSplit(route.params.split);
     }
   }, [route.params.split]);
+
+  React.useEffect(() => {
+    const newRanges: CalendarRange[] = splits.map(split => {
+      return {
+        startRange: new Date(split.startDate),
+        endRange: new Date(split.endDate),
+        color: split.color,
+      };
+    });
+
+    setRanges(newRanges);
+  }, [splits]);
 
   const loadSplit = (split: Split) => {
     setEditing(true);
@@ -144,6 +158,8 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
             endDate={endDate}
             setStartDate={setStartDate}
             setEndDate={setEndDate}
+            ranges={ranges}
+            color={color}
           />
 
           <Pressable

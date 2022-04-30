@@ -8,7 +8,9 @@ import {
   Dimensions,
 } from 'react-native';
 import uuid from 'react-native-uuid';
+import type { CalendarRange as CalendarRangeType } from '../../types/calendar';
 import { checkDateEquality } from '../../utils/checkDateEquality';
+import { isDateInRange } from '../../utils/isDateInRange';
 
 interface CalendarData {
   key: string;
@@ -21,6 +23,8 @@ interface CalendarRangeProps {
   endDate: Date | undefined;
   setStartDate: (date: Date | undefined) => void;
   setEndDate: (date: Date | undefined) => void;
+  ranges: CalendarRangeType[];
+  color: string;
 }
 
 const CalendarRange: React.FC<CalendarRangeProps> = ({
@@ -28,6 +32,8 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
   endDate,
   setStartDate,
   setEndDate,
+  ranges,
+  color,
 }) => {
   const [today, setToday] = React.useState<Date>(new Date());
   const [calendar, setCalendar] = React.useState<CalendarData[]>([]);
@@ -167,11 +173,23 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
           : false;
       const isSelectedEnd =
         endDate !== undefined ? checkDateEquality(endDate, itemData) : false;
+
       let isInRange = false;
       if (startDate !== undefined && endDate !== undefined) {
-        if (itemData > startDate && itemData < endDate) {
+        const range: CalendarRangeType = {
+          startRange: startDate,
+          endRange: endDate,
+          color: color,
+        };
+        if (isDateInRange(itemData, [range])) {
           isInRange = true;
         }
+      }
+
+      let otherSplitColor = isDateInRange(itemData, ranges);
+      let isInOtherRange = false;
+      if (otherSplitColor) {
+        isInOtherRange = true;
       }
 
       return (
@@ -183,7 +201,8 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
               backgroundColor: '#484848',
               borderRadius: 30,
             },
-            isInRange && { backgroundColor: '#909090' },
+            isInRange && { backgroundColor: color },
+            isInOtherRange && { backgroundColor: otherSplitColor },
           ]}
         >
           <Text
