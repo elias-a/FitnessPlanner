@@ -12,6 +12,7 @@ const initialCurrentSplit: Split = {
   endDate: '',
   categories: {},
   exercises: {},
+  color: '',
 };
 
 const initialSplits: Split[] = [];
@@ -40,12 +41,14 @@ export const splitSplice = createSlice({
         state.currentSplit.endDate = currentSplit.endDate;
         state.currentSplit.categories = currentSplit.categories;
         state.currentSplit.exercises = currentSplit.exercises;
+        state.currentSplit.color = currentSplit.color;
       } else {
         state.currentSplit.id = initialCurrentSplit.id;
         state.currentSplit.startDate = initialCurrentSplit.startDate;
         state.currentSplit.endDate = initialCurrentSplit.endDate;
         state.currentSplit.categories = initialCurrentSplit.categories;
         state.currentSplit.exercises = initialCurrentSplit.exercises;
+        state.currentSplit.color = initialCurrentSplit.color;
       }
     },
     createSplit: (
@@ -79,6 +82,7 @@ export const splitSplice = createSlice({
         state.currentSplit.endDate = currentSplit.endDate;
         state.currentSplit.categories = currentSplit.categories;
         state.currentSplit.exercises = currentSplit.exercises;
+        state.currentSplit.color = currentSplit.color;
       }
     },
     updateExercises: (
@@ -99,6 +103,7 @@ export const splitSplice = createSlice({
         state.currentSplit.endDate = initialCurrentSplit.endDate;
         state.currentSplit.categories = initialCurrentSplit.categories;
         state.currentSplit.exercises = initialCurrentSplit.exercises;
+        state.currentSplit.color = initialCurrentSplit.color;
       }
     },
   },

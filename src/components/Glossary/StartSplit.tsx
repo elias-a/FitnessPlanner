@@ -9,12 +9,15 @@ import MultiSelect from '../MultiSelect';
 import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays from '../ScrollableWeek/ScrollableDays';
 import Header from './Header';
+import ColorPickerModal from '../Modals/ColorPicker';
 import ErrorModal from '../Modals/Error';
 import ConfirmModal from '../Modals/Confirm';
 import { createSplit } from '../../slices/split';
 import { buildSplit } from '../../algorithms/buildSplit';
 import uuid from 'react-native-uuid';
 import { checkDateOverlap } from '../../utils/checkDateOverlap';
+
+const defaultColor = '#000';
 
 type StartSplitProps = NativeStackScreenProps<Stack, 'StartSplit'>;
 
@@ -30,6 +33,8 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
   const [splitExercises, setSplitExercises] = React.useState<{
     [key: string]: SplitExercise[];
   }>({});
+  const [color, setColor] = React.useState(defaultColor);
+  const [isColorPickerOpen, setIsColorPickerOpen] = React.useState(false);
   const [existingSplit, setExistingSplit] = React.useState<Split | undefined>();
   const [error, setError] = React.useState('');
   const [confirm, setConfirm] = React.useState('');
@@ -86,6 +91,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
       endDate: endDate ? endDate.toString() : '',
       categories: selectedCategories,
       exercises: {},
+      color: color,
     };
 
     if (route.params.split) {
@@ -121,6 +127,11 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
     }
   };
 
+  const selectColor = (newColor: string) => {
+    setColor(newColor);
+    setIsColorPickerOpen(false);
+  };
+
   return (
     <React.Fragment>
       <Header title={'Start Split'} goBack={goBack} />
@@ -133,6 +144,13 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
             setStartDate={setStartDate}
             setEndDate={setEndDate}
           />
+
+          <Pressable
+            onPress={() => setIsColorPickerOpen(true)}
+            style={styles.addButton}
+          >
+            <Text>{'Choose Color'}</Text>
+          </Pressable>
 
           <Pressable
             onPress={() => {
@@ -199,6 +217,12 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
         onCancel={() => setConfirm('')}
         onConfirm={editSplit}
         message={confirm}
+      />
+      <ColorPickerModal
+        isOpen={isColorPickerOpen}
+        onCancel={() => setIsColorPickerOpen(false)}
+        onSelect={newColor => selectColor(newColor)}
+        color={color}
       />
     </React.Fragment>
   );

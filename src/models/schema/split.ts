@@ -38,5 +38,6 @@ export const Split: Realm.ObjectSchema = {
     endDate: 'string',
     categories: 'StringArrayMap[]',
     exercises: 'SplitExerciseArrayMap[]',
+    color: 'string',
   },
 };

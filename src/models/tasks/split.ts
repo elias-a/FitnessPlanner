@@ -21,6 +21,7 @@ export const getSplits = (): Split[] => {
       endDate: split.endDate,
       categories: categories,
       exercises: exercises,
+      color: split.color,
     });
   });
 
@@ -71,6 +72,7 @@ export const createSplit = (split: Split, editing: boolean): Split => {
         endDate: split.endDate,
         categories: stringArrayMap,
         exercises: splitExerciseArrayMap,
+        color: split.color,
       },
       editing ? Realm.UpdateMode.Modified : Realm.UpdateMode.Never,
     );
@@ -86,6 +88,7 @@ export const createSplit = (split: Split, editing: boolean): Split => {
     endDate: newSplit.endDate,
     categories: categories,
     exercises: exercises,
+    color: newSplit.color,
   };
 };
 
