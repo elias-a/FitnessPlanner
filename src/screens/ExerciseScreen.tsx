@@ -4,8 +4,9 @@ import ScrollableWeek from '../components/ScrollableWeek';
 import ExerciseList from '../components/ExerciseList';
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { updateExercises } from '../slices/split';
-import type { SplitExercise } from '../types/split';
+import type { Split, SplitExercise } from '../types/split';
 import { getDayKey } from '../utils/getDayKey';
+import { isDateInSplit } from '../utils/isDateInSplit';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Tab } from '../Navigation';
 
@@ -17,7 +18,8 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   const [splitExercises, setSplitExercises] = React.useState<SplitExercise[]>(
     [],
   );
-  const { currentSplit } = useAppSelector(state => state.split);
+  const [selectedDateSplit, setSelectedDateSplit] = React.useState<Split>();
+  const { splits } = useAppSelector(state => state.split);
   const { exercises } = useAppSelector(state => state.exercise);
   const dispatch = useAppDispatch();
 
@@ -28,30 +30,29 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   }, [route.params]);
 
   React.useEffect(() => {
-    if (!currentSplit.startDate || !currentSplit.endDate) {
+    const split = isDateInSplit(selectedDate, splits);
+    setSelectedDateSplit(split);
+
+    if (!split) {
       setSplitExercises([]);
       return;
     }
 
-    if (
-      selectedDate < new Date(currentSplit.startDate) ||
-      selectedDate > new Date(currentSplit.endDate)
-    ) {
+    const key = getDayKey(selectedDate, new Date(split.startDate));
+    if (!Object.keys(split.exercises).includes(key)) {
       setSplitExercises([]);
       return;
     }
 
-    const key = getDayKey(selectedDate, new Date(currentSplit.startDate));
-    if (!Object.keys(currentSplit.exercises).includes(key)) {
-      setSplitExercises([]);
-      return;
-    }
-
-    setSplitExercises(currentSplit.exercises[key]);
+    setSplitExercises(split.exercises[key]);
     setDayKey(key);
-  }, [currentSplit, exercises, selectedDate]);
+  }, [splits, exercises, selectedDate]);
 
   const toggleIsCompleted = (id: string) => {
+    if (!selectedDateSplit) {
+      return;
+    }
+
     const updatedSplitExercises: SplitExercise[] = [];
 
     splitExercises.forEach(exercise => {
@@ -67,7 +68,7 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
 
     dispatch(
       updateExercises({
-        ...currentSplit.exercises,
+        ...selectedDateSplit.exercises,
         [dayKey]: updatedSplitExercises,
       }),
     );

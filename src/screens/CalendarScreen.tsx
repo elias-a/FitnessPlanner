@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useAppSelector } from '../hooks';
 import Calendar from '../components/Calendar';
 import { getDayKey } from '../utils/getDayKey';
+import { isDateInSplit } from '../utils/isDateInSplit';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Tab } from '../Navigation';
@@ -51,27 +52,21 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
   }, [currentSplit]);
 
   React.useEffect(() => {
-    if (!currentSplit.startDate || !currentSplit.endDate) {
+    const split = isDateInSplit(selectedDate, splits);
+
+    if (!split) {
       setDayCategories([]);
       return;
     }
 
-    if (
-      selectedDate < new Date(currentSplit.startDate) ||
-      selectedDate > new Date(currentSplit.endDate)
-    ) {
-      setDayCategories([]);
-      return;
-    }
-
-    const key = getDayKey(selectedDate, new Date(currentSplit.startDate));
-    if (!Object.keys(currentSplit.exercises).includes(key)) {
+    const key = getDayKey(selectedDate, new Date(split.startDate));
+    if (!Object.keys(split.exercises).includes(key)) {
       setDayCategories([]);
       return;
     }
 
     const newCategories: string[] = [];
-    currentSplit.categories[key].forEach(category => {
+    split.categories[key].forEach(category => {
       const categoryName = categories.find(el => el.id === category);
       if (categoryName !== undefined) {
         newCategories.push(categoryName.name);
@@ -79,7 +74,7 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
     });
 
     setDayCategories(newCategories);
-  }, [selectedDate, currentSplit, categories]);
+  }, [selectedDate, splits, categories]);
 
   return (
     <View style={styles.container}>
