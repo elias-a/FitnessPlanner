@@ -9,31 +9,14 @@ import {
 } from 'react-native';
 import uuid from 'react-native-uuid';
 import type { CalendarRange } from '../../types/calendar';
+import { checkDateEquality } from '../../utils/checkDateEquality';
+import { isDateInRange } from '../../utils/isDateInRange';
 
 interface CalendarData {
   key: string;
   type: string;
   data: string | Date;
 }
-
-const compareDates = (date1: Date, date2: Date) => {
-  const areEqual =
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate();
-  return areEqual;
-};
-
-const isDateInRange = (date: Date, ranges: CalendarRange[]): string => {
-  for (const range of ranges) {
-    const { startRange, endRange, color } = range;
-    if (date >= startRange && date <= endRange) {
-      return color;
-    }
-  }
-
-  return '';
-};
 
 interface CalendarProps {
   selectedDate: Date;
@@ -154,8 +137,8 @@ const Calendar: React.FC<CalendarProps> = ({
       return <View style={{ width: 0 }} />;
     } else {
       const itemData = item.data as Date;
-      const isToday = compareDates(today, itemData);
-      const isSelected = compareDates(selectedDate, itemData);
+      const isToday = checkDateEquality(today, itemData);
+      const isSelected = checkDateEquality(selectedDate, itemData);
 
       let splitColor = isDateInRange(itemData, ranges);
       let isInRange = false;

@@ -8,20 +8,13 @@ import {
   Dimensions,
 } from 'react-native';
 import uuid from 'react-native-uuid';
+import { checkDateEquality } from '../../utils/checkDateEquality';
 
 interface CalendarData {
   key: string;
   type: string;
   data: string | Date;
 }
-
-const compareDates = (date1: Date, date2: Date) => {
-  const areEqual =
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate();
-  return areEqual;
-};
 
 interface CalendarRangeProps {
   startDate: Date | undefined;
@@ -167,11 +160,13 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
       return <View style={{ width: 0 }} />;
     } else {
       const itemData = item.data as Date;
-      const isToday = compareDates(today, itemData);
+      const isToday = checkDateEquality(today, itemData);
       const isSelected =
-        startDate !== undefined ? compareDates(startDate, itemData) : false;
+        startDate !== undefined
+          ? checkDateEquality(startDate, itemData)
+          : false;
       const isSelectedEnd =
-        endDate !== undefined ? compareDates(endDate, itemData) : false;
+        endDate !== undefined ? checkDateEquality(endDate, itemData) : false;
       let isInRange = false;
       if (startDate !== undefined && endDate !== undefined) {
         if (itemData > startDate && itemData < endDate) {
