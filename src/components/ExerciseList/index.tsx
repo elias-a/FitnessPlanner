@@ -17,7 +17,13 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
       <View style={styles.container}>
         {exercises.map(exercise => {
           return (
-            <View key={exercise.exercise.id} style={styles.exercise}>
+            <View
+              key={exercise.exercise.id}
+              style={[
+                styles.exercise,
+                !toggleIsCompleted && styles.splitSelection,
+              ]}
+            >
               {toggleIsCompleted && (
                 <Pressable
                   onPress={() => toggleIsCompleted(exercise.exercise.id)}
@@ -39,12 +45,20 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                 </Pressable>
               )}
               <View style={styles.exerciseDetails}>
-                <Text style={styles.exerciseName}>
-                  {exercise.exercise.name}
-                </Text>
-                <Text style={styles.setsAndReps}>
-                  {`${exercise.sets} x ${exercise.reps}`}
-                </Text>
+                {toggleIsCompleted ? (
+                  <Text style={styles.exerciseName}>
+                    {exercise.exercise.name}
+                  </Text>
+                ) : (
+                  <Text style={styles.exerciseName}>
+                    {`${exercise.exercise.name} (${exercise.sets} x ${exercise.reps})`}
+                  </Text>
+                )}
+                {toggleIsCompleted && (
+                  <Text style={styles.setsAndReps}>
+                    {`${exercise.sets} x ${exercise.reps}`}
+                  </Text>
+                )}
               </View>
             </View>
           );
@@ -65,21 +79,29 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    display: 'flex',
     flexDirection: 'row',
-    flexWrap: 'wrap',
     marginRight: 8,
     marginTop: 20,
     backgroundColor: '#909090',
   },
+  splitSelection: {
+    height: 40,
+    marginTop: 10,
+  },
   checkbox: {
-    position: 'absolute',
-    left: 20,
-    top: 20,
+    flex: 1,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    maxWidth: 70,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   exerciseDetails: {
-    position: 'absolute',
-    left: 80,
-    top: 20,
+    flex: 2,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    paddingLeft: 10,
   },
   exerciseName: {
     color: '#fff',
