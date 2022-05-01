@@ -16,6 +16,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginBottom: 20,
   },
+  centeredView: {
+    alignItems: 'center',
+  },
   backButton: {
     width: 50,
     height: 50,

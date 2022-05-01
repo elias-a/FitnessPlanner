@@ -29,6 +29,7 @@ export const splitSplice = createSlice({
       state.splits = splits;
 
       const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
       const currentSplit = splits.find(
         split =>
           today >= new Date(split.startDate) &&

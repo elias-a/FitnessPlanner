@@ -43,3 +43,35 @@ export const buildSplit = (
 
   return splitExercises;
 };
+
+export const selectExercises = (
+  categories: string[],
+  exercises: Exercise[],
+): SplitExercise[] => {
+  const associatedExercises: Exercise[] = [];
+
+  // Find all exercises associated with the categories.
+  exercises.forEach(exercise => {
+    categories.forEach(category => {
+      if (exercise.categories.includes(category)) {
+        associatedExercises.push(exercise);
+      }
+    });
+  });
+
+  // Select 4 random exercises.
+  const selectedExercises = associatedExercises
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 4);
+
+  const splitExercises: SplitExercise[] = selectedExercises.map(exercise => {
+    return {
+      exercise: exercise,
+      sets: 3,
+      reps: 10,
+      isCompleted: false,
+    };
+  });
+
+  return splitExercises;
+};

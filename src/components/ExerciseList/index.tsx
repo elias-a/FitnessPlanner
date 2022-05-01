@@ -5,7 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 interface ExerciseListProps {
   exercises: SplitExercise[];
-  toggleIsCompleted: (id: string) => void;
+  toggleIsCompleted?: (id: string) => void;
 }
 
 const ExerciseList: React.FC<ExerciseListProps> = ({
@@ -18,24 +18,26 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
         {exercises.map(exercise => {
           return (
             <View key={exercise.exercise.id} style={styles.exercise}>
-              <Pressable
-                onPress={() => toggleIsCompleted(exercise.exercise.id)}
-                style={styles.checkbox}
-              >
-                {exercise.isCompleted ? (
-                  <MaterialCommunityIcons
-                    name={'checkbox-marked-circle'}
-                    size={50}
-                    color={'#000'}
-                  />
-                ) : (
-                  <MaterialCommunityIcons
-                    name={'checkbox-blank-circle-outline'}
-                    size={50}
-                    color={'#000'}
-                  />
-                )}
-              </Pressable>
+              {toggleIsCompleted && (
+                <Pressable
+                  onPress={() => toggleIsCompleted(exercise.exercise.id)}
+                  style={styles.checkbox}
+                >
+                  {exercise.isCompleted ? (
+                    <MaterialCommunityIcons
+                      name={'checkbox-marked-circle'}
+                      size={50}
+                      color={'#000'}
+                    />
+                  ) : (
+                    <MaterialCommunityIcons
+                      name={'checkbox-blank-circle-outline'}
+                      size={50}
+                      color={'#000'}
+                    />
+                  )}
+                </Pressable>
+              )}
               <View style={styles.exerciseDetails}>
                 <Text style={styles.exerciseName}>
                   {exercise.exercise.name}

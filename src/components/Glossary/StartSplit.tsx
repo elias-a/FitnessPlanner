@@ -9,12 +9,13 @@ import styles from './styles';
 import MultiSelect from '../MultiSelect';
 import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays from '../ScrollableWeek/ScrollableDays';
+import ExerciseList from '../ExerciseList';
 import Header from './Header';
 import ColorPickerModal from '../Modals/ColorPicker';
 import ErrorModal from '../Modals/Error';
 import ConfirmModal from '../Modals/Confirm';
 import { createSplit } from '../../slices/split';
-import { buildSplit } from '../../algorithms/buildSplit';
+import { buildSplit, selectExercises } from '../../algorithms/buildSplit';
 import uuid from 'react-native-uuid';
 import { checkDateOverlap } from '../../utils/checkDateOverlap';
 
@@ -109,7 +110,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
       color: color,
     };
 
-    if (route.params.split) {
+    if (Object.keys(splitExercises).length > 0) {
       newSplit.exercises = splitExercises;
     } else {
       const selectedExercises = buildSplit(newSplit, exercises);
@@ -145,6 +146,18 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
   const selectColor = (newColor: string) => {
     setColor(newColor);
     setIsColorPickerOpen(false);
+  };
+
+  const selectDayExercises = () => {
+    const dayExercises = selectExercises(
+      selectedCategories[selectedDay],
+      exercises,
+    );
+
+    setSplitExercises(prevState => ({
+      ...prevState,
+      [selectedDay]: dayExercises,
+    }));
   };
 
   return (
@@ -201,14 +214,14 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
         </View>
       )}
       {page === 2 && (
-        <View style={styles.container}>
+        <View style={{ flex: 1 }}>
           <ScrollableDays
             numDays={7}
             selectedDay={selectedDay}
             setSelectedDay={day => setSelectedDay(day)}
           />
 
-          <View style={{ marginTop: 32 }}>
+          <View style={[styles.centeredView, { marginTop: 32 }]}>
             <MultiSelect
               items={categories}
               selectedItems={selectedCategories[selectedDay]}
@@ -219,9 +232,23 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
             />
           </View>
 
-          <Pressable onPress={start} style={styles.addButton}>
-            <Text>{'Start Split'}</Text>
-          </Pressable>
+          <View style={styles.centeredView}>
+            <Pressable onPress={selectDayExercises} style={styles.addButton}>
+              <Text>{'Select Exercises'}</Text>
+            </Pressable>
+          </View>
+
+          {Object.keys(splitExercises).includes(selectedDay.toString()) && (
+            <View style={{ flex: 1, marginTop: 20, marginBottom: 20 }}>
+              <ExerciseList exercises={splitExercises[selectedDay]} />
+            </View>
+          )}
+
+          <View style={[styles.centeredView, { marginBottom: 10 }]}>
+            <Pressable onPress={start} style={styles.addButton}>
+              <Text>{'Start Split'}</Text>
+            </Pressable>
+          </View>
         </View>
       )}
       <ErrorModal

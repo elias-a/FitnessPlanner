@@ -111,7 +111,7 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
           </Pressable>
         </View>
       </View>
-      {currentSplit.startDate && (
+      {!!currentSplit.startDate && (
         <View style={styles.splitContainer}>
           <View style={[styles.splitDetails, styles.splitLength]}>
             <Text style={styles.splitDetailsText}>
