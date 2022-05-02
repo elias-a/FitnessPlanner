@@ -1,23 +1,22 @@
 import React from 'react';
-import {
-  View,
-  FlatList,
-  Pressable,
-  Text,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { View, FlatList, Pressable, Text, StyleSheet } from 'react-native';
+
+export const dayWidth = 95;
 
 interface ScrollableDaysProps {
   numDays: number;
+  colors: { [key: string]: string };
   selectedDay: number;
   setSelectedDay: (day: number) => void;
+  flatListRef: React.RefObject<FlatList<number>> | undefined | null;
 }
 
 const ScrollableDays: React.FC<ScrollableDaysProps> = ({
   numDays,
+  colors,
   selectedDay,
   setSelectedDay,
+  flatListRef,
 }) => {
   const [days, setDays] = React.useState<number[]>([]);
 
@@ -31,12 +30,17 @@ const ScrollableDays: React.FC<ScrollableDaysProps> = ({
   }, [numDays]);
 
   const renderItem = ({ item }: { item: number }) => {
+    const finalizedColor = colors[item];
     const isActive = selectedDay === item;
 
     return (
       <Pressable
         onPress={() => setSelectedDay(item)}
-        style={[styles.item, isActive && { backgroundColor: '#484848' }]}
+        style={[
+          styles.item,
+          !!finalizedColor && { backgroundColor: finalizedColor },
+          isActive && { backgroundColor: '#484848' },
+        ]}
       >
         <Text style={[styles.dateNumber, isActive && { color: '#fff' }]}>
           {`Day ${item}`}
@@ -53,21 +57,19 @@ const ScrollableDays: React.FC<ScrollableDaysProps> = ({
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         getItemLayout={(_, index) => ({
-          length: itemWidth,
-          offset: (itemWidth + 18) * index,
+          length: dayWidth,
+          offset: (dayWidth + 18) * index,
           index,
         })}
+        ref={flatListRef}
       />
     </View>
   );
 };
 
-const { width } = Dimensions.get('window');
-const itemWidth = width * 0.24;
-
 const styles = StyleSheet.create({
   item: {
-    width: itemWidth,
+    width: dayWidth,
     height: 70,
     borderRadius: 5,
     justifyContent: 'center',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, FlatList } from 'react-native';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
@@ -8,7 +8,7 @@ import type { CalendarRange } from '../../types/calendar';
 import styles from './styles';
 import MultiSelect from '../MultiSelect';
 import Calendar from '../Calendar/CalendarRange';
-import ScrollableDays from '../ScrollableWeek/ScrollableDays';
+import ScrollableDays, { dayWidth } from '../ScrollableWeek/ScrollableDays';
 import ExerciseList from '../ExerciseList';
 import Header from './Header';
 import ColorPickerModal from '../Modals/ColorPicker';
@@ -38,6 +38,9 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
   const [color, setColor] = React.useState(defaultColor);
   const [isColorPickerOpen, setIsColorPickerOpen] = React.useState(false);
   const [existingSplit, setExistingSplit] = React.useState<Split | undefined>();
+  const [finalizedDays, setFinalizedDays] = React.useState<{
+    [key: string]: string;
+  }>({});
   const [error, setError] = React.useState('');
   const [confirm, setConfirm] = React.useState('');
   const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
@@ -45,6 +48,8 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
   const { exercises } = useAppSelector(state => state.exercise);
   const { splits } = useAppSelector(state => state.split);
   const dispatch = useAppDispatch();
+  const flatListRef: React.RefObject<FlatList<number>> | undefined | null =
+    React.createRef();
 
   React.useEffect(() => {
     if (route.params.split) {
@@ -91,6 +96,20 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
 
   const next = () => {
     setPage(page + 1);
+  };
+
+  const finalizeDay = () => {
+    setFinalizedDays(prevState => ({
+      ...prevState,
+      [selectedDay]: color,
+    }));
+
+    if (selectedDay < 7) {
+      setSelectedDay(selectedDay + 1);
+      flatListRef.current?.scrollToOffset({
+        offset: dayWidth * selectedDay,
+      });
+    }
   };
 
   const start = () => {
@@ -217,8 +236,10 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
         <View style={{ flex: 1 }}>
           <ScrollableDays
             numDays={7}
+            colors={finalizedDays}
             selectedDay={selectedDay}
             setSelectedDay={day => setSelectedDay(day)}
+            flatListRef={flatListRef}
           />
 
           <View style={[styles.centeredView, { marginTop: 32 }]}>
@@ -244,8 +265,11 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
             </View>
           )}
 
-          <View style={[styles.centeredView, { marginBottom: 10 }]}>
-            <Pressable onPress={start} style={styles.addButton}>
+          <View style={styles.bottomButtonSection}>
+            <Pressable onPress={finalizeDay} style={styles.fullWidthButton}>
+              <Text>{'Finalize Day'}</Text>
+            </Pressable>
+            <Pressable onPress={start} style={styles.fullWidthButton}>
               <Text>{'Start Split'}</Text>
             </Pressable>
           </View>

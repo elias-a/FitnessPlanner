@@ -44,6 +44,18 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontSize: 20,
   },
+  bottomButtonSection: {
+    position: 'absolute',
+    bottom: 0,
+  },
+  fullWidthButton: {
+    minWidth: '100%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#909090',
+    marginTop: 1,
+  },
   addButton: {
     width: 350,
     height: 50,
