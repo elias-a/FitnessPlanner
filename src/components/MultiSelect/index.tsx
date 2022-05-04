@@ -40,7 +40,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           },
           selectToggle: {
             backgroundColor: '#d0d0d0',
-            width: 300,
+            width: 350,
             height: 40,
             borderWidth: 1,
             padding: 10,
@@ -57,7 +57,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 32,
+    marginTop: 15,
+    marginBottom: 15,
   },
 });
 

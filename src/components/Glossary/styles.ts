@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
     backgroundColor: '#909090',
   },
   listContainer: {
@@ -104,6 +103,9 @@ const styles = StyleSheet.create({
   splitDetailsText: {
     fontSize: 26,
     fontWeight: '700',
+  },
+  selectedExerciseList: {
+    flex: 1,
   },
 });
 

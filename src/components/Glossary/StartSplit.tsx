@@ -12,6 +12,7 @@ import ScrollableDays, { dayWidth } from '../ScrollableWeek/ScrollableDays';
 import ExerciseList from '../ExerciseList';
 import Header from './Header';
 import ColorPickerModal from '../Modals/ColorPicker';
+import AddSplitExerciseModal from '../Modals/AddSplitExercise';
 import ErrorModal from '../Modals/Error';
 import ConfirmModal from '../Modals/Confirm';
 import { createSplit } from '../../slices/split';
@@ -41,6 +42,8 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
   const [finalizedDays, setFinalizedDays] = React.useState<{
     [key: string]: string;
   }>({});
+  const [isAddSplitExerciseOpen, setIsAddSplitExerciseOpen] =
+    React.useState(false);
   const [error, setError] = React.useState('');
   const [confirm, setConfirm] = React.useState('');
   const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
@@ -179,6 +182,21 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
     }));
   };
 
+  const chooseExercise = (newSplitExercise: SplitExercise) => {
+    let newSplitExercises: SplitExercise[];
+    if (Object.keys(splitExercises).includes(selectedDay.toString())) {
+      newSplitExercises = [...splitExercises[selectedDay], newSplitExercise];
+    } else {
+      newSplitExercises = [newSplitExercise];
+    }
+
+    setSplitExercises(prevState => ({
+      ...prevState,
+      [selectedDay]: newSplitExercises,
+    }));
+    setIsAddSplitExerciseOpen(false);
+  };
+
   return (
     <React.Fragment>
       <Header title={'Start Split'} goBack={goBack} />
@@ -242,7 +260,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
             flatListRef={flatListRef}
           />
 
-          <View style={[styles.centeredView, { marginTop: 32 }]}>
+          <View style={styles.centeredView}>
             <MultiSelect
               items={categories}
               selectedItems={selectedCategories[selectedDay]}
@@ -251,16 +269,21 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
               subKey={'subCategories'}
               selectText={'Choose categories...'}
             />
-          </View>
 
-          <View style={styles.centeredView}>
             <Pressable onPress={selectDayExercises} style={styles.addButton}>
-              <Text>{'Select Exercises'}</Text>
+              <Text>{'Randomly Select Exercises...'}</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => setIsAddSplitExerciseOpen(true)}
+              style={styles.addButton}
+            >
+              <Text>{'Add Exercise...'}</Text>
             </Pressable>
           </View>
 
           {Object.keys(splitExercises).includes(selectedDay.toString()) && (
-            <View style={{ flex: 1, marginTop: 20, marginBottom: 20 }}>
+            <View style={styles.selectedExerciseList}>
               <ExerciseList exercises={splitExercises[selectedDay]} />
             </View>
           )}
@@ -291,6 +314,11 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
         onCancel={() => setIsColorPickerOpen(false)}
         onSelect={newColor => selectColor(newColor)}
         color={color}
+      />
+      <AddSplitExerciseModal
+        isOpen={isAddSplitExerciseOpen}
+        onCancel={() => setIsAddSplitExerciseOpen(false)}
+        onAdd={newSplitExercise => chooseExercise(newSplitExercise)}
       />
     </React.Fragment>
   );
