@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Modal, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Modal from './Modal';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -16,7 +17,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   message,
 }) => {
   return (
-    <Modal transparent visible={isOpen} onRequestClose={() => {}}>
+    <Modal isOpen={isOpen}>
       <View style={styles.modal}>
         <View style={styles.headerSection}>
           <View style={styles.alertIcon}>
@@ -61,8 +62,6 @@ const styles = StyleSheet.create({
     maxHeight: '30%',
     minWidth: '90%',
     maxWidth: '90%',
-    marginLeft: '5%',
-    marginTop: '70%',
     backgroundColor: '#fff',
   },
   headerSection: {

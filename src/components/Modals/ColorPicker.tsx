@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Modal, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TriangleColorPicker, toHsv, fromHsv } from 'react-native-color-picker';
+import Modal from './Modal';
 
 interface HsvColor {
   h: number;
@@ -35,7 +36,7 @@ const ColorPickerModal: React.FC<ColorPickerModalProps> = ({
   };
 
   return (
-    <Modal transparent visible={isOpen} onRequestClose={() => {}}>
+    <Modal isOpen={isOpen}>
       <View style={styles.modal}>
         <View style={styles.headerSection}>
           <View style={styles.alertIcon}>
@@ -87,8 +88,6 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
     minWidth: '90%',
     maxWidth: '90%',
-    marginLeft: '5%',
-    marginTop: '20%',
     backgroundColor: '#fff',
   },
   headerSection: {

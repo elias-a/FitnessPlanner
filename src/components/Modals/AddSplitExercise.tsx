@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Modal, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown';
+import Modal from './Modal';
 import NumericInput from 'react-native-numeric-input';
 import { useAppSelector } from '../../hooks';
 import type { Exercise } from '../../types/exercise';
@@ -38,7 +39,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
   };
 
   return (
-    <Modal transparent visible={isOpen} onRequestClose={() => {}}>
+    <Modal isOpen={isOpen}>
       <View style={styles.modal}>
         <View style={styles.headerSection}>
           <View style={styles.alertIcon}>
@@ -140,8 +141,6 @@ const styles = StyleSheet.create({
     maxHeight: '50%',
     minWidth: '90%',
     maxWidth: '90%',
-    marginLeft: '5%',
-    marginTop: '30%',
     backgroundColor: '#fff',
   },
   headerSection: {
