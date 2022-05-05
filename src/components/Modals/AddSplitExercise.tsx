@@ -8,26 +8,53 @@ import NumericInput from 'react-native-numeric-input';
 import { useAppSelector } from '../../hooks';
 import type { Exercise } from '../../types/exercise';
 import type { SplitExercise } from '../../types/split';
+import uuid from 'react-native-uuid';
 
 interface AddSplitExerciseProps {
   isOpen: boolean;
   onCancel: () => void;
   onAdd: (splitExercise: SplitExercise) => void;
+  initialSplitExercise?: SplitExercise;
 }
 
 const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
   isOpen,
   onCancel,
   onAdd,
+  initialSplitExercise,
 }) => {
   const [exercise, setExercise] = React.useState<Exercise | undefined>();
   const [sets, setSets] = React.useState(0);
   const [reps, setReps] = React.useState(0);
   const { exercises } = useAppSelector(state => state.exercise);
 
+  React.useEffect(() => {
+    loadSplitExercise(initialSplitExercise);
+  }, [initialSplitExercise]);
+
+  const loadSplitExercise = (splitExercise: SplitExercise | undefined) => {
+    if (splitExercise) {
+      setExercise(splitExercise.exercise);
+      setSets(splitExercise.sets);
+      setReps(splitExercise.reps);
+    } else {
+      setExercise(undefined);
+      setSets(0);
+      setReps(0);
+    }
+  };
+
+  const handleClose = () => {
+    loadSplitExercise(undefined);
+    onCancel();
+  };
+
   const handleAdd = () => {
     if (exercise) {
       const splitExercise: SplitExercise = {
+        id: initialSplitExercise
+          ? initialSplitExercise.id
+          : uuid.v4().toString(),
         exercise: exercise,
         reps: reps,
         sets: sets,
@@ -35,6 +62,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
       };
 
       onAdd(splitExercise);
+      loadSplitExercise(undefined);
     }
   };
 
@@ -52,7 +80,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
 
           <Text style={styles.headerText}>{'Add Exercise'}</Text>
 
-          <Pressable onPress={onCancel} style={styles.closeIcon}>
+          <Pressable onPress={handleClose} style={styles.closeIcon}>
             <MaterialCommunityIcons
               name={'close-circle-outline'}
               size={35}
@@ -64,6 +92,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
         <View style={styles.messageSection}>
           <View style={styles.exerciseDropdown}>
             <SelectDropdown
+              defaultValue={exercise}
               data={exercises}
               defaultButtonText={'Select exercise...'}
               buttonTextAfterSelection={item => item.name}
@@ -97,6 +126,8 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
             </View>
             <View style={styles.numericInput}>
               <NumericInput
+                initValue={sets}
+                value={sets}
                 minValue={0}
                 totalWidth={150}
                 totalHeight={40}
@@ -113,6 +144,8 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
             </View>
             <View style={styles.numericInput}>
               <NumericInput
+                initValue={reps}
+                value={reps}
                 minValue={0}
                 totalWidth={150}
                 totalHeight={40}
@@ -126,7 +159,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
           <Pressable onPress={handleAdd} style={styles.confirmButton}>
             <Text>{'Add'}</Text>
           </Pressable>
-          <Pressable onPress={onCancel} style={styles.cancelButton}>
+          <Pressable onPress={handleClose} style={styles.cancelButton}>
             <Text>{'Cancel'}</Text>
           </Pressable>
         </View>
@@ -219,7 +252,6 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     flex: 2,
     flexDirection: 'row',
-    rowGap: 100,
     alignItems: 'center',
     marginTop: 20,
     minHeight: 60,

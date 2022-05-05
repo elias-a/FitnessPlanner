@@ -6,10 +6,9 @@ import type { Stack } from './index';
 import type { Split, SplitExercise } from '../../types/split';
 import type { CalendarRange } from '../../types/calendar';
 import styles from './styles';
-import MultiSelect from '../MultiSelect';
 import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays, { dayWidth } from '../ScrollableWeek/ScrollableDays';
-import ExerciseList from '../ExerciseList';
+import ExerciseList from '../ExerciseList/SplitExerciseList';
 import Header from './Header';
 import ColorPickerModal from '../Modals/ColorPicker';
 import AddSplitExerciseModal from '../Modals/AddSplitExercise';
@@ -19,6 +18,7 @@ import { createSplit } from '../../slices/split';
 import { buildSplit, selectExercises } from '../../algorithms/buildSplit';
 import uuid from 'react-native-uuid';
 import { checkDateOverlap } from '../../utils/checkDateOverlap';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const defaultColor = '#000';
 
@@ -47,6 +47,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
   const [error, setError] = React.useState('');
   const [confirm, setConfirm] = React.useState('');
   const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
+  const [exerciseToEdit, setExerciseToEdit] = React.useState<SplitExercise>();
   const { categories } = useAppSelector(state => state.category);
   const { exercises } = useAppSelector(state => state.exercise);
   const { splits } = useAppSelector(state => state.split);
@@ -184,7 +185,15 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
 
   const chooseExercise = (newSplitExercise: SplitExercise) => {
     let newSplitExercises: SplitExercise[];
-    if (Object.keys(splitExercises).includes(selectedDay.toString())) {
+    if (exerciseToEdit) {
+      newSplitExercises = splitExercises[selectedDay].map(item => {
+        if (item.id === newSplitExercise.id) {
+          return { ...newSplitExercise };
+        } else {
+          return { ...item };
+        }
+      });
+    } else if (Object.keys(splitExercises).includes(selectedDay.toString())) {
       newSplitExercises = [...splitExercises[selectedDay], newSplitExercise];
     } else {
       newSplitExercises = [newSplitExercise];
@@ -195,14 +204,35 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
       [selectedDay]: newSplitExercises,
     }));
     setIsAddSplitExerciseOpen(false);
+    setExerciseToEdit(undefined);
+  };
+
+  const editExercise = (item: SplitExercise) => {
+    setExerciseToEdit(item);
+    setIsAddSplitExerciseOpen(true);
+  };
+
+  const removeExercise = (item: SplitExercise) => {
+    let newSplitExercises = [...splitExercises[selectedDay]];
+    newSplitExercises = newSplitExercises.filter(el => el.id !== item.id);
+
+    setSplitExercises(prevState => ({
+      ...prevState,
+      [selectedDay]: newSplitExercises,
+    }));
+  };
+
+  const closeAddSplitExerciseModal = () => {
+    setIsAddSplitExerciseOpen(false);
+    setExerciseToEdit(undefined);
   };
 
   return (
-    <React.Fragment>
+    <View style={styles.pageContainer}>
       <Header title={'Start Split'} goBack={goBack} />
 
       {page === 1 && (
-        <View style={styles.container}>
+        <View style={styles.viewContainer}>
           <Calendar
             startDate={startDate}
             endDate={endDate}
@@ -251,49 +281,151 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
         </View>
       )}
       {page === 2 && (
-        <View style={{ flex: 1 }}>
-          <ScrollableDays
-            numDays={7}
-            colors={finalizedDays}
-            selectedDay={selectedDay}
-            setSelectedDay={day => setSelectedDay(day)}
-            flatListRef={flatListRef}
-          />
-
-          <View style={styles.centeredView}>
-            <MultiSelect
-              items={categories}
-              selectedItems={selectedCategories[selectedDay]}
-              onSelectedItemsChange={changeSelectedItems}
-              isSingle={false}
-              subKey={'subCategories'}
-              selectText={'Choose categories...'}
+        <View style={styles.viewContainer}>
+          <View style={{ flex: 1, minHeight: 70, maxHeight: 70 }}>
+            <ScrollableDays
+              numDays={7}
+              colors={finalizedDays}
+              selectedDay={selectedDay}
+              setSelectedDay={day => setSelectedDay(day)}
+              flatListRef={flatListRef}
             />
+          </View>
 
-            <Pressable onPress={selectDayExercises} style={styles.addButton}>
-              <Text>{'Randomly Select Exercises...'}</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => setIsAddSplitExerciseOpen(true)}
-              style={styles.addButton}
+          <View
+            style={{
+              flex: 2,
+              minHeight: 130,
+              maxHeight: 130,
+              alignItems: 'center',
+              paddingTop: 15,
+            }}
+          >
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                minWidth: '100%',
+                maxWidth: '100%',
+                minHeight: '100%',
+                maxHeight: '100%',
+              }}
             >
-              <Text>{'Add Exercise...'}</Text>
-            </Pressable>
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: '700',
+                  flex: 1,
+                  marginLeft: 10,
+                }}
+              >
+                {'Categories'}
+              </Text>
+              <Pressable
+                onPress={() => {}}
+                style={{
+                  flex: 2,
+                  minWidth: 32,
+                  maxWidth: 32,
+                  minHeight: '100%',
+                  maxHeight: '100%',
+                }}
+              >
+                <MaterialCommunityIcons
+                  name={'plus'}
+                  size={32}
+                  color={'#000'}
+                />
+              </Pressable>
+            </View>
+          </View>
+
+          <View
+            style={{
+              flex: 3,
+              alignItems: 'center',
+              minHeight: 50,
+              maxHeight: 50,
+            }}
+          >
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                minWidth: '100%',
+                maxWidth: '100%',
+                minHeight: '100%',
+                maxHeight: '100%',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: '700',
+                  flex: 1,
+                  marginLeft: 10,
+                }}
+              >
+                {'Exercises'}
+              </Text>
+              <Pressable
+                onPress={selectDayExercises}
+                style={{
+                  flex: 3,
+                  minWidth: 32,
+                  maxWidth: 32,
+                  minHeight: '100%',
+                  maxHeight: '100%',
+                }}
+              >
+                <MaterialCommunityIcons
+                  name={'dice-multiple'}
+                  size={32}
+                  color={'#000'}
+                />
+              </Pressable>
+              <Pressable
+                onPress={() => setIsAddSplitExerciseOpen(true)}
+                style={{
+                  flex: 2,
+                  minWidth: 32,
+                  maxWidth: 32,
+                  minHeight: '100%',
+                  maxHeight: '100%',
+                }}
+              >
+                <MaterialCommunityIcons
+                  name={'plus'}
+                  size={32}
+                  color={'#000'}
+                />
+              </Pressable>
+            </View>
           </View>
 
           {Object.keys(splitExercises).includes(selectedDay.toString()) && (
-            <View style={styles.selectedExerciseList}>
-              <ExerciseList exercises={splitExercises[selectedDay]} />
+            <View style={{ flex: 4, paddingVertical: 10 }}>
+              <ExerciseList
+                exercises={splitExercises[selectedDay]}
+                editExercise={item => editExercise(item)}
+                removeExercise={item => removeExercise(item)}
+              />
             </View>
           )}
 
-          <View style={styles.bottomButtonSection}>
+          <View
+            style={{
+              flex: 5,
+              justifyContent: 'flex-end',
+              minHeight: 102,
+              maxHeight: 102,
+            }}
+          >
             <Pressable onPress={finalizeDay} style={styles.fullWidthButton}>
-              <Text>{'Finalize Day'}</Text>
+              <Text style={{ fontSize: 20 }}>{'Finalize Day'}</Text>
             </Pressable>
             <Pressable onPress={start} style={styles.fullWidthButton}>
-              <Text>{'Start Split'}</Text>
+              <Text style={{ fontSize: 20 }}>{'Start Split'}</Text>
             </Pressable>
           </View>
         </View>
@@ -317,10 +449,11 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
       />
       <AddSplitExerciseModal
         isOpen={isAddSplitExerciseOpen}
-        onCancel={() => setIsAddSplitExerciseOpen(false)}
+        onCancel={() => closeAddSplitExerciseModal()}
         onAdd={newSplitExercise => chooseExercise(newSplitExercise)}
+        initialSplitExercise={exerciseToEdit}
       />
-    </React.Fragment>
+    </View>
   );
 };
 

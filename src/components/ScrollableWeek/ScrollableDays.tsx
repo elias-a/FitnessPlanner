@@ -50,7 +50,7 @@ const ScrollableDays: React.FC<ScrollableDaysProps> = ({
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
         data={days}
         renderItem={renderItem}
@@ -68,6 +68,11 @@ const ScrollableDays: React.FC<ScrollableDaysProps> = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    minHeight: 70,
+    maxHeight: 70,
+  },
   item: {
     width: dayWidth,
     height: 70,

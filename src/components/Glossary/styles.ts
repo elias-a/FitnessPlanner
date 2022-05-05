@@ -1,6 +1,32 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+  pageContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    minHeight: '100%',
+    maxHeight: '100%',
+    minWidth: '100%',
+    maxWidth: '100%',
+  },
+  viewContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    minHeight: '90%',
+    maxHeight: '90%',
+  },
+  headerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    minHeight: '10%',
+    maxHeight: '10%',
+    minWidth: '100%',
+    maxWidth: '100%',
+  },
+
   button: {
     width: 70,
     height: 70,
@@ -44,10 +70,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontSize: 20,
   },
-  bottomButtonSection: {
-    position: 'absolute',
-    bottom: 0,
-  },
   fullWidthButton: {
     minWidth: '100%',
     height: 50,
@@ -57,9 +79,10 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   addButton: {
+    flex: 1,
     width: 350,
-    height: 50,
-    borderRadius: 5,
+    maxHeight: 50,
+    marginTop: 5,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#909090',
@@ -103,9 +126,6 @@ const styles = StyleSheet.create({
   splitDetailsText: {
     fontSize: 26,
     fontWeight: '700',
-  },
-  selectedExerciseList: {
-    flex: 1,
   },
 });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import type { Category } from '../../types/category';
@@ -22,7 +22,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   selectText,
 }) => {
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
       <SectionedMultiSelect
         items={items}
         IconRenderer={Icon}
@@ -54,12 +54,5 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 15,
-    marginBottom: 15,
-  },
-});
 
 export default MultiSelect;

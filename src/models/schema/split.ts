@@ -22,6 +22,7 @@ export const SplitExercise: Realm.ObjectSchema = {
   name: 'SplitExercise',
   embedded: true,
   properties: {
+    id: 'string',
     exercise: 'Exercise',
     sets: 'int',
     reps: 'int',

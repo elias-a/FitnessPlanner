@@ -10,6 +10,7 @@ export interface Split {
 }
 
 export interface SplitExercise {
+  id: string;
   exercise: Exercise;
   sets: number;
   reps: number;

@@ -5,7 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 interface ExerciseListProps {
   exercises: SplitExercise[];
-  toggleIsCompleted?: (id: string) => void;
+  toggleIsCompleted: (id: string) => void;
 }
 
 const ExerciseList: React.FC<ExerciseListProps> = ({
@@ -17,48 +17,32 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
       <View style={styles.container}>
         {exercises.map(exercise => {
           return (
-            <View
-              key={exercise.exercise.id}
-              style={[
-                styles.exercise,
-                !toggleIsCompleted && styles.splitSelection,
-              ]}
-            >
-              {toggleIsCompleted && (
-                <Pressable
-                  onPress={() => toggleIsCompleted(exercise.exercise.id)}
-                  style={styles.checkbox}
-                >
-                  {exercise.isCompleted ? (
-                    <MaterialCommunityIcons
-                      name={'checkbox-marked-circle'}
-                      size={50}
-                      color={'#000'}
-                    />
-                  ) : (
-                    <MaterialCommunityIcons
-                      name={'checkbox-blank-circle-outline'}
-                      size={50}
-                      color={'#000'}
-                    />
-                  )}
-                </Pressable>
-              )}
-              <View style={styles.exerciseDetails}>
-                {toggleIsCompleted ? (
-                  <Text style={styles.exerciseName}>
-                    {exercise.exercise.name}
-                  </Text>
+            <View key={exercise.id} style={styles.exercise}>
+              <Pressable
+                onPress={() => toggleIsCompleted(exercise.exercise.id)}
+                style={styles.checkbox}
+              >
+                {exercise.isCompleted ? (
+                  <MaterialCommunityIcons
+                    name={'checkbox-marked-circle'}
+                    size={50}
+                    color={'#000'}
+                  />
                 ) : (
-                  <Text style={styles.exerciseName}>
-                    {`${exercise.exercise.name} (${exercise.sets} x ${exercise.reps})`}
-                  </Text>
+                  <MaterialCommunityIcons
+                    name={'checkbox-blank-circle-outline'}
+                    size={50}
+                    color={'#000'}
+                  />
                 )}
-                {toggleIsCompleted && (
-                  <Text style={styles.setsAndReps}>
-                    {`${exercise.sets} x ${exercise.reps}`}
-                  </Text>
-                )}
+              </Pressable>
+              <View style={styles.exerciseDetails}>
+                <Text style={styles.exerciseName}>
+                  {exercise.exercise.name}
+                </Text>
+                <Text style={styles.setsAndReps}>
+                  {`${exercise.sets} x ${exercise.reps}`}
+                </Text>
               </View>
             </View>
           );
@@ -84,10 +68,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginTop: 20,
     backgroundColor: '#909090',
-  },
-  splitSelection: {
-    height: 40,
-    marginTop: 10,
   },
   checkbox: {
     flex: 1,

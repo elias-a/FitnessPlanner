@@ -10,7 +10,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title, goBack }) => {
   return (
-    <View style={styles.container}>
+    <View style={styles.headerContainer}>
       <Pressable onPress={goBack} style={styles.backButton}>
         <MaterialCommunityIcons
           name={'arrow-left-bold'}

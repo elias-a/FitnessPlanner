@@ -1,5 +1,6 @@
 import type { Split, SplitExercise } from '../types/split';
 import type { Exercise } from '../types/exercise';
+import uuid from 'react-native-uuid';
 
 export const buildSplit = (
   split: Split,
@@ -29,6 +30,7 @@ export const buildSplit = (
       const daySplitExercises: SplitExercise[] = selectedExercises[key].map(
         exercise => {
           return {
+            id: uuid.v4().toString(),
             exercise: exercise,
             sets: 3,
             reps: 10,
@@ -66,6 +68,7 @@ export const selectExercises = (
 
   const splitExercises: SplitExercise[] = selectedExercises.map(exercise => {
     return {
+      id: uuid.v4().toString(),
       exercise: exercise,
       sets: 3,
       reps: 10,
