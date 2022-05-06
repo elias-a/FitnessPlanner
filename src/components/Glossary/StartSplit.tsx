@@ -11,6 +11,7 @@ import ScrollableDays, { dayWidth } from '../ScrollableWeek/ScrollableDays';
 import ExerciseList from '../ExerciseList/SplitExerciseList';
 import Header from './Header';
 import ColorPickerModal from '../Modals/ColorPicker';
+import RandomizeExercises from '../Modals/RandomizeExercises';
 import AddSplitExerciseModal from '../Modals/AddSplitExercise';
 import ErrorModal from '../Modals/Error';
 import ConfirmModal from '../Modals/Confirm';
@@ -42,13 +43,14 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
   const [finalizedDays, setFinalizedDays] = React.useState<{
     [key: string]: string;
   }>({});
+  const [isRandomizeExercisesOpen, setIsRandomizeExercisesOpen] =
+    React.useState(false);
   const [isAddSplitExerciseOpen, setIsAddSplitExerciseOpen] =
     React.useState(false);
   const [error, setError] = React.useState('');
   const [confirm, setConfirm] = React.useState('');
   const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
   const [exerciseToEdit, setExerciseToEdit] = React.useState<SplitExercise>();
-  const { categories } = useAppSelector(state => state.category);
   const { exercises } = useAppSelector(state => state.exercise);
   const { splits } = useAppSelector(state => state.split);
   const dispatch = useAppDispatch();
@@ -227,6 +229,11 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
     setExerciseToEdit(undefined);
   };
 
+  const handleRandomizeClose = () => {
+    selectDayExercises();
+    setIsRandomizeExercisesOpen(false);
+  };
+
   return (
     <View style={styles.pageContainer}>
       <Header title={'Start Split'} goBack={goBack} />
@@ -294,58 +301,11 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
 
           <View
             style={{
-              flex: 2,
-              minHeight: 130,
-              maxHeight: 130,
-              alignItems: 'center',
-              paddingTop: 15,
-            }}
-          >
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                minWidth: '100%',
-                maxWidth: '100%',
-                minHeight: '100%',
-                maxHeight: '100%',
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 24,
-                  fontWeight: '700',
-                  flex: 1,
-                  marginLeft: 10,
-                }}
-              >
-                {'Categories'}
-              </Text>
-              <Pressable
-                onPress={() => {}}
-                style={{
-                  flex: 2,
-                  minWidth: 32,
-                  maxWidth: 32,
-                  minHeight: '100%',
-                  maxHeight: '100%',
-                }}
-              >
-                <MaterialCommunityIcons
-                  name={'plus'}
-                  size={32}
-                  color={'#000'}
-                />
-              </Pressable>
-            </View>
-          </View>
-
-          <View
-            style={{
               flex: 3,
               alignItems: 'center',
-              minHeight: 50,
-              maxHeight: 50,
+              minHeight: 70,
+              maxHeight: 70,
+              paddingVertical: 20,
             }}
           >
             <View
@@ -369,7 +329,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
                 {'Exercises'}
               </Text>
               <Pressable
-                onPress={selectDayExercises}
+                onPress={() => setIsRandomizeExercisesOpen(true)}
                 style={{
                   flex: 3,
                   minWidth: 32,
@@ -403,15 +363,15 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
             </View>
           </View>
 
-          {Object.keys(splitExercises).includes(selectedDay.toString()) && (
-            <View style={{ flex: 4, paddingVertical: 10 }}>
+          <View style={{ flex: 4, paddingVertical: 10 }}>
+            {Object.keys(splitExercises).includes(selectedDay.toString()) && (
               <ExerciseList
                 exercises={splitExercises[selectedDay]}
                 editExercise={item => editExercise(item)}
                 removeExercise={item => removeExercise(item)}
               />
-            </View>
-          )}
+            )}
+          </View>
 
           <View
             style={{
@@ -446,6 +406,13 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
         onCancel={() => setIsColorPickerOpen(false)}
         onSelect={newColor => selectColor(newColor)}
         color={color}
+      />
+      <RandomizeExercises
+        isOpen={isRandomizeExercisesOpen}
+        onCancel={() => setIsRandomizeExercisesOpen(false)}
+        onRandomize={handleRandomizeClose}
+        onCategoriesSelection={changeSelectedItems}
+        selectedCategories={selectedCategories[selectedDay]}
       />
       <AddSplitExerciseModal
         isOpen={isAddSplitExerciseOpen}
