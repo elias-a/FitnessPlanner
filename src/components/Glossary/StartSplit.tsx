@@ -236,7 +236,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
 
   return (
     <View style={styles.pageContainer}>
-      <Header title={'Start Split'} goBack={goBack} />
+      <Header title={'Create Split'} goBack={goBack} />
 
       {page === 1 && (
         <View style={styles.viewContainer}>
@@ -289,7 +289,9 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
       )}
       {page === 2 && (
         <View style={styles.viewContainer}>
-          <View style={{ flex: 1, minHeight: 70, maxHeight: 70 }}>
+          <View
+            style={{ flex: 1, minHeight: 70, maxHeight: 70, paddingTop: 10 }}
+          >
             <ScrollableDays
               numDays={7}
               colors={finalizedDays}
@@ -385,7 +387,7 @@ const StartSplit: React.FC<StartSplitProps> = ({ route, navigation }) => {
               <Text style={{ fontSize: 20 }}>{'Finalize Day'}</Text>
             </Pressable>
             <Pressable onPress={start} style={styles.fullWidthButton}>
-              <Text style={{ fontSize: 20 }}>{'Start Split'}</Text>
+              <Text style={{ fontSize: 20 }}>{'Create Split'}</Text>
             </Pressable>
           </View>
         </View>

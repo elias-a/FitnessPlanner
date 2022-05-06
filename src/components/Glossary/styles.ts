@@ -25,8 +25,9 @@ const styles = StyleSheet.create({
     maxHeight: '10%',
     minWidth: '100%',
     maxWidth: '100%',
+    paddingBottom: 30,
+    backgroundColor: '#909090',
   },
-
   button: {
     width: 70,
     height: 70,
