@@ -128,6 +128,50 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '700',
   },
+
+  exercise: {
+    width: 340,
+    height: 90,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginRight: 8,
+    marginTop: 20,
+    borderBottomWidth: 2,
+  },
+  splitSelection: {
+    height: 40,
+    marginTop: 10,
+  },
+  exerciseDetails: {
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: '100%',
+    maxHeight: '100%',
+    marginLeft: 5,
+  },
+  editSection: {
+    flex: 2,
+    minWidth: 32,
+    maxWidth: 32,
+    minHeight: '100%',
+    maxHeight: '100%',
+    marginRight: 5,
+    marginTop: 3,
+  },
+  deleteSection: {
+    flex: 3,
+    minWidth: 32,
+    maxWidth: 32,
+    minHeight: '100%',
+    maxHeight: '100%',
+    marginRight: 5,
+    marginTop: 3,
+  },
+  exerciseName: {
+    color: '#000',
+    fontSize: 22,
+  },
 });
 
 export default styles;
