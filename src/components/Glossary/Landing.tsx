@@ -12,19 +12,19 @@ const Landing: React.FC<LandingProps> = ({ navigation }) => {
         onPress={() => navigation.push('ViewExercises', 'ViewExercises')}
         style={styles.button}
       >
-        <Text>{'View Exercises'}</Text>
+        <Text style={{ fontSize: 20 }}>{'Exercises'}</Text>
       </Pressable>
       <Pressable
         onPress={() => navigation.push('ViewCategories', 'ViewCategories')}
         style={styles.button}
       >
-        <Text>{'View Categories'}</Text>
+        <Text style={{ fontSize: 20 }}>{'Categories'}</Text>
       </Pressable>
       <Pressable
         onPress={() => navigation.push('ViewSplits', 'ViewSplits')}
         style={styles.button}
       >
-        <Text>{'View Splits'}</Text>
+        <Text style={{ fontSize: 20 }}>{'Splits'}</Text>
       </Pressable>
       <Pressable
         onPress={() =>
@@ -35,7 +35,7 @@ const Landing: React.FC<LandingProps> = ({ navigation }) => {
         }
         style={styles.button}
       >
-        <Text>{'Start Split'}</Text>
+        <Text style={{ fontSize: 20 }}>{'Start Split'}</Text>
       </Pressable>
     </View>
   );

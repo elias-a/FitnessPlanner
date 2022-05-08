@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import type { Exercise } from '../../types/exercise';
@@ -40,42 +40,37 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
 
         <View style={styles.viewContainer}>
           <View style={styles.listContainer}>
-            {exercises.map(exercise => {
-              return (
-                <View key={exercise.id} style={styles.exercise}>
-                  <View style={styles.exerciseDetails}>
-                    <Text style={styles.exerciseName}>{exercise.name}</Text>
+            <ScrollView>
+              {exercises.map(exercise => {
+                return (
+                  <View key={exercise.id} style={styles.exercise}>
+                    <View style={styles.exerciseDetails}>
+                      <Text style={styles.exerciseName}>{exercise.name}</Text>
+                    </View>
+                    <View style={styles.editSection}>
+                      <Pressable onPress={() => {}}>
+                        <MaterialCommunityIcons
+                          name={'pencil'}
+                          size={32}
+                          color={'#000'}
+                        />
+                      </Pressable>
+                    </View>
+                    <View style={styles.deleteSection}>
+                      <Pressable
+                        onPress={() => dispatch(deleteExercise(exercise))}
+                      >
+                        <MaterialCommunityIcons
+                          name={'delete'}
+                          size={32}
+                          color={'#000'}
+                        />
+                      </Pressable>
+                    </View>
                   </View>
-                  <View style={styles.editSection}>
-                    <Pressable
-                      onPress={() =>
-                        navigation.navigate({
-                          name: 'AddExercise',
-                          params: { exercise: exercise },
-                        })
-                      }
-                    >
-                      <MaterialCommunityIcons
-                        name={'pencil'}
-                        size={32}
-                        color={'#000'}
-                      />
-                    </Pressable>
-                  </View>
-                  <View style={styles.deleteSection}>
-                    <Pressable
-                      onPress={() => dispatch(deleteExercise(exercise))}
-                    >
-                      <MaterialCommunityIcons
-                        name={'delete'}
-                        size={32}
-                        color={'#000'}
-                      />
-                    </Pressable>
-                  </View>
-                </View>
-              );
-            })}
+                );
+              })}
+            </ScrollView>
           </View>
 
           <View style={styles.addButtonSection}>
@@ -108,15 +103,15 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
     minHeight: '90%',
     maxHeight: '90%',
   },
   listContainer: {
     flex: 1,
-    minHeight: '80%',
-    maxHeight: '80%',
+    minHeight: '100%',
+    maxHeight: '100%',
     alignItems: 'center',
+    paddingVertical: 20,
   },
   exercise: {
     width: 340,
@@ -159,11 +154,9 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   addButtonSection: {
-    flex: 2,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingRight: 20,
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
   },
 });
 
