@@ -1,26 +1,24 @@
 import React from 'react';
-import { View, Modal as ModalComponent, StyleSheet } from 'react-native';
+import ModalComponent from 'react-native-modal';
 
 interface ModalProps {
   isOpen: boolean;
+  close: () => void;
   children: any;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, children }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, close, children }) => {
   return (
-    <ModalComponent transparent visible={isOpen} onRequestClose={() => {}}>
-      <View style={styles.modal}>{children}</View>
+    <ModalComponent
+      isVisible={isOpen}
+      swipeDirection="down"
+      onSwipeComplete={close}
+      onBackdropPress={close}
+      style={{ margin: 0 }}
+    >
+      {children}
     </ModalComponent>
   );
 };
-
-const styles = StyleSheet.create({
-  modal: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-  },
-});
 
 export default Modal;

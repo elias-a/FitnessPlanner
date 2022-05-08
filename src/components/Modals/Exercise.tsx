@@ -1,67 +1,75 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from './Modal';
 import MultiSelect from '../MultiSelect';
 import { useAppSelector } from '../../hooks';
 import type { Exercise } from '../../types/exercise';
 
-interface RandomizeExercisesProps {
+const initialExercise: Exercise = {
+  id: '',
+  name: '',
+  categories: [],
+};
+
+interface ExerciseModalProps {
   isOpen: boolean;
   onCancel: () => void;
   onSave: (exercise: Exercise, editing: boolean) => void;
+  editing: boolean;
 }
 
-const RandomizeExercises: React.FC<RandomizeExercisesProps> = ({
+const ExerciseModal: React.FC<ExerciseModalProps> = ({
   isOpen,
   onCancel,
   onSave,
+  editing,
 }) => {
+  const [exercise, setExercise] = React.useState(initialExercise);
   const { categories } = useAppSelector(state => state.category);
 
+  const updateExercise = <T,>(name: string, value: T) => {
+    setExercise(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSave = () => {
+    onSave(exercise, editing);
+  };
+
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} close={onCancel}>
       <View style={styles.modal}>
-        <View style={styles.headerSection}>
-          <View style={styles.alertIcon}>
-            <MaterialCommunityIcons
-              name={'alert-circle-outline'}
-              size={35}
-              color={'#000'}
+        <View style={styles.container}>
+          <View style={styles.textInputSection}>
+            <TextInput
+              value={exercise.name}
+              onChangeText={name => updateExercise('name', name)}
+              placeholder={'Enter exercise name...'}
+              style={styles.textInput}
             />
           </View>
 
-          <Text style={styles.headerText}>{'Randomize'}</Text>
-
-          <Pressable onPress={onCancel} style={styles.closeIcon}>
-            <MaterialCommunityIcons
-              name={'close-circle-outline'}
-              size={35}
-              color={'#000'}
-            />
-          </Pressable>
-        </View>
-
-        <View style={styles.messageSection}>
-          <View style={styles.categorySelect}>
-            {/*<MultiSelect
+          <View style={styles.multiSelectSection}>
+            <MultiSelect
               items={categories}
-              selectedItems={selectedCategories}
-              onSelectedItemsChange={onCategoriesSelection}
+              selectedItems={[]}
+              onSelectedItemsChange={items =>
+                updateExercise('categories', items)
+              }
               isSingle={false}
               subKey={'subCategories'}
               selectText={'Choose categories...'}
-            />*/}
+            />
           </View>
-        </View>
 
-        <View style={styles.buttonSection}>
-          <Pressable onPress={onSave} style={styles.confirmButton}>
-            <Text>{'Save'}</Text>
-          </Pressable>
-          <Pressable onPress={onCancel} style={styles.cancelButton}>
-            <Text>{'Cancel'}</Text>
-          </Pressable>
+          <View style={styles.saveButtonSection}>
+            <Pressable onPress={handleSave} style={styles.addButton}>
+              <Text style={{ fontSize: 20 }}>{'Save'}</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </Modal>
@@ -70,80 +78,51 @@ const RandomizeExercises: React.FC<RandomizeExercisesProps> = ({
 
 const styles = StyleSheet.create({
   modal: {
-    minHeight: '50%',
-    maxHeight: '50%',
-    minWidth: '90%',
-    maxWidth: '90%',
+    position: 'absolute',
+    bottom: 0,
+    minHeight: '70%',
+    maxHeight: '70%',
+    minWidth: '100%',
+    maxWidth: '100%',
     backgroundColor: '#fff',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
-  headerSection: {
-    minHeight: '12%',
-    maxHeight: '12%',
-    backgroundColor: '#e8e8e8',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  alertIcon: {
-    position: 'absolute',
-    top: 7,
-    left: 5,
-  },
-  closeIcon: {
-    position: 'absolute',
-    top: 7,
-    right: 15,
-  },
-  headerText: {
-    position: 'absolute',
-    top: 3,
-    left: 50,
-    fontSize: 35,
-    color: '#000',
-  },
-  messageSection: {
-    minHeight: '73%',
-    maxHeight: '73%',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-  buttonSection: {
-    minHeight: '15%',
-    maxHeight: '15%',
-    backgroundColor: '#e8e8e8',
-    justifyContent: 'center',
-  },
-  cancelButton: {
-    minWidth: 100,
-    maxWidth: 100,
-    minHeight: 40,
-    maxHeight: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    position: 'absolute',
-    right: 125,
-  },
-  confirmButton: {
-    minWidth: 100,
-    maxWidth: 100,
-    minHeight: 40,
-    maxHeight: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    position: 'absolute',
-    right: 15,
-  },
-  categorySelect: {
+  container: {
     flex: 1,
-    marginTop: 20,
+    alignItems: 'center',
+  },
+  textInputSection: {
+    flex: 1,
+  },
+  textInput: {
+    flex: 1,
+    minWidth: 300,
+    maxWidth: 300,
     minHeight: 40,
     maxHeight: 40,
+    borderWidth: 1,
+    padding: 10,
+  },
+  multiSelectSection: {
+    flex: 2,
+  },
+  saveButtonSection: {
+    flex: 3,
+    minHeight: 110,
+    maxHeight: 110,
+    paddingVertical: 30,
+  },
+  addButton: {
+    flex: 1,
+    minWidth: 350,
+    maxWidth: 350,
+    minHeight: 50,
+    maxHeight: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#909090',
   },
 });
 
-export default RandomizeExercises;
+export default ExerciseModal;
