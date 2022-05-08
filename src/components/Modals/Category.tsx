@@ -1,49 +1,44 @@
 import React from 'react';
 import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Modal from './Modal';
-import SelectDropdown from 'react-native-select-dropdown';
-import { useAppSelector } from '../../hooks';
-import type { Exercise } from '../../types/exercise';
 import type { Category } from '../../types/category';
 
-const initialExercise: Exercise = {
+const initialCategory: Category = {
   id: '',
   name: '',
-  categories: [],
+  subCategories: [],
 };
 
-interface ExerciseModalProps {
+interface CategoryModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  onSave: (exercise: Exercise, editing: boolean) => void;
+  onSave: (category: Category, editing: boolean) => void;
   editing: boolean;
 }
 
-const ExerciseModal: React.FC<ExerciseModalProps> = ({
+const CategoryModal: React.FC<CategoryModalProps> = ({
   isOpen,
   onCancel,
   onSave,
   editing,
 }) => {
-  const [exercise, setExercise] = React.useState(initialExercise);
-  const { categories } = useAppSelector(state => state.category);
+  const [category, setCategory] = React.useState(initialCategory);
 
-  const updateExercise = <T,>(name: string, value: T) => {
-    setExercise(prevState => ({
+  const updateCategory = <T,>(name: string, value: T) => {
+    setCategory(prevState => ({
       ...prevState,
       [name]: value,
     }));
   };
 
   const handleCancel = () => {
-    setExercise(initialExercise);
+    setCategory(initialCategory);
     onCancel();
   };
 
   const handleSave = () => {
-    onSave(exercise, editing);
-    setExercise(initialExercise);
+    onSave(category, editing);
+    setCategory(initialCategory);
   };
 
   return (
@@ -52,37 +47,10 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({
         <View style={styles.container}>
           <View style={styles.textInputSection}>
             <TextInput
-              value={exercise.name}
-              onChangeText={name => updateExercise('name', name)}
-              placeholder={'Enter exercise name...'}
+              value={category.name}
+              onChangeText={name => updateCategory('name', name)}
+              placeholder={'Enter category name...'}
               style={styles.textInput}
-            />
-          </View>
-
-          <View style={styles.multiSelectSection}>
-            <SelectDropdown
-              data={categories}
-              defaultButtonText={'Select category...'}
-              buttonTextAfterSelection={item => item.name}
-              rowTextForSelection={item => item.name}
-              onSelect={(selectedCategory: Category) =>
-                updateExercise('categories', [selectedCategory.id])
-              }
-              buttonStyle={styles.dropdown1BtnStyle}
-              buttonTextStyle={styles.dropdown1BtnTxtStyle}
-              renderDropdownIcon={isOpened => {
-                return (
-                  <FontAwesome
-                    name={isOpened ? 'chevron-up' : 'chevron-down'}
-                    color={'#444'}
-                    size={18}
-                  />
-                );
-              }}
-              dropdownIconPosition={'right'}
-              dropdownStyle={styles.dropdown1DropdownStyle}
-              rowStyle={styles.dropdown1RowStyle}
-              rowTextStyle={styles.dropdown1RowTxtStyle}
             />
           </View>
 
@@ -180,4 +148,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExerciseModal;
+export default CategoryModal;

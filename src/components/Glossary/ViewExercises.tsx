@@ -88,6 +88,7 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
         isOpen={isExerciseOpen}
         onCancel={() => setIsExerciseOpen(false)}
         onSave={saveExercise}
+        editing={false}
       />
     </React.Fragment>
   );

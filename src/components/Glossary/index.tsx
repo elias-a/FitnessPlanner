@@ -4,11 +4,7 @@ import Landing from './Landing';
 import ViewExercises from './ViewExercises';
 import ViewCategories from './ViewCategories';
 import ViewSplits from './ViewSplits';
-import AddExercise from './AddExercise';
-import AddCategory from './AddCategory';
 import StartSplit from './StartSplit';
-import type { Category } from '../../types/category';
-import type { Exercise } from '../../types/exercise';
 import { Split } from '../../types/split';
 
 export type Stack = {
@@ -16,8 +12,6 @@ export type Stack = {
   ViewExercises: undefined;
   ViewCategories: undefined;
   ViewSplits: undefined;
-  AddExercise: { exercise: Exercise | undefined };
-  AddCategory: { category: Category | undefined };
   StartSplit: { split: Split | undefined };
 };
 
@@ -50,20 +44,6 @@ const Glossary: React.FC<{}> = ({}) => {
       <Stack.Screen
         name="ViewSplits"
         component={ViewSplits}
-        options={{
-          header: () => null,
-        }}
-      />
-      <Stack.Screen
-        name="AddExercise"
-        component={AddExercise}
-        options={{
-          header: () => null,
-        }}
-      />
-      <Stack.Screen
-        name="AddCategory"
-        component={AddCategory}
         options={{
           header: () => null,
         }}

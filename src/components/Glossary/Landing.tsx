@@ -29,28 +29,6 @@ const Landing: React.FC<LandingProps> = ({ navigation }) => {
       <Pressable
         onPress={() =>
           navigation.navigate({
-            name: 'AddExercise',
-            params: { exercise: undefined },
-          })
-        }
-        style={styles.button}
-      >
-        <Text>{'Add Exercise'}</Text>
-      </Pressable>
-      <Pressable
-        onPress={() =>
-          navigation.navigate({
-            name: 'AddCategory',
-            params: { category: undefined },
-          })
-        }
-        style={styles.button}
-      >
-        <Text>{'Add Category'}</Text>
-      </Pressable>
-      <Pressable
-        onPress={() =>
-          navigation.navigate({
             name: 'StartSplit',
             params: { split: undefined },
           })
