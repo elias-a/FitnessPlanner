@@ -1,13 +1,12 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { addCategory } from '../../slices/category';
 import { deleteCategory } from '../../slices/category';
-import Header from './Header';
-import AddButton from './AddButton';
+import ScrollableList from '../ScrollableList';
 import CategoryModal from '../Modals/Category';
 import type { Category } from '../../types/category';
 import uuid from 'react-native-uuid';
@@ -35,58 +34,47 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
   };
 
   return (
-    <React.Fragment>
-      <View style={styles.pageContainer}>
-        <Header title={'Categories'} goBack={() => navigation.goBack()} />
-
-        <View style={styles.viewContainer}>
-          <View style={styles.listContainer}>
-            <ScrollView>
-              {categories.map(category => {
-                return (
-                  <View key={category.id} style={styles.category}>
-                    <View style={styles.categoryDetails}>
-                      <Text style={styles.categoryName}>{category.name}</Text>
-                    </View>
-                    <View style={styles.editSection}>
-                      <Pressable onPress={() => {}}>
-                        <MaterialCommunityIcons
-                          name={'pencil'}
-                          size={32}
-                          color={'#000'}
-                        />
-                      </Pressable>
-                    </View>
-                    <View style={styles.deleteSection}>
-                      <Pressable
-                        onPress={() => dispatch(deleteCategory(category))}
-                      >
-                        <MaterialCommunityIcons
-                          name={'delete'}
-                          size={32}
-                          color={'#000'}
-                        />
-                      </Pressable>
-                    </View>
-                  </View>
-                );
-              })}
-            </ScrollView>
+    <ScrollableList
+      title={'Categories'}
+      goBack={() => navigation.goBack()}
+      clickAddButton={() => setIsCategoryOpen(true)}
+      modal={
+        <CategoryModal
+          isOpen={isCategoryOpen}
+          onCancel={() => setIsCategoryOpen(false)}
+          onSave={saveCategory}
+          editing={false}
+        />
+      }
+    >
+      {categories.map(category => {
+        return (
+          <View key={category.id} style={styles.category}>
+            <View style={styles.categoryDetails}>
+              <Text style={styles.categoryName}>{category.name}</Text>
+            </View>
+            <View style={styles.editSection}>
+              <Pressable onPress={() => {}}>
+                <MaterialCommunityIcons
+                  name={'pencil'}
+                  size={32}
+                  color={'#000'}
+                />
+              </Pressable>
+            </View>
+            <View style={styles.deleteSection}>
+              <Pressable onPress={() => dispatch(deleteCategory(category))}>
+                <MaterialCommunityIcons
+                  name={'delete'}
+                  size={32}
+                  color={'#000'}
+                />
+              </Pressable>
+            </View>
           </View>
-
-          <View style={styles.addButtonSection}>
-            <AddButton add={() => setIsCategoryOpen(true)} />
-          </View>
-        </View>
-      </View>
-
-      <CategoryModal
-        isOpen={isCategoryOpen}
-        onCancel={() => setIsCategoryOpen(false)}
-        onSave={saveCategory}
-        editing={false}
-      />
-    </React.Fragment>
+        );
+      })}
+    </ScrollableList>
   );
 };
 

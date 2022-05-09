@@ -9,7 +9,7 @@ import styles from './styles';
 import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays, { dayWidth } from '../ScrollableWeek/ScrollableDays';
 import ExerciseList from '../ExerciseList/SplitExerciseList';
-import Header from './Header';
+import Header from '../ScrollableList/Header';
 import ColorPickerModal from '../Modals/ColorPicker';
 import RandomizeExercises from '../Modals/RandomizeExercises';
 import AddSplitExerciseModal from '../Modals/AddSplitExercise';
