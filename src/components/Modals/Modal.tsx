@@ -1,17 +1,23 @@
 import React from 'react';
-import ModalComponent from 'react-native-modal';
+import ModalComponent, { Direction } from 'react-native-modal';
 
 interface ModalProps {
   isOpen: boolean;
   close: () => void;
+  swipeDirection?: 'up' | 'down' | 'left' | 'right' | Direction[];
   children: any;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, close, children }) => {
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  close,
+  swipeDirection,
+  children,
+}) => {
   return (
     <ModalComponent
       isVisible={isOpen}
-      swipeDirection="down"
+      swipeDirection={swipeDirection}
       onSwipeComplete={close}
       onBackdropPress={close}
       style={{ margin: 0 }}

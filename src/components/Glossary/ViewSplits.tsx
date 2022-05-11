@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import styles from './styles';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { deleteSplit } from '../../slices/split';
 import ScrollableList from '../ScrollableList';
@@ -33,7 +32,7 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
     >
       {splits.map(split => {
         return (
-          <Pressable key={split.id} onPress={() => {}} style={styles.listItem}>
+          <View key={split.id} style={styles.split}>
             <View style={styles.splitDetails}>
               <Text style={styles.splitDetailsText}>
                 {`${formatDate(new Date(split.startDate))} - ${formatDate(
@@ -41,36 +40,79 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
                 )}`}
               </Text>
             </View>
-            <Pressable
-              onPress={() =>
-                navigation.navigate({
-                  name: 'StartSplit',
-                  params: { split: split },
-                })
-              }
-              style={styles.editButton}
-            >
-              <MaterialCommunityIcons
-                name={'pencil'}
-                size={32}
-                color={'#000'}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => dispatch(deleteSplit(split))}
-              style={styles.deleteButton}
-            >
-              <MaterialCommunityIcons
-                name={'delete'}
-                size={32}
-                color={'#000'}
-              />
-            </Pressable>
-          </Pressable>
+            <View style={styles.editSection}>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate({
+                    name: 'StartSplit',
+                    params: { split: split },
+                  })
+                }
+              >
+                <MaterialCommunityIcons
+                  name={'pencil'}
+                  size={32}
+                  color={'#000'}
+                />
+              </Pressable>
+            </View>
+            <View style={styles.deleteSection}>
+              <Pressable onPress={() => dispatch(deleteSplit(split))}>
+                <MaterialCommunityIcons
+                  name={'delete'}
+                  size={32}
+                  color={'#000'}
+                />
+              </Pressable>
+            </View>
+          </View>
         );
       })}
     </ScrollableList>
   );
 };
+
+const styles = StyleSheet.create({
+  split: {
+    width: 340,
+    minHeight: 40,
+    maxHeight: 40,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginRight: 8,
+    marginTop: 20,
+    borderBottomWidth: 2,
+  },
+  splitDetails: {
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: '100%',
+    maxHeight: '100%',
+    marginLeft: 5,
+  },
+  editSection: {
+    flex: 2,
+    minWidth: 32,
+    maxWidth: 32,
+    minHeight: '100%',
+    maxHeight: '100%',
+    marginRight: 5,
+    marginTop: 3,
+  },
+  deleteSection: {
+    flex: 3,
+    minWidth: 32,
+    maxWidth: 32,
+    minHeight: '100%',
+    maxHeight: '100%',
+    marginRight: 5,
+    marginTop: 3,
+  },
+  splitDetailsText: {
+    color: '#000',
+    fontSize: 22,
+  },
+});
 
 export default ViewSplits;

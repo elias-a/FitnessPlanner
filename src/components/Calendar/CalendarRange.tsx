@@ -252,10 +252,9 @@ const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     width: width * 0.95,
     paddingLeft: width * 0.025,
-    height: 450,
-    backgroundColor: '#d0d0d0',
   },
   item: {
     width: width * 0.1,

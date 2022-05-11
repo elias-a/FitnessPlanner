@@ -79,29 +79,6 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  pageContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    minHeight: '100%',
-    maxHeight: '100%',
-    minWidth: '100%',
-    maxWidth: '100%',
-  },
-  viewContainer: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '90%',
-    maxHeight: '90%',
-  },
-  listContainer: {
-    flex: 1,
-    minHeight: '100%',
-    maxHeight: '100%',
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
   category: {
     width: 340,
     minHeight: 40,
@@ -141,11 +118,6 @@ const styles = StyleSheet.create({
   categoryName: {
     color: '#000',
     fontSize: 22,
-  },
-  addButtonSection: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
   },
 });
 

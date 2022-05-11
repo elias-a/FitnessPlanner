@@ -26,17 +26,6 @@ const Landing: React.FC<LandingProps> = ({ navigation }) => {
       >
         <Text style={{ fontSize: 20 }}>{'Splits'}</Text>
       </Pressable>
-      <Pressable
-        onPress={() =>
-          navigation.navigate({
-            name: 'StartSplit',
-            params: { split: undefined },
-          })
-        }
-        style={styles.button}
-      >
-        <Text style={{ fontSize: 20 }}>{'Start Split'}</Text>
-      </Pressable>
     </View>
   );
 };

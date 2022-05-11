@@ -42,7 +42,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} close={handleCancel}>
+    <Modal isOpen={isOpen} close={handleCancel} swipeDirection={'down'}>
       <View style={styles.modal}>
         <View style={styles.container}>
           <View style={styles.textInputSection}>

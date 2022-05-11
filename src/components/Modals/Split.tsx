@@ -61,9 +61,19 @@ const SplitModal: React.FC<SplitModalProps> = ({
   const flatListRef: React.RefObject<FlatList<number>> | undefined | null =
     React.createRef();
 
-  const loadSplit = (split: Split) => {
-    setEditing(true);
+  React.useEffect(() => {
+    const newRanges: CalendarRange[] = splits.map(split => {
+      return {
+        startRange: new Date(split.startDate),
+        endRange: new Date(split.endDate),
+        color: split.color,
+      };
+    });
 
+    setRanges(newRanges);
+  }, [splits]);
+
+  const loadSplit = (split: Split) => {
     setStartDate(new Date(split.startDate));
     setEndDate(new Date(split.endDate));
     setSelectedCategories(split.categories);
@@ -210,173 +220,246 @@ const SplitModal: React.FC<SplitModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} close={onCancel}>
-      <View style={styles.modal}>
-        <View style={styles.container}>
-          {page === 1 && (
-            <View style={styles.viewContainer}>
-              <Calendar
-                startDate={startDate}
-                endDate={endDate}
-                setStartDate={setStartDate}
-                setEndDate={setEndDate}
-                ranges={ranges}
-                color={color}
-              />
-
-              <Pressable
-                onPress={() => setIsColorPickerOpen(true)}
-                style={styles.addButton}
-              >
-                <Text>{'Choose Color'}</Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => {
-                  if (!startDate || !endDate) {
-                    setError('Select a start and end date');
-                    return;
-                  }
-
-                  const overlappingSplit = checkDateOverlap(
-                    startDate,
-                    endDate,
-                    splits,
-                  );
-                  if (overlappingSplit && !editing) {
-                    setExistingSplit(overlappingSplit);
-                    setConfirm(
-                      "The dates you've selected overlap an existing split. Would you like to edit that split now?",
-                    );
-                    return;
-                  }
-
-                  if (Object.keys(selectedCategories).length === 0) {
-                    initializeCategories();
-                  }
-                  next();
-                }}
-                style={styles.addButton}
-              >
-                <Text>{'Continue'}</Text>
+    <React.Fragment>
+      <Modal isOpen={isOpen} close={onCancel}>
+        <View style={styles.modal}>
+          <View style={styles.header}>
+            <View style={styles.closeIcon}>
+              <Pressable onPress={onCancel}>
+                <MaterialCommunityIcons
+                  name={'window-close'}
+                  size={32}
+                  color={'#000'}
+                />
               </Pressable>
             </View>
-          )}
-          {page === 2 && (
-            <View style={styles.viewContainer}>
-              <View
-                style={{
-                  flex: 1,
-                  minHeight: 70,
-                  maxHeight: 70,
-                  paddingTop: 10,
-                }}
-              >
-                <ScrollableDays
-                  numDays={7}
-                  colors={finalizedDays}
-                  selectedDay={selectedDay}
-                  setSelectedDay={day => setSelectedDay(day)}
-                  flatListRef={flatListRef}
-                />
-              </View>
 
-              <View
-                style={{
-                  flex: 3,
-                  alignItems: 'center',
-                  minHeight: 70,
-                  maxHeight: 70,
-                  paddingVertical: 20,
-                }}
-              >
+            <View style={styles.leftIcon}>
+              {page === 1 && (
+                <Pressable onPress={() => setIsColorPickerOpen(true)}>
+                  <MaterialCommunityIcons
+                    name={'palette-outline'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
+              )}
+              {page === 2 && (
+                <Pressable onPress={() => setPage(1)}>
+                  <MaterialCommunityIcons
+                    name={'chevron-left'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.container}>
+            {page === 1 && (
+              <View style={styles.viewContainer}>
+                <Calendar
+                  startDate={startDate}
+                  endDate={endDate}
+                  setStartDate={setStartDate}
+                  setEndDate={setEndDate}
+                  ranges={ranges}
+                  color={color}
+                />
+
                 <View
                   style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    minWidth: '100%',
-                    maxWidth: '100%',
-                    minHeight: '100%',
-                    maxHeight: '100%',
+                    flex: 2,
+                    justifyContent: 'flex-end',
+                    minHeight: 102,
+                    maxHeight: 102,
+                    marginBottom: 35,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 24,
-                      fontWeight: '700',
-                      flex: 1,
-                      marginLeft: 10,
-                    }}
-                  >
-                    {'Exercises'}
-                  </Text>
                   <Pressable
-                    onPress={() => setIsRandomizeExercisesOpen(true)}
-                    style={{
-                      flex: 3,
-                      minWidth: 32,
-                      maxWidth: 32,
-                      minHeight: '100%',
-                      maxHeight: '100%',
+                    onPress={() => {
+                      if (!startDate || !endDate) {
+                        setError('Select a start and end date');
+                        return;
+                      }
+
+                      const overlappingSplit = checkDateOverlap(
+                        startDate,
+                        endDate,
+                        splits,
+                      );
+                      if (overlappingSplit && !editing) {
+                        setExistingSplit(overlappingSplit);
+                        setConfirm(
+                          "The dates you've selected overlap an existing split. Would you like to edit that split now?",
+                        );
+                        return;
+                      }
+
+                      if (Object.keys(selectedCategories).length === 0) {
+                        initializeCategories();
+                      }
+                      next();
                     }}
+                    style={styles.fullWidthButton}
                   >
-                    <MaterialCommunityIcons
-                      name={'dice-multiple'}
-                      size={32}
-                      color={'#000'}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setIsAddSplitExerciseOpen(true)}
-                    style={{
-                      flex: 2,
-                      minWidth: 32,
-                      maxWidth: 32,
-                      minHeight: '100%',
-                      maxHeight: '100%',
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name={'plus'}
-                      size={32}
-                      color={'#000'}
-                    />
+                    <Text style={{ fontSize: 20 }}>{'Continue'}</Text>
                   </Pressable>
                 </View>
               </View>
-
-              <View style={{ flex: 4, paddingVertical: 10 }}>
-                {Object.keys(splitExercises).includes(
-                  selectedDay.toString(),
-                ) && (
-                  <ExerciseList
-                    exercises={splitExercises[selectedDay]}
-                    editExercise={item => editExercise(item)}
-                    removeExercise={item => removeExercise(item)}
+            )}
+            {page === 2 && (
+              <View style={styles.viewContainer}>
+                <View
+                  style={{
+                    flex: 1,
+                    minHeight: 70,
+                    maxHeight: 70,
+                    paddingTop: 10,
+                  }}
+                >
+                  <ScrollableDays
+                    numDays={7}
+                    colors={finalizedDays}
+                    selectedDay={selectedDay}
+                    setSelectedDay={day => setSelectedDay(day)}
+                    flatListRef={flatListRef}
                   />
-                )}
-              </View>
+                </View>
 
-              <View
-                style={{
-                  flex: 5,
-                  justifyContent: 'flex-end',
-                  minHeight: 102,
-                  maxHeight: 102,
-                }}
-              >
-                <Pressable onPress={finalizeDay} style={styles.fullWidthButton}>
-                  <Text style={{ fontSize: 20 }}>{'Finalize Day'}</Text>
-                </Pressable>
-                <Pressable onPress={start} style={styles.fullWidthButton}>
-                  <Text style={{ fontSize: 20 }}>{'Create Split'}</Text>
-                </Pressable>
+                <View
+                  style={{
+                    flex: 3,
+                    alignItems: 'center',
+                    minHeight: 70,
+                    maxHeight: 70,
+                    paddingVertical: 20,
+                  }}
+                >
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      minWidth: '100%',
+                      maxWidth: '100%',
+                      minHeight: '100%',
+                      maxHeight: '100%',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 24,
+                        fontWeight: '700',
+                        flex: 1,
+                        marginLeft: 10,
+                      }}
+                    >
+                      {'Exercises'}
+                    </Text>
+                    <Pressable
+                      onPress={() => setIsRandomizeExercisesOpen(true)}
+                      style={{
+                        flex: 3,
+                        minWidth: 32,
+                        maxWidth: 32,
+                        minHeight: '100%',
+                        maxHeight: '100%',
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name={'dice-multiple'}
+                        size={32}
+                        color={'#000'}
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => setIsAddSplitExerciseOpen(true)}
+                      style={{
+                        flex: 2,
+                        minWidth: 32,
+                        maxWidth: 32,
+                        minHeight: '100%',
+                        maxHeight: '100%',
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name={'plus'}
+                        size={32}
+                        color={'#000'}
+                      />
+                    </Pressable>
+                  </View>
+                </View>
+
+                <View style={{ flex: 4, paddingVertical: 10 }}>
+                  {Object.keys(splitExercises).includes(
+                    selectedDay.toString(),
+                  ) && (
+                    <ExerciseList
+                      exercises={splitExercises[selectedDay]}
+                      editExercise={item => editExercise(item)}
+                      removeExercise={item => removeExercise(item)}
+                    />
+                  )}
+                </View>
+
+                <View
+                  style={{
+                    flex: 5,
+                    justifyContent: 'flex-end',
+                    minHeight: 102,
+                    maxHeight: 102,
+                    marginBottom: 35,
+                  }}
+                >
+                  <Pressable
+                    onPress={finalizeDay}
+                    style={styles.fullWidthButton}
+                  >
+                    <Text style={{ fontSize: 20 }}>{'Finalize Day'}</Text>
+                  </Pressable>
+                  <Pressable onPress={start} style={styles.fullWidthButton}>
+                    <Text style={{ fontSize: 20 }}>{'Create Split'}</Text>
+                  </Pressable>
+                </View>
               </View>
-            </View>
-          )}
+            )}
+          </View>
         </View>
-      </View>
-    </Modal>
+
+        <ErrorModal
+          isOpen={!!error}
+          onClose={() => setError('')}
+          message={error}
+        />
+        <ConfirmModal
+          isOpen={!!confirm}
+          onCancel={() => setConfirm('')}
+          onConfirm={editSplit}
+          message={confirm}
+        />
+        <ColorPickerModal
+          isOpen={isColorPickerOpen}
+          onCancel={() => setIsColorPickerOpen(false)}
+          onSelect={newColor => selectColor(newColor)}
+          color={color}
+        />
+        <RandomizeExercises
+          isOpen={isRandomizeExercisesOpen}
+          onCancel={() => setIsRandomizeExercisesOpen(false)}
+          onRandomize={handleRandomizeClose}
+          onCategoriesSelection={changeSelectedItems}
+          selectedCategories={selectedCategories[selectedDay]}
+        />
+        <AddSplitExerciseModal
+          isOpen={isAddSplitExerciseOpen}
+          onCancel={() => closeAddSplitExerciseModal()}
+          onAdd={newSplitExercise => chooseExercise(newSplitExercise)}
+          initialSplitExercise={exerciseToEdit}
+        />
+      </Modal>
+    </React.Fragment>
   );
 };
 
@@ -384,16 +467,31 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
     bottom: 0,
-    minHeight: '95%',
-    maxHeight: '95%',
+    minHeight: '100%',
+    maxHeight: '100%',
     minWidth: '100%',
     maxWidth: '100%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
-  container: {
+  header: {
     flex: 1,
+    minHeight: '10%',
+    maxHeight: '10%',
+  },
+  leftIcon: {
+    position: 'absolute',
+    top: 45,
+    left: 20,
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: 45,
+    right: 20,
+  },
+  container: {
+    flex: 2,
     alignItems: 'center',
   },
   textInputSection: {
@@ -473,9 +571,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    minHeight: '90%',
-    maxHeight: '90%',
+    alignItems: 'center',
   },
 });
 

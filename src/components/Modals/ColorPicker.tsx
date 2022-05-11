@@ -36,7 +36,7 @@ const ColorPickerModal: React.FC<ColorPickerModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} close={onCancel}>
       <View style={styles.modal}>
         <View style={styles.headerSection}>
           <View style={styles.alertIcon}>
