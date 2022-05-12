@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  FlatList,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { View, Text, Pressable, FlatList, StyleSheet } from 'react-native';
 import uuid from 'react-native-uuid';
 import type { CalendarRange as CalendarRangeType } from '../../types/calendar';
 import { checkDateEquality } from '../../utils/checkDateEquality';
 import { isDateInRange } from '../../utils/isDateInRange';
+
+const dayWidth = 45;
 
 interface CalendarData {
   key: string;
@@ -37,7 +32,6 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
 }) => {
   const [today, setToday] = React.useState<Date>(new Date());
   const [calendar, setCalendar] = React.useState<CalendarData[]>([]);
-  const [initialScrollIndex, setInitialScrollIndex] = React.useState(0);
   const daysOfWeek: CalendarData[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(
     day => {
       return {
@@ -47,14 +41,23 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
       };
     },
   );
+  const flatListRef:
+    | React.RefObject<FlatList<CalendarData>>
+    | undefined
+    | null = React.createRef();
 
   React.useEffect(() => {
     setToday(new Date());
   }, []);
 
   React.useEffect(() => {
+    flatListRef.current?.scrollToOffset({
+      offset: dayWidth * 20,
+    });
+  }, [flatListRef]);
+
+  React.useEffect(() => {
     const data: CalendarData[] = [];
-    let todayIndex = 0;
 
     for (let i = -4; i <= 4; i++) {
       const firstOfMonth = new Date(today.getFullYear(), today.getMonth() + i);
@@ -111,14 +114,9 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
           data: '',
         });
       }
-
-      if (i >= 0) {
-        todayIndex++;
-      }
     }
 
     setCalendar(data);
-    setInitialScrollIndex(todayIndex);
   }, [today]);
 
   const onSelect = (data: Date) => {
@@ -225,8 +223,8 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
         renderItem={renderItem}
         numColumns={7}
         getItemLayout={(_, index) => ({
-          length: width * 0.1,
-          offset: (width * 0.24 + 18) * index,
+          length: dayWidth,
+          offset: dayWidth * index,
           index,
         })}
         scrollEnabled={false}
@@ -235,38 +233,38 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
         data={calendar}
         renderItem={renderItem}
         numColumns={7}
-        initialScrollIndex={initialScrollIndex}
         getItemLayout={(_, index) => ({
-          length: width * 0.1,
-          offset: (width * 0.24 + 18) * index,
+          length: dayWidth,
+          offset: dayWidth * index,
           index,
         })}
         bounces={false}
         extraData={[startDate, endDate]}
+        ref={flatListRef}
       />
     </View>
   );
 };
 
-const { width } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: width * 0.95,
-    paddingLeft: width * 0.025,
+    alignItems: 'center',
+    width: '100%',
   },
   item: {
-    width: width * 0.1,
-    height: 40,
-    marginRight: 8,
-    marginTop: 8,
+    minWidth: dayWidth,
+    maxWidth: dayWidth,
+    minHeight: dayWidth,
+    maxHeight: dayWidth,
+    padding: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },
   monthYear: {
-    width: width,
-    marginLeft: 120,
+    width: '100%',
+    flex: 1,
+    alignItems: 'center',
   },
   monthYearText: {
     fontSize: 18,
