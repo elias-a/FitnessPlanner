@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TriangleColorPicker, toHsv, fromHsv } from 'react-native-color-picker';
 import Modal from './Modal';
 
@@ -36,28 +35,8 @@ const ColorPickerModal: React.FC<ColorPickerModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} close={onCancel}>
+    <Modal isOpen={isOpen} close={onCancel} swipeDirection="down">
       <View style={styles.modal}>
-        <View style={styles.headerSection}>
-          <View style={styles.alertIcon}>
-            <MaterialCommunityIcons
-              name={'alert-circle-outline'}
-              size={35}
-              color={'#000'}
-            />
-          </View>
-
-          <Text style={styles.headerText}>{'Choose Color'}</Text>
-
-          <Pressable onPress={onCancel} style={styles.closeIcon}>
-            <MaterialCommunityIcons
-              name={'close-circle-outline'}
-              size={35}
-              color={'#000'}
-            />
-          </Pressable>
-        </View>
-
         <View style={styles.colorPickerSection}>
           <TriangleColorPicker
             color={selectedColor}
@@ -66,16 +45,15 @@ const ColorPickerModal: React.FC<ColorPickerModalProps> = ({
           />
         </View>
 
-        <View style={styles.buttonSection}>
-          <Pressable
-            onPress={() => onSelect(fromHsv(selectedColor))}
-            style={styles.selectButton}
-          >
-            <Text>{'Select'}</Text>
-          </Pressable>
-          <Pressable onPress={onCancel} style={styles.cancelButton}>
-            <Text>{'Cancel'}</Text>
-          </Pressable>
+        <View style={styles.container}>
+          <View style={styles.saveButtonSection}>
+            <Pressable
+              onPress={() => onSelect(fromHsv(selectedColor))}
+              style={styles.addButton}
+            >
+              <Text style={{ fontSize: 20 }}>{'Save'}</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </Modal>
@@ -84,88 +62,44 @@ const ColorPickerModal: React.FC<ColorPickerModalProps> = ({
 
 const styles = StyleSheet.create({
   modal: {
+    position: 'absolute',
+    bottom: 0,
     minHeight: '80%',
     maxHeight: '80%',
-    minWidth: '90%',
-    maxWidth: '90%',
+    minWidth: '100%',
+    maxWidth: '100%',
     backgroundColor: '#fff',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
-  headerSection: {
-    minHeight: '8%',
-    maxHeight: '8%',
-    backgroundColor: '#e8e8e8',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  alertIcon: {
-    position: 'absolute',
-    top: 7,
-    left: 5,
-  },
-  closeIcon: {
-    position: 'absolute',
-    top: 7,
-    right: 15,
-  },
-  headerText: {
-    position: 'absolute',
-    top: 3,
-    left: 50,
-    fontSize: 35,
-    color: '#000',
+  container: {
+    flex: 1,
+    alignItems: 'center',
   },
   colorPickerSection: {
-    minHeight: '55%',
-    maxHeight: '55%',
-    backgroundColor: '#fff',
+    minHeight: '75%',
+    maxHeight: '75%',
+    paddingTop: 50,
   },
   colorPicker: {
     flex: 1,
   },
-  buttonSection: {
-    minHeight: '37%',
-    maxHeight: '37%',
-    backgroundColor: '#e8e8e8',
-    justifyContent: 'center',
+  saveButtonSection: {
+    flex: 3,
+    minHeight: 110,
+    maxHeight: 110,
+    paddingVertical: 30,
   },
-  closeButton: {
-    minWidth: 100,
-    maxWidth: 100,
-    minHeight: 40,
-    maxHeight: 40,
-    alignItems: 'center',
+  addButton: {
+    flex: 2,
+    alignSelf: 'flex-end',
+    minWidth: 350,
+    maxWidth: 350,
+    minHeight: 50,
+    maxHeight: 50,
     justifyContent: 'center',
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    position: 'absolute',
-    right: 15,
-  },
-  cancelButton: {
-    minWidth: 100,
-    maxWidth: 100,
-    minHeight: 40,
-    maxHeight: 40,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    position: 'absolute',
-    right: 125,
-  },
-  selectButton: {
-    minWidth: 100,
-    maxWidth: 100,
-    minHeight: 40,
-    maxHeight: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    position: 'absolute',
-    right: 15,
+    backgroundColor: '#909090',
   },
 });
 

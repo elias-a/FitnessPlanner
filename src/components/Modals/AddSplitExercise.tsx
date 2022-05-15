@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown';
 import Modal from './Modal';
@@ -67,101 +66,80 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} close={handleClose}>
       <View style={styles.modal}>
-        <View style={styles.headerSection}>
-          <View style={styles.alertIcon}>
-            <MaterialCommunityIcons
-              name={'alert-circle-outline'}
-              size={35}
-              color={'#000'}
-            />
-          </View>
-
-          <Text style={styles.headerText}>{'Add Exercise'}</Text>
-
-          <Pressable onPress={handleClose} style={styles.closeIcon}>
-            <MaterialCommunityIcons
-              name={'close-circle-outline'}
-              size={35}
-              color={'#000'}
-            />
-          </Pressable>
-        </View>
-
-        <View style={styles.messageSection}>
-          <View style={styles.exerciseDropdown}>
-            <SelectDropdown
-              defaultValue={exercise}
-              data={exercises}
-              defaultButtonText={'Select exercise...'}
-              buttonTextAfterSelection={item => item.name}
-              rowTextForSelection={item => item.name}
-              onSelect={(selectedExercise: Exercise) =>
-                setExercise(selectedExercise)
-              }
-              buttonStyle={styles.dropdown1BtnStyle}
-              buttonTextStyle={styles.dropdown1BtnTxtStyle}
-              renderDropdownIcon={isOpened => {
-                return (
-                  <FontAwesome
-                    name={isOpened ? 'chevron-up' : 'chevron-down'}
-                    color={'#444'}
-                    size={18}
-                  />
-                );
-              }}
-              dropdownIconPosition={'right'}
-              dropdownStyle={styles.dropdown1DropdownStyle}
-              rowStyle={styles.dropdown1RowStyle}
-              rowTextStyle={styles.dropdown1RowTxtStyle}
-            />
-          </View>
-
-          <View style={styles.numericInputSection}>
-            <View style={styles.numericInputLabel}>
-              <Text style={styles.numericInputLabelText}>
-                {'Number of sets:'}
-              </Text>
-            </View>
-            <View style={styles.numericInput}>
-              <NumericInput
-                initValue={sets}
-                value={sets}
-                minValue={0}
-                totalWidth={150}
-                totalHeight={40}
-                onChange={newSets => setSets(newSets)}
+        <View style={styles.container}>
+          <View style={styles.messageSection}>
+            <View style={styles.exerciseDropdown}>
+              <SelectDropdown
+                defaultValue={exercise}
+                data={exercises}
+                defaultButtonText={'Select exercise...'}
+                buttonTextAfterSelection={item => item.name}
+                rowTextForSelection={item => item.name}
+                onSelect={(selectedExercise: Exercise) =>
+                  setExercise(selectedExercise)
+                }
+                buttonStyle={styles.dropdown1BtnStyle}
+                buttonTextStyle={styles.dropdown1BtnTxtStyle}
+                renderDropdownIcon={isOpened => {
+                  return (
+                    <FontAwesome
+                      name={isOpened ? 'chevron-up' : 'chevron-down'}
+                      color={'#444'}
+                      size={18}
+                    />
+                  );
+                }}
+                dropdownIconPosition={'right'}
+                dropdownStyle={styles.dropdown1DropdownStyle}
+                rowStyle={styles.dropdown1RowStyle}
+                rowTextStyle={styles.dropdown1RowTxtStyle}
               />
             </View>
+
+            <View style={styles.numericInputSection}>
+              <View style={styles.numericInputLabel}>
+                <Text style={styles.numericInputLabelText}>
+                  {'Number of sets:'}
+                </Text>
+              </View>
+              <View style={styles.numericInput}>
+                <NumericInput
+                  initValue={sets}
+                  value={sets}
+                  minValue={0}
+                  totalWidth={150}
+                  totalHeight={40}
+                  onChange={newSets => setSets(newSets)}
+                />
+              </View>
+            </View>
+
+            <View style={styles.numericInputSection}>
+              <View style={styles.numericInputLabel}>
+                <Text style={styles.numericInputLabelText}>
+                  {'Number of reps:'}
+                </Text>
+              </View>
+              <View style={styles.numericInput}>
+                <NumericInput
+                  initValue={reps}
+                  value={reps}
+                  minValue={0}
+                  totalWidth={150}
+                  totalHeight={40}
+                  onChange={newReps => setReps(newReps)}
+                />
+              </View>
+            </View>
           </View>
 
-          <View style={styles.numericInputSection}>
-            <View style={styles.numericInputLabel}>
-              <Text style={styles.numericInputLabelText}>
-                {'Number of reps:'}
-              </Text>
-            </View>
-            <View style={styles.numericInput}>
-              <NumericInput
-                initValue={reps}
-                value={reps}
-                minValue={0}
-                totalWidth={150}
-                totalHeight={40}
-                onChange={newReps => setReps(newReps)}
-              />
-            </View>
+          <View style={styles.saveButtonSection}>
+            <Pressable onPress={handleAdd} style={styles.addButton}>
+              <Text style={{ fontSize: 20 }}>{'Save'}</Text>
+            </Pressable>
           </View>
-        </View>
-
-        <View style={styles.buttonSection}>
-          <Pressable onPress={handleAdd} style={styles.confirmButton}>
-            <Text>{'Add'}</Text>
-          </Pressable>
-          <Pressable onPress={handleClose} style={styles.cancelButton}>
-            <Text>{'Cancel'}</Text>
-          </Pressable>
         </View>
       </View>
     </Modal>
@@ -170,76 +148,25 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
 
 const styles = StyleSheet.create({
   modal: {
-    minHeight: '50%',
-    maxHeight: '50%',
-    minWidth: '90%',
-    maxWidth: '90%',
+    position: 'absolute',
+    bottom: 0,
+    minHeight: '70%',
+    maxHeight: '70%',
+    minWidth: '100%',
+    maxWidth: '100%',
     backgroundColor: '#fff',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
-  headerSection: {
-    minHeight: '12%',
-    maxHeight: '12%',
-    backgroundColor: '#e8e8e8',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  alertIcon: {
-    position: 'absolute',
-    top: 7,
-    left: 5,
-  },
-  closeIcon: {
-    position: 'absolute',
-    top: 7,
-    right: 15,
-  },
-  headerText: {
-    position: 'absolute',
-    top: 3,
-    left: 50,
-    fontSize: 35,
-    color: '#000',
+  container: {
+    flex: 1,
+    alignItems: 'center',
   },
   messageSection: {
-    minHeight: '73%',
-    maxHeight: '73%',
-    backgroundColor: '#fff',
     alignItems: 'center',
   },
   message: {
     fontSize: 22,
-  },
-  buttonSection: {
-    minHeight: '15%',
-    maxHeight: '15%',
-    backgroundColor: '#e8e8e8',
-    justifyContent: 'center',
-  },
-  cancelButton: {
-    minWidth: 100,
-    maxWidth: 100,
-    minHeight: 40,
-    maxHeight: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    position: 'absolute',
-    right: 125,
-  },
-  confirmButton: {
-    minWidth: 100,
-    maxWidth: 100,
-    minHeight: 40,
-    maxHeight: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    position: 'absolute',
-    right: 15,
   },
   exerciseDropdown: {
     flex: 1,
@@ -292,6 +219,23 @@ const styles = StyleSheet.create({
   dropdown1RowTxtStyle: {
     color: '#444',
     textAlign: 'left',
+  },
+  saveButtonSection: {
+    flex: 3,
+    minHeight: 110,
+    maxHeight: 110,
+    paddingVertical: 30,
+  },
+  addButton: {
+    flex: 2,
+    alignSelf: 'flex-end',
+    minWidth: 350,
+    maxWidth: 350,
+    minHeight: 50,
+    maxHeight: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#909090',
   },
 });
 

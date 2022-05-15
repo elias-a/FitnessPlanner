@@ -9,11 +9,8 @@ import ExerciseList from '../ExerciseList/SplitExerciseList';
 import ColorPickerModal from '../Modals/ColorPicker';
 import RandomizeExercises from '../Modals/RandomizeExercises';
 import AddSplitExerciseModal from '../Modals/AddSplitExercise';
-import ErrorModal from '../Modals/Error';
-import ConfirmModal from '../Modals/Confirm';
 import type { Split, SplitExercise } from '../../types/split';
 import type { CalendarRange } from '../../types/calendar';
-import { checkDateOverlap } from '../../utils/checkDateOverlap';
 import { createSplit } from '../../slices/split';
 import { buildSplit, selectExercises } from '../../algorithms/buildSplit';
 import uuid from 'react-native-uuid';
@@ -43,7 +40,6 @@ const SplitModal: React.FC<SplitModalProps> = ({
   }>({});
   const [color, setColor] = React.useState('#000');
   const [isColorPickerOpen, setIsColorPickerOpen] = React.useState(false);
-  const [existingSplit, setExistingSplit] = React.useState<Split | undefined>();
   const [finalizedDays, setFinalizedDays] = React.useState<{
     [key: string]: string;
   }>({});
@@ -51,8 +47,6 @@ const SplitModal: React.FC<SplitModalProps> = ({
     React.useState(false);
   const [isAddSplitExerciseOpen, setIsAddSplitExerciseOpen] =
     React.useState(false);
-  const [error, setError] = React.useState('');
-  const [confirm, setConfirm] = React.useState('');
   const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
   const [exerciseToEdit, setExerciseToEdit] = React.useState<SplitExercise>();
   const { exercises } = useAppSelector(state => state.exercise);
@@ -72,14 +66,6 @@ const SplitModal: React.FC<SplitModalProps> = ({
 
     setRanges(newRanges);
   }, [splits]);
-
-  const loadSplit = (split: Split) => {
-    setStartDate(new Date(split.startDate));
-    setEndDate(new Date(split.endDate));
-    setSelectedCategories(split.categories);
-    setSplitExercises(split.exercises);
-    setColor(split.color);
-  };
 
   const initializeCategories = () => {
     const newCategories: { [key: string]: string[] } = {};
@@ -142,15 +128,6 @@ const SplitModal: React.FC<SplitModalProps> = ({
     );
 
     onCancel();
-  };
-
-  const editSplit = () => {
-    if (existingSplit) {
-      loadSplit(existingSplit);
-      setConfirm('');
-    } else {
-      setError('No overlapping split found');
-    }
   };
 
   const selectColor = (newColor: string) => {
@@ -220,246 +197,212 @@ const SplitModal: React.FC<SplitModalProps> = ({
   };
 
   return (
-    <React.Fragment>
-      <Modal isOpen={isOpen} close={onCancel}>
-        <View style={styles.modal}>
-          <View style={styles.header}>
-            <View style={styles.closeIcon}>
-              <Pressable onPress={onCancel}>
+    <Modal isOpen={isOpen} close={onCancel}>
+      <View style={styles.modal}>
+        <View style={styles.header}>
+          <View style={styles.closeIcon}>
+            <Pressable onPress={onCancel}>
+              <MaterialCommunityIcons
+                name={'window-close'}
+                size={32}
+                color={'#000'}
+              />
+            </Pressable>
+          </View>
+
+          <View style={styles.leftIcon}>
+            {page === 1 && (
+              <Pressable onPress={() => setIsColorPickerOpen(true)}>
                 <MaterialCommunityIcons
-                  name={'window-close'}
+                  name={'palette-outline'}
                   size={32}
                   color={'#000'}
                 />
               </Pressable>
-            </View>
-
-            <View style={styles.leftIcon}>
-              {page === 1 && (
-                <Pressable onPress={() => setIsColorPickerOpen(true)}>
-                  <MaterialCommunityIcons
-                    name={'palette-outline'}
-                    size={32}
-                    color={'#000'}
-                  />
-                </Pressable>
-              )}
-              {page === 2 && (
-                <Pressable onPress={() => setPage(1)}>
-                  <MaterialCommunityIcons
-                    name={'chevron-left'}
-                    size={32}
-                    color={'#000'}
-                  />
-                </Pressable>
-              )}
-            </View>
-          </View>
-
-          <View style={styles.container}>
-            {page === 1 && (
-              <View style={styles.viewContainer}>
-                <Calendar
-                  startDate={startDate}
-                  endDate={endDate}
-                  setStartDate={setStartDate}
-                  setEndDate={setEndDate}
-                  ranges={ranges}
-                  color={color}
-                />
-
-                <View
-                  style={{
-                    flex: 2,
-                    justifyContent: 'flex-end',
-                    minHeight: 102,
-                    maxHeight: 102,
-                    marginBottom: 35,
-                  }}
-                >
-                  <Pressable
-                    onPress={() => {
-                      if (!startDate || !endDate) {
-                        setError('Select a start and end date');
-                        return;
-                      }
-
-                      const overlappingSplit = checkDateOverlap(
-                        startDate,
-                        endDate,
-                        splits,
-                      );
-                      if (overlappingSplit && !editing) {
-                        setExistingSplit(overlappingSplit);
-                        setConfirm(
-                          "The dates you've selected overlap an existing split. Would you like to edit that split now?",
-                        );
-                        return;
-                      }
-
-                      if (Object.keys(selectedCategories).length === 0) {
-                        initializeCategories();
-                      }
-                      next();
-                    }}
-                    style={styles.fullWidthButton}
-                  >
-                    <Text style={{ fontSize: 20 }}>{'Continue'}</Text>
-                  </Pressable>
-                </View>
-              </View>
             )}
             {page === 2 && (
-              <View style={styles.viewContainer}>
-                <View
-                  style={{
-                    flex: 1,
-                    minHeight: 70,
-                    maxHeight: 70,
-                    paddingTop: 10,
-                  }}
-                >
-                  <ScrollableDays
-                    numDays={7}
-                    colors={finalizedDays}
-                    selectedDay={selectedDay}
-                    setSelectedDay={day => setSelectedDay(day)}
-                    flatListRef={flatListRef}
-                  />
-                </View>
-
-                <View
-                  style={{
-                    flex: 3,
-                    alignItems: 'center',
-                    minHeight: 70,
-                    maxHeight: 70,
-                    paddingVertical: 20,
-                  }}
-                >
-                  <View
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      minWidth: '100%',
-                      maxWidth: '100%',
-                      minHeight: '100%',
-                      maxHeight: '100%',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 24,
-                        fontWeight: '700',
-                        flex: 1,
-                        marginLeft: 10,
-                      }}
-                    >
-                      {'Exercises'}
-                    </Text>
-                    <Pressable
-                      onPress={() => setIsRandomizeExercisesOpen(true)}
-                      style={{
-                        flex: 3,
-                        minWidth: 32,
-                        maxWidth: 32,
-                        minHeight: '100%',
-                        maxHeight: '100%',
-                      }}
-                    >
-                      <MaterialCommunityIcons
-                        name={'dice-multiple'}
-                        size={32}
-                        color={'#000'}
-                      />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => setIsAddSplitExerciseOpen(true)}
-                      style={{
-                        flex: 2,
-                        minWidth: 32,
-                        maxWidth: 32,
-                        minHeight: '100%',
-                        maxHeight: '100%',
-                      }}
-                    >
-                      <MaterialCommunityIcons
-                        name={'plus'}
-                        size={32}
-                        color={'#000'}
-                      />
-                    </Pressable>
-                  </View>
-                </View>
-
-                <View style={{ flex: 4, paddingVertical: 10 }}>
-                  {Object.keys(splitExercises).includes(
-                    selectedDay.toString(),
-                  ) && (
-                    <ExerciseList
-                      exercises={splitExercises[selectedDay]}
-                      editExercise={item => editExercise(item)}
-                      removeExercise={item => removeExercise(item)}
-                    />
-                  )}
-                </View>
-
-                <View
-                  style={{
-                    flex: 5,
-                    justifyContent: 'flex-end',
-                    minHeight: 102,
-                    maxHeight: 102,
-                    marginBottom: 35,
-                  }}
-                >
-                  <Pressable
-                    onPress={finalizeDay}
-                    style={styles.fullWidthButton}
-                  >
-                    <Text style={{ fontSize: 20 }}>{'Finalize Day'}</Text>
-                  </Pressable>
-                  <Pressable onPress={start} style={styles.fullWidthButton}>
-                    <Text style={{ fontSize: 20 }}>{'Create Split'}</Text>
-                  </Pressable>
-                </View>
-              </View>
+              <Pressable onPress={() => setPage(1)}>
+                <MaterialCommunityIcons
+                  name={'chevron-left'}
+                  size={32}
+                  color={'#000'}
+                />
+              </Pressable>
             )}
           </View>
         </View>
 
-        <ErrorModal
-          isOpen={!!error}
-          onClose={() => setError('')}
-          message={error}
-        />
-        <ConfirmModal
-          isOpen={!!confirm}
-          onCancel={() => setConfirm('')}
-          onConfirm={editSplit}
-          message={confirm}
-        />
-        <ColorPickerModal
-          isOpen={isColorPickerOpen}
-          onCancel={() => setIsColorPickerOpen(false)}
-          onSelect={newColor => selectColor(newColor)}
-          color={color}
-        />
-        <RandomizeExercises
-          isOpen={isRandomizeExercisesOpen}
-          onCancel={() => setIsRandomizeExercisesOpen(false)}
-          onRandomize={handleRandomizeClose}
-          onCategoriesSelection={changeSelectedItems}
-          selectedCategories={selectedCategories[selectedDay]}
-        />
-        <AddSplitExerciseModal
-          isOpen={isAddSplitExerciseOpen}
-          onCancel={() => closeAddSplitExerciseModal()}
-          onAdd={newSplitExercise => chooseExercise(newSplitExercise)}
-          initialSplitExercise={exerciseToEdit}
-        />
-      </Modal>
-    </React.Fragment>
+        <View style={styles.container}>
+          {page === 1 && (
+            <View style={styles.viewContainer}>
+              <Calendar
+                startDate={startDate}
+                endDate={endDate}
+                setStartDate={setStartDate}
+                setEndDate={setEndDate}
+                ranges={ranges}
+                color={color}
+              />
+
+              <View
+                style={{
+                  flex: 2,
+                  justifyContent: 'flex-end',
+                  minHeight: 102,
+                  maxHeight: 102,
+                  marginBottom: 35,
+                }}
+              >
+                <Pressable
+                  onPress={() => {
+                    if (Object.keys(selectedCategories).length === 0) {
+                      initializeCategories();
+                    }
+                    next();
+                  }}
+                  style={styles.fullWidthButton}
+                >
+                  <Text style={{ fontSize: 20 }}>{'Continue'}</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+          {page === 2 && (
+            <View style={styles.viewContainer}>
+              <View
+                style={{
+                  flex: 1,
+                  minHeight: 70,
+                  maxHeight: 70,
+                  paddingTop: 10,
+                }}
+              >
+                <ScrollableDays
+                  numDays={7}
+                  colors={finalizedDays}
+                  selectedDay={selectedDay}
+                  setSelectedDay={day => setSelectedDay(day)}
+                  flatListRef={flatListRef}
+                />
+              </View>
+
+              <View
+                style={{
+                  flex: 3,
+                  alignItems: 'center',
+                  minHeight: 70,
+                  maxHeight: 70,
+                  paddingVertical: 20,
+                }}
+              >
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    minWidth: '100%',
+                    maxWidth: '100%',
+                    minHeight: '100%',
+                    maxHeight: '100%',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 24,
+                      fontWeight: '700',
+                      flex: 1,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {'Exercises'}
+                  </Text>
+                  <Pressable
+                    onPress={() => setIsRandomizeExercisesOpen(true)}
+                    style={{
+                      flex: 3,
+                      minWidth: 32,
+                      maxWidth: 32,
+                      minHeight: '100%',
+                      maxHeight: '100%',
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name={'dice-multiple'}
+                      size={32}
+                      color={'#000'}
+                    />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => setIsAddSplitExerciseOpen(true)}
+                    style={{
+                      flex: 2,
+                      minWidth: 32,
+                      maxWidth: 32,
+                      minHeight: '100%',
+                      maxHeight: '100%',
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name={'plus'}
+                      size={32}
+                      color={'#000'}
+                    />
+                  </Pressable>
+                </View>
+              </View>
+
+              <View style={{ flex: 4, paddingVertical: 10 }}>
+                {Object.keys(splitExercises).includes(
+                  selectedDay.toString(),
+                ) && (
+                  <ExerciseList
+                    exercises={splitExercises[selectedDay]}
+                    editExercise={item => editExercise(item)}
+                    removeExercise={item => removeExercise(item)}
+                  />
+                )}
+              </View>
+
+              <View
+                style={{
+                  flex: 5,
+                  justifyContent: 'flex-end',
+                  minHeight: 102,
+                  maxHeight: 102,
+                  marginBottom: 35,
+                }}
+              >
+                <Pressable onPress={finalizeDay} style={styles.fullWidthButton}>
+                  <Text style={{ fontSize: 20 }}>{'Finalize Day'}</Text>
+                </Pressable>
+                <Pressable onPress={start} style={styles.fullWidthButton}>
+                  <Text style={{ fontSize: 20 }}>{'Create Split'}</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+        </View>
+      </View>
+
+      <ColorPickerModal
+        isOpen={isColorPickerOpen}
+        onCancel={() => setIsColorPickerOpen(false)}
+        onSelect={newColor => selectColor(newColor)}
+        color={color}
+      />
+      <RandomizeExercises
+        isOpen={isRandomizeExercisesOpen}
+        onCancel={() => setIsRandomizeExercisesOpen(false)}
+        onRandomize={handleRandomizeClose}
+        onCategoriesSelection={changeSelectedItems}
+        selectedCategories={selectedCategories[selectedDay]}
+      />
+      <AddSplitExerciseModal
+        isOpen={isAddSplitExerciseOpen}
+        onCancel={() => closeAddSplitExerciseModal()}
+        onAdd={newSplitExercise => chooseExercise(newSplitExercise)}
+        initialSplitExercise={exerciseToEdit}
+      />
+    </Modal>
   );
 };
 
