@@ -5,16 +5,43 @@ import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { deleteSplit } from '../../slices/split';
+import { createSplit } from '../../slices/split';
+import { buildSplit } from '../../algorithms/buildSplit';
 import ScrollableList from '../ScrollableList';
 import SplitModal from '../Modals/Split';
 import { formatDate } from '../../utils/formatDate';
+import type { Split } from '../../types/split';
 
 type ViewSplitsProps = NativeStackScreenProps<Stack, 'ViewSplits'>;
 
 const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
   const [isSplitOpen, setIsSplitOpen] = React.useState(false);
+  const [selectedSplit, setSelectedSplit] = React.useState<Split>();
   const { splits } = useAppSelector(state => state.split);
+  const { exercises } = useAppSelector(state => state.exercise);
   const dispatch = useAppDispatch();
+
+  const handleEdit = (split: Split) => {
+    setSelectedSplit(split);
+    setIsSplitOpen(true);
+  };
+
+  const saveSplit = (split: Split, editing: boolean) => {
+    if (Object.keys(split.exercises).length === 0) {
+      const selectedExercises = buildSplit(split, exercises);
+      split.exercises = selectedExercises;
+    }
+
+    dispatch(
+      createSplit({
+        split: split,
+        editing: editing,
+      }),
+    );
+
+    setSelectedSplit(undefined);
+    setIsSplitOpen(false);
+  };
 
   return (
     <ScrollableList
@@ -25,8 +52,8 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
         <SplitModal
           isOpen={isSplitOpen}
           onCancel={() => setIsSplitOpen(false)}
-          onSave={() => {}}
-          editing={false}
+          onSave={saveSplit}
+          selectedSplit={selectedSplit}
         />
       }
     >
@@ -41,14 +68,7 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
               </Text>
             </View>
             <View style={styles.editSection}>
-              <Pressable
-                onPress={() =>
-                  navigation.navigate({
-                    name: 'StartSplit',
-                    params: { split: split },
-                  })
-                }
-              >
+              <Pressable onPress={() => handleEdit(split)}>
                 <MaterialCommunityIcons
                   name={'pencil'}
                   size={32}

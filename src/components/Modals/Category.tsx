@@ -13,16 +13,24 @@ interface CategoryModalProps {
   isOpen: boolean;
   onCancel: () => void;
   onSave: (category: Category, editing: boolean) => void;
-  editing: boolean;
+  selectedCategory?: Category;
 }
 
 const CategoryModal: React.FC<CategoryModalProps> = ({
   isOpen,
   onCancel,
   onSave,
-  editing,
+  selectedCategory,
 }) => {
   const [category, setCategory] = React.useState(initialCategory);
+
+  React.useEffect(() => {
+    if (selectedCategory) {
+      setCategory({ ...selectedCategory });
+    } else {
+      setCategory({ ...initialCategory });
+    }
+  }, [isOpen, selectedCategory]);
 
   const updateCategory = <T,>(name: string, value: T) => {
     setCategory(prevState => ({
@@ -37,7 +45,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   };
 
   const handleSave = () => {
-    onSave(category, editing);
+    onSave(category, !!selectedCategory);
     setCategory(initialCategory);
   };
 

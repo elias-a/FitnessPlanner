@@ -1,11 +1,9 @@
 import React from 'react';
 import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Modal from './Modal';
-import SelectDropdown from 'react-native-select-dropdown';
+import MultiSelect from '../MultiSelect';
 import { useAppSelector } from '../../hooks';
 import type { Exercise } from '../../types/exercise';
-import type { Category } from '../../types/category';
 
 const initialExercise: Exercise = {
   id: '',
@@ -17,17 +15,25 @@ interface ExerciseModalProps {
   isOpen: boolean;
   onCancel: () => void;
   onSave: (exercise: Exercise, editing: boolean) => void;
-  editing: boolean;
+  selectedExercise?: Exercise;
 }
 
 const ExerciseModal: React.FC<ExerciseModalProps> = ({
   isOpen,
   onCancel,
   onSave,
-  editing,
+  selectedExercise,
 }) => {
   const [exercise, setExercise] = React.useState(initialExercise);
   const { categories } = useAppSelector(state => state.category);
+
+  React.useEffect(() => {
+    if (selectedExercise) {
+      setExercise({ ...selectedExercise });
+    } else {
+      setExercise({ ...initialExercise });
+    }
+  }, [isOpen, selectedExercise]);
 
   const updateExercise = <T,>(name: string, value: T) => {
     setExercise(prevState => ({
@@ -42,12 +48,12 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({
   };
 
   const handleSave = () => {
-    onSave(exercise, editing);
+    onSave(exercise, !!selectedExercise);
     setExercise(initialExercise);
   };
 
   return (
-    <Modal isOpen={isOpen} close={handleCancel} swipeDirection={'down'}>
+    <Modal isOpen={isOpen} close={handleCancel} swipeDirection="down">
       <View style={styles.modal}>
         <View style={styles.container}>
           <View style={styles.textInputSection}>
@@ -60,29 +66,15 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({
           </View>
 
           <View style={styles.multiSelectSection}>
-            <SelectDropdown
-              data={categories}
-              defaultButtonText={'Select category...'}
-              buttonTextAfterSelection={item => item.name}
-              rowTextForSelection={item => item.name}
-              onSelect={(selectedCategory: Category) =>
-                updateExercise('categories', [selectedCategory.id])
+            <MultiSelect
+              items={categories}
+              selectedItems={exercise.categories}
+              onSelectedItemsChange={newCategories =>
+                updateExercise('categories', newCategories)
               }
-              buttonStyle={styles.dropdown1BtnStyle}
-              buttonTextStyle={styles.dropdown1BtnTxtStyle}
-              renderDropdownIcon={isOpened => {
-                return (
-                  <FontAwesome
-                    name={isOpened ? 'chevron-up' : 'chevron-down'}
-                    color={'#444'}
-                    size={18}
-                  />
-                );
-              }}
-              dropdownIconPosition={'right'}
-              dropdownStyle={styles.dropdown1DropdownStyle}
-              rowStyle={styles.dropdown1RowStyle}
-              rowTextStyle={styles.dropdown1RowTxtStyle}
+              isSingle={false}
+              subKey={'subCategories'}
+              selectText={'Choose categories...'}
             />
           </View>
 
@@ -101,8 +93,8 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
     bottom: 0,
-    minHeight: '60%',
-    maxHeight: '60%',
+    minHeight: '65%',
+    maxHeight: '65%',
     minWidth: '100%',
     maxWidth: '100%',
     backgroundColor: '#fff',
@@ -131,8 +123,8 @@ const styles = StyleSheet.create({
   multiSelectSection: {
     flex: 2,
     paddingTop: 30,
-    minHeight: 70,
-    maxHeight: 70,
+    minHeight: 135,
+    maxHeight: 135,
   },
   saveButtonSection: {
     flex: 3,
@@ -150,33 +142,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#909090',
-  },
-
-  dropdown1BtnStyle: {
-    padding: 0,
-    margin: 0,
-    minWidth: 300,
-    maxWidth: 300,
-    minHeight: 40,
-    maxHeight: 40,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#444',
-  },
-  dropdown1BtnTxtStyle: {
-    color: '#444',
-    textAlign: 'left',
-  },
-  dropdown1DropdownStyle: {
-    backgroundColor: '#efefef',
-  },
-  dropdown1RowStyle: {
-    backgroundColor: '#efefef',
-    borderBottomColor: '#c5c5c5',
-  },
-  dropdown1RowTxtStyle: {
-    color: '#444',
-    textAlign: 'left',
   },
 });
 

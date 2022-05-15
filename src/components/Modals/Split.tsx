@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, FlatList } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useAppSelector, useAppDispatch } from '../../hooks';
+import { useAppSelector } from '../../hooks';
+import { selectExercises } from '../../algorithms/buildSplit';
 import Modal from './Modal';
 import Calendar from '../Calendar/CalendarRange';
 import ScrollableDays, { dayWidth } from '../ScrollableWeek/ScrollableDays';
@@ -11,22 +12,22 @@ import RandomizeExercises from '../Modals/RandomizeExercises';
 import AddSplitExerciseModal from '../Modals/AddSplitExercise';
 import type { Split, SplitExercise } from '../../types/split';
 import type { CalendarRange } from '../../types/calendar';
-import { createSplit } from '../../slices/split';
-import { buildSplit, selectExercises } from '../../algorithms/buildSplit';
 import uuid from 'react-native-uuid';
+
+const initialColor = '#909090';
 
 interface SplitModalProps {
   isOpen: boolean;
   onCancel: () => void;
   onSave: (split: Split, editing: boolean) => void;
-  editing: boolean;
+  selectedSplit?: Split;
 }
 
 const SplitModal: React.FC<SplitModalProps> = ({
   isOpen,
   onCancel,
   onSave,
-  editing,
+  selectedSplit,
 }) => {
   const [page, setPage] = React.useState(1);
   const [startDate, setStartDate] = React.useState<Date | undefined>();
@@ -38,7 +39,7 @@ const SplitModal: React.FC<SplitModalProps> = ({
   const [splitExercises, setSplitExercises] = React.useState<{
     [key: string]: SplitExercise[];
   }>({});
-  const [color, setColor] = React.useState('#000');
+  const [color, setColor] = React.useState(initialColor);
   const [isColorPickerOpen, setIsColorPickerOpen] = React.useState(false);
   const [finalizedDays, setFinalizedDays] = React.useState<{
     [key: string]: string;
@@ -51,9 +52,28 @@ const SplitModal: React.FC<SplitModalProps> = ({
   const [exerciseToEdit, setExerciseToEdit] = React.useState<SplitExercise>();
   const { exercises } = useAppSelector(state => state.exercise);
   const { splits } = useAppSelector(state => state.split);
-  const dispatch = useAppDispatch();
   const flatListRef: React.RefObject<FlatList<number>> | undefined | null =
     React.createRef();
+
+  React.useEffect(() => {
+    if (selectedSplit) {
+      setStartDate(new Date(selectedSplit.startDate));
+      setEndDate(new Date(selectedSplit.endDate));
+      setSelectedCategories({ ...selectedSplit.categories });
+      setSplitExercises({ ...selectedSplit.exercises });
+      setColor(selectedSplit.color);
+    } else {
+      setStartDate(undefined);
+      setEndDate(undefined);
+      setSelectedCategories({});
+      setSplitExercises({});
+      setColor(initialColor);
+    }
+
+    setPage(1);
+    setSelectedDay(1);
+    setFinalizedDays({});
+  }, [isOpen, selectedSplit]);
 
   React.useEffect(() => {
     const newRanges: CalendarRange[] = splits.map(split => {
@@ -101,33 +121,15 @@ const SplitModal: React.FC<SplitModalProps> = ({
   };
 
   const start = () => {
-    // TODO: FIX
-    const id = uuid.v4().toString();
-
     const newSplit: Split = {
-      id: id,
+      id: selectedSplit ? selectedSplit.id : uuid.v4().toString(),
       startDate: startDate ? startDate.toString() : '',
       endDate: endDate ? endDate.toString() : '',
       categories: selectedCategories,
-      exercises: {},
+      exercises: Object.keys(splitExercises).length > 0 ? splitExercises : {},
       color: color,
     };
-
-    if (Object.keys(splitExercises).length > 0) {
-      newSplit.exercises = splitExercises;
-    } else {
-      const selectedExercises = buildSplit(newSplit, exercises);
-      newSplit.exercises = selectedExercises;
-    }
-
-    dispatch(
-      createSplit({
-        split: newSplit,
-        editing: editing,
-      }),
-    );
-
-    onCancel();
+    onSave(newSplit, !!selectedSplit);
   };
 
   const selectColor = (newColor: string) => {
@@ -375,7 +377,7 @@ const SplitModal: React.FC<SplitModalProps> = ({
                   <Text style={{ fontSize: 20 }}>{'Finalize Day'}</Text>
                 </Pressable>
                 <Pressable onPress={start} style={styles.fullWidthButton}>
-                  <Text style={{ fontSize: 20 }}>{'Create Split'}</Text>
+                  <Text style={{ fontSize: 20 }}>{'Finalize Split'}</Text>
                 </Pressable>
               </View>
             </View>

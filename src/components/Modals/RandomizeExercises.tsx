@@ -40,7 +40,7 @@ const RandomizeExercises: React.FC<RandomizeExercisesProps> = ({
 
           <View style={styles.saveButtonSection}>
             <Pressable onPress={onRandomize} style={styles.addButton}>
-              <Text style={{ fontSize: 20 }}>{'Save'}</Text>
+              <Text style={{ fontSize: 20 }}>{'Randomize'}</Text>
             </Pressable>
           </View>
         </View>

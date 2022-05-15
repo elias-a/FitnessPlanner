@@ -68,7 +68,7 @@ export const splitSplice = createSlice({
           }
         });
       } else {
-        state.splits.push(newSplit);
+        state.splits.push({ ...newSplit });
       }
 
       const today = new Date();

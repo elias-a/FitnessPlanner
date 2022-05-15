@@ -14,8 +14,14 @@ type ViewExercisesProps = NativeStackScreenProps<Stack, 'ViewExercises'>;
 
 const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
   const [isExerciseOpen, setIsExerciseOpen] = React.useState(false);
+  const [selectedExercise, setSelectedExercise] = React.useState<Exercise>();
   const { exercises } = useAppSelector(state => state.exercise);
   const dispatch = useAppDispatch();
+
+  const handleEdit = (exercise: Exercise) => {
+    setSelectedExercise(exercise);
+    setIsExerciseOpen(true);
+  };
 
   const saveExercise = (exercise: Exercise, editing: boolean) => {
     dispatch(
@@ -42,7 +48,7 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
           isOpen={isExerciseOpen}
           onCancel={() => setIsExerciseOpen(false)}
           onSave={saveExercise}
-          editing={false}
+          selectedExercise={selectedExercise}
         />
       }
     >
@@ -53,7 +59,7 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
               <Text style={styles.exerciseName}>{exercise.name}</Text>
             </View>
             <View style={styles.editSection}>
-              <Pressable onPress={() => {}}>
+              <Pressable onPress={() => handleEdit(exercise)}>
                 <MaterialCommunityIcons
                   name={'pencil'}
                   size={32}

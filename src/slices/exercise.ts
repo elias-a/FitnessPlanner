@@ -33,7 +33,7 @@ export const exerciseSlice = createSlice({
           }
         });
       } else {
-        state.exercises.push(newExercise);
+        state.exercises.push({ ...newExercise });
       }
     },
     deleteExercise: (state, action: { payload: Exercise }) => {

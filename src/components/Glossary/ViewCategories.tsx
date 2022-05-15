@@ -15,8 +15,14 @@ type ViewCategoriesProps = NativeStackScreenProps<Stack, 'ViewExercises'>;
 
 const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
   const [isCategoryOpen, setIsCategoryOpen] = React.useState(false);
+  const [selectedCategory, setSelectedCategory] = React.useState<Category>();
   const { categories } = useAppSelector(state => state.category);
   const dispatch = useAppDispatch();
+
+  const handleEdit = (category: Category) => {
+    setSelectedCategory(category);
+    setIsCategoryOpen(true);
+  };
 
   const saveCategory = (category: Category, editing: boolean) => {
     dispatch(
@@ -43,7 +49,7 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
           isOpen={isCategoryOpen}
           onCancel={() => setIsCategoryOpen(false)}
           onSave={saveCategory}
-          editing={false}
+          selectedCategory={selectedCategory}
         />
       }
     >
@@ -54,7 +60,7 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
               <Text style={styles.categoryName}>{category.name}</Text>
             </View>
             <View style={styles.editSection}>
-              <Pressable onPress={() => {}}>
+              <Pressable onPress={() => handleEdit(category)}>
                 <MaterialCommunityIcons
                   name={'pencil'}
                   size={32}

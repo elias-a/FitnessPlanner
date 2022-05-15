@@ -33,7 +33,7 @@ export const categorySlice = createSlice({
           }
         });
       } else {
-        state.categories.push(newCategory);
+        state.categories.push({ ...newCategory });
       }
     },
     deleteCategory: (state, action: { payload: Category }) => {
