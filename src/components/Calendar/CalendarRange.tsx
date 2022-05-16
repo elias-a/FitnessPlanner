@@ -239,7 +239,7 @@ const CalendarRange: React.FC<CalendarRangeProps> = ({
           index,
         })}
         bounces={false}
-        extraData={[startDate, endDate]}
+        extraData={[startDate, endDate, color]}
         ref={flatListRef}
       />
     </View>

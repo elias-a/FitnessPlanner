@@ -76,16 +76,20 @@ const SplitModal: React.FC<SplitModalProps> = ({
   }, [isOpen, selectedSplit]);
 
   React.useEffect(() => {
-    const newRanges: CalendarRange[] = splits.map(split => {
-      return {
-        startRange: new Date(split.startDate),
-        endRange: new Date(split.endDate),
-        color: split.color,
-      };
+    const id = selectedSplit ? selectedSplit.id : '';
+    const newRanges: CalendarRange[] = [];
+    splits.forEach(split => {
+      if (id !== split.id) {
+        newRanges.push({
+          startRange: new Date(split.startDate),
+          endRange: new Date(split.endDate),
+          color: split.color,
+        });
+      }
     });
 
     setRanges(newRanges);
-  }, [splits]);
+  }, [selectedSplit, splits]);
 
   const initializeCategories = () => {
     const newCategories: { [key: string]: string[] } = {};
