@@ -36,7 +36,12 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
       }),
     );
 
+    closeCategoryModal();
+  };
+
+  const closeCategoryModal = () => {
     setIsCategoryOpen(false);
+    setSelectedCategory(undefined);
   };
 
   return (
@@ -47,7 +52,7 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
       modal={
         <CategoryModal
           isOpen={isCategoryOpen}
-          onCancel={() => setIsCategoryOpen(false)}
+          onCancel={closeCategoryModal}
           onSave={saveCategory}
           selectedCategory={selectedCategory}
         />

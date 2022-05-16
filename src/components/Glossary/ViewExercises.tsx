@@ -35,7 +35,12 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
       }),
     );
 
+    closeExerciseModal();
+  };
+
+  const closeExerciseModal = () => {
     setIsExerciseOpen(false);
+    setSelectedExercise(undefined);
   };
 
   return (
@@ -46,7 +51,7 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
       modal={
         <ExerciseModal
           isOpen={isExerciseOpen}
-          onCancel={() => setIsExerciseOpen(false)}
+          onCancel={closeExerciseModal}
           onSave={saveExercise}
           selectedExercise={selectedExercise}
         />

@@ -39,8 +39,12 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
       }),
     );
 
-    setSelectedSplit(undefined);
+    closeSplitModal();
+  };
+
+  const closeSplitModal = () => {
     setIsSplitOpen(false);
+    setSelectedSplit(undefined);
   };
 
   return (
@@ -51,7 +55,7 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
       modal={
         <SplitModal
           isOpen={isSplitOpen}
-          onCancel={() => setIsSplitOpen(false)}
+          onCancel={closeSplitModal}
           onSave={saveSplit}
           selectedSplit={selectedSplit}
         />
