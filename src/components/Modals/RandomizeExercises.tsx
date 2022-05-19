@@ -38,8 +38,16 @@ const RandomizeExercises: React.FC<RandomizeExercisesProps> = ({
             </View>
           </View>
 
-          <View style={styles.saveButtonSection}>
-            <Pressable onPress={onRandomize} style={styles.addButton}>
+          <View
+            style={{
+              flex: 5,
+              justifyContent: 'flex-end',
+              minHeight: 102,
+              maxHeight: 102,
+              marginBottom: 35,
+            }}
+          >
+            <Pressable onPress={onRandomize} style={styles.fullWidthButton}>
               <Text style={{ fontSize: 20 }}>{'Randomize'}</Text>
             </Pressable>
           </View>
@@ -53,8 +61,8 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
     bottom: 0,
-    minHeight: '55%',
-    maxHeight: '55%',
+    minHeight: '90%',
+    maxHeight: '90%',
     minWidth: '100%',
     maxWidth: '100%',
     backgroundColor: '#fff',
@@ -68,7 +76,7 @@ const styles = StyleSheet.create({
   messageSection: {
     flex: 1,
     alignItems: 'center',
-    maxHeight: 130,
+    minHeight: 130,
   },
   categorySelect: {
     flex: 1,
@@ -76,22 +84,13 @@ const styles = StyleSheet.create({
     minHeight: 40,
     maxHeight: 40,
   },
-  saveButtonSection: {
-    flex: 2,
-    minHeight: 110,
-    maxHeight: 110,
-    paddingVertical: 30,
-  },
-  addButton: {
-    flex: 2,
-    alignSelf: 'flex-end',
-    minWidth: 350,
-    maxWidth: 350,
-    minHeight: 50,
-    maxHeight: 50,
+  fullWidthButton: {
+    minWidth: '100%',
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#909090',
+    marginTop: 1,
   },
 });
 

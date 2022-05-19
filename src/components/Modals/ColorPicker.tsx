@@ -45,15 +45,21 @@ const ColorPickerModal: React.FC<ColorPickerModalProps> = ({
           />
         </View>
 
-        <View style={styles.container}>
-          <View style={styles.saveButtonSection}>
-            <Pressable
-              onPress={() => onSelect(fromHsv(selectedColor))}
-              style={styles.addButton}
-            >
-              <Text style={{ fontSize: 20 }}>{'Save'}</Text>
-            </Pressable>
-          </View>
+        <View
+          style={{
+            flex: 5,
+            justifyContent: 'flex-end',
+            minHeight: 102,
+            maxHeight: 102,
+            marginBottom: 35,
+          }}
+        >
+          <Pressable
+            onPress={() => onSelect(fromHsv(selectedColor))}
+            style={styles.fullWidthButton}
+          >
+            <Text style={{ fontSize: 20 }}>{'Save'}</Text>
+          </Pressable>
         </View>
       </View>
     </Modal>
@@ -64,8 +70,8 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
     bottom: 0,
-    minHeight: '80%',
-    maxHeight: '80%',
+    minHeight: '90%',
+    maxHeight: '90%',
     minWidth: '100%',
     maxWidth: '100%',
     backgroundColor: '#fff',
@@ -77,29 +83,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   colorPickerSection: {
-    minHeight: '75%',
-    maxHeight: '75%',
+    flex: 1,
     paddingTop: 50,
   },
   colorPicker: {
     flex: 1,
   },
-  saveButtonSection: {
-    flex: 3,
-    minHeight: 110,
-    maxHeight: 110,
-    paddingVertical: 30,
-  },
-  addButton: {
-    flex: 2,
-    alignSelf: 'flex-end',
-    minWidth: 350,
-    maxWidth: 350,
-    minHeight: 50,
-    maxHeight: 50,
+  fullWidthButton: {
+    minWidth: '100%',
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#909090',
+    marginTop: 1,
   },
 });
 

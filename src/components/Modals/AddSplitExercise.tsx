@@ -135,8 +135,16 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
             </View>
           </View>
 
-          <View style={styles.saveButtonSection}>
-            <Pressable onPress={handleAdd} style={styles.addButton}>
+          <View
+            style={{
+              flex: 5,
+              justifyContent: 'flex-end',
+              minHeight: 102,
+              maxHeight: 102,
+              marginBottom: 35,
+            }}
+          >
+            <Pressable onPress={handleAdd} style={styles.fullWidthButton}>
               <Text style={{ fontSize: 20 }}>{'Save'}</Text>
             </Pressable>
           </View>
@@ -150,8 +158,8 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
     bottom: 0,
-    minHeight: '70%',
-    maxHeight: '70%',
+    minHeight: '90%',
+    maxHeight: '90%',
     minWidth: '100%',
     maxWidth: '100%',
     backgroundColor: '#fff',
@@ -163,6 +171,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   messageSection: {
+    flex: 1,
     alignItems: 'center',
   },
   message: {
@@ -220,22 +229,13 @@ const styles = StyleSheet.create({
     color: '#444',
     textAlign: 'left',
   },
-  saveButtonSection: {
-    flex: 3,
-    minHeight: 110,
-    maxHeight: 110,
-    paddingVertical: 30,
-  },
-  addButton: {
-    flex: 2,
-    alignSelf: 'flex-end',
-    minWidth: 350,
-    maxWidth: 350,
-    minHeight: 50,
-    maxHeight: 50,
+  fullWidthButton: {
+    minWidth: '100%',
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#909090',
+    marginTop: 1,
   },
 });
 

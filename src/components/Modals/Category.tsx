@@ -62,8 +62,16 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
             />
           </View>
 
-          <View style={styles.saveButtonSection}>
-            <Pressable onPress={handleSave} style={styles.addButton}>
+          <View
+            style={{
+              flex: 5,
+              justifyContent: 'flex-end',
+              minHeight: 102,
+              maxHeight: 102,
+              marginBottom: 35,
+            }}
+          >
+            <Pressable onPress={handleSave} style={styles.fullWidthButton}>
               <Text style={{ fontSize: 20 }}>{'Save'}</Text>
             </Pressable>
           </View>
@@ -77,8 +85,8 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
     bottom: 0,
-    minHeight: '60%',
-    maxHeight: '60%',
+    minHeight: '90%',
+    maxHeight: '90%',
     minWidth: '100%',
     maxWidth: '100%',
     backgroundColor: '#fff',
@@ -93,7 +101,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 30,
     minHeight: 70,
-    maxHeight: 70,
   },
   textInput: {
     flex: 1,
@@ -153,6 +160,14 @@ const styles = StyleSheet.create({
   dropdown1RowTxtStyle: {
     color: '#444',
     textAlign: 'left',
+  },
+  fullWidthButton: {
+    minWidth: '100%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#909090',
+    marginTop: 1,
   },
 });
 
