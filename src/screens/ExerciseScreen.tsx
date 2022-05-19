@@ -15,6 +15,7 @@ type ExerciseScreenProps = BottomTabScreenProps<Tab, 'Exercises'>;
 const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [dayKey, setDayKey] = React.useState('');
+  const [splitId, setSplitId] = React.useState('');
   const [splitExercises, setSplitExercises] = React.useState<SplitExercise[]>(
     [],
   );
@@ -46,6 +47,7 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
 
     setSplitExercises(split.exercises[key]);
     setDayKey(key);
+    setSplitId(split.id);
   }, [splits, exercises, selectedDate]);
 
   const toggleIsCompleted = (id: string) => {
@@ -68,8 +70,11 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
 
     dispatch(
       updateExercises({
-        ...selectedDateSplit.exercises,
-        [dayKey]: updatedSplitExercises,
+        id: splitId,
+        splitExercises: {
+          ...selectedDateSplit.exercises,
+          [dayKey]: updatedSplitExercises,
+        },
       }),
     );
     setSplitExercises(updatedSplitExercises);

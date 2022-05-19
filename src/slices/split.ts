@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { Split, SplitExercise } from '../types/split';
+import type { Split, SplitExercises } from '../types/split';
 import {
   getSplits as getSplitsTask,
   createSplit as createSplitTask,
   deleteSplit as deleteSplitTask,
+  updateSplitExercises as updateSplitExercisesTask,
 } from '../models/tasks/split';
 
 const initialCurrentSplit: Split = {
@@ -88,11 +89,20 @@ export const splitSplice = createSlice({
     },
     updateExercises: (
       state,
-      action: { payload: { [key: string]: SplitExercise[] } },
+      action: { payload: { id: string; splitExercises: SplitExercises } },
     ) => {
-      const splitExercises = action.payload;
+      const { id, splitExercises } = action.payload;
+      const newSplitExercises = updateSplitExercisesTask(id, splitExercises);
 
-      state.currentSplit.exercises = splitExercises;
+      state.splits = state.splits.map(item => {
+        if (item.id === id) {
+          // Update current split as well.
+          state.currentSplit.exercises = { ...newSplitExercises };
+          return { ...item, exercises: { ...newSplitExercises } };
+        } else {
+          return { ...item };
+        }
+      });
     },
     deleteSplit: (state, action: { payload: Split }) => {
       const split = deleteSplitTask(action.payload);

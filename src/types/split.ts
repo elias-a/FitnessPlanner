@@ -5,8 +5,12 @@ export interface Split {
   startDate: string;
   endDate: string;
   categories: { [key: string]: string[] };
-  exercises: { [key: string]: SplitExercise[] };
+  exercises: SplitExercises;
   color: string;
+}
+
+export interface SplitExercises {
+  [key: string]: SplitExercise[];
 }
 
 export interface SplitExercise {

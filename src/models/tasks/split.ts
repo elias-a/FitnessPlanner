@@ -1,6 +1,7 @@
 import realm from '../realm';
 import type {
   Split,
+  SplitExercises,
   SplitExercise,
   StringArrayMap,
   SplitExerciseArrayMap,
@@ -39,28 +40,7 @@ export const createSplit = (split: Split, editing: boolean): Split => {
       },
     );
 
-    const splitExerciseArrayMap: SplitExerciseArrayMap[] = Object.keys(
-      split.exercises,
-    ).map(day => {
-      const splitExercises: SplitExercise[] = [];
-      split.exercises[day].forEach(splitExercise => {
-        const exerciseObject: Exercise | undefined = realm.objectForPrimaryKey(
-          'Exercise',
-          splitExercise.exercise.id,
-        );
-
-        if (exerciseObject) {
-          splitExercises.push({
-            ...splitExercise,
-            exercise: exerciseObject,
-          });
-        }
-      });
-      return {
-        key: day,
-        value: splitExercises,
-      };
-    });
+    const splitExerciseArrayMap = createSplitExerciseArray(split.exercises);
 
     const createdSplit: SplitObject = realm.create(
       // This seems to be an issue with `realm.create` types.
@@ -102,6 +82,55 @@ export const deleteSplit = (split: Split): Split => {
   return split;
 };
 
+export const updateSplitExercises = (
+  id: string,
+  splitExercises: SplitExercises,
+) => {
+  const updatedSplit: any = realm.write(() => {
+    const splitExerciseArray = createSplitExerciseArray(splitExercises);
+
+    const split = realm.create(
+      'Split',
+      {
+        id: id,
+        exercises: splitExerciseArray,
+      },
+      Realm.UpdateMode.Modified,
+    );
+
+    return split;
+  });
+
+  const { exercises } = convertSplit(updatedSplit);
+
+  return exercises;
+};
+
+const createSplitExerciseArray = (
+  splitExercises: SplitExercises,
+): SplitExerciseArrayMap[] => {
+  return Object.keys(splitExercises).map(day => {
+    const splitExercisesArray: SplitExercise[] = [];
+    splitExercises[day].forEach(splitExercise => {
+      const exerciseObject: Exercise | undefined = realm.objectForPrimaryKey(
+        'Exercise',
+        splitExercise.exercise.id,
+      );
+
+      if (exerciseObject) {
+        splitExercisesArray.push({
+          ...splitExercise,
+          exercise: exerciseObject,
+        });
+      }
+    });
+    return {
+      key: day,
+      value: splitExercisesArray,
+    };
+  });
+};
+
 const convertSplit = (split: SplitObject) => {
   const categories: { [key: string]: string[] } = {};
   const newStringArrayMap: StringArrayMap[] = parseJson(split.categories);
@@ -109,12 +138,12 @@ const convertSplit = (split: SplitObject) => {
     categories[key] = value;
   });
 
-  const exercises: { [key: string]: SplitExercise[] } = {};
+  const exercises: SplitExercises = {};
   const newSplitExerciseArrayMap: SplitExerciseArrayMap[] = parseJson(
     split.exercises,
   );
   newSplitExerciseArrayMap.forEach(({ key, value }) => {
-    exercises[key] = value;
+    exercises[key] = [...value];
   });
 
   return { categories, exercises };
