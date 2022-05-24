@@ -38,7 +38,9 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
               </Pressable>
               <View style={styles.exerciseDetails}>
                 <Text style={styles.exerciseName}>
-                  {exercise.exercise.name}
+                  {exercise.isSingleArm
+                    ? `Single Arm ${exercise.exercise.name}`
+                    : `${exercise.exercise.name}`}
                 </Text>
                 <Text style={styles.setsAndReps}>
                   {`${exercise.sets} x ${exercise.reps}`}

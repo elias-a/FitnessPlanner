@@ -34,6 +34,7 @@ export const buildSplit = (
             exercise: exercise,
             sets: 3,
             reps: 10,
+            isSingleArm: false,
             isCompleted: false,
           };
         },
@@ -72,6 +73,7 @@ export const selectExercises = (
       exercise: exercise,
       sets: 3,
       reps: 10,
+      isSingleArm: false,
       isCompleted: false,
     };
   });

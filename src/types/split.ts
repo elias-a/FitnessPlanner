@@ -18,6 +18,7 @@ export interface SplitExercise {
   exercise: Exercise;
   sets: number;
   reps: number;
+  isSingleArm: boolean;
   isCompleted: boolean;
 }
 

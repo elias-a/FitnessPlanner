@@ -26,6 +26,7 @@ export const SplitExercise: Realm.ObjectSchema = {
     exercise: 'Exercise',
     sets: 'int',
     reps: 'int',
+    isSingleArm: 'bool',
     isCompleted: 'bool',
   },
 };

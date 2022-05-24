@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown';
 import Modal from './Modal';
@@ -25,6 +26,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
   const [exercise, setExercise] = React.useState<Exercise | undefined>();
   const [sets, setSets] = React.useState(0);
   const [reps, setReps] = React.useState(0);
+  const [isSingleArm, setIsSingleArm] = React.useState(false);
   const { exercises } = useAppSelector(state => state.exercise);
 
   React.useEffect(() => {
@@ -36,10 +38,12 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
       setExercise(splitExercise.exercise);
       setSets(splitExercise.sets);
       setReps(splitExercise.reps);
+      setIsSingleArm(splitExercise.isSingleArm);
     } else {
       setExercise(undefined);
       setSets(0);
       setReps(0);
+      setIsSingleArm(false);
     }
   };
 
@@ -57,6 +61,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
         exercise: exercise,
         reps: reps,
         sets: sets,
+        isSingleArm: isSingleArm,
         isCompleted: false,
       };
 
@@ -131,6 +136,34 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
                   totalHeight={40}
                   onChange={newReps => setReps(newReps)}
                 />
+              </View>
+            </View>
+
+            <View style={styles.numericInputSection}>
+              <View style={styles.numericInputLabel}>
+                <Text style={styles.numericInputLabelText}>
+                  {'Single Arm:'}
+                </Text>
+              </View>
+              <View style={styles.numericInput}>
+                <Pressable
+                  onPress={() => setIsSingleArm(!isSingleArm)}
+                  style={styles.checkbox}
+                >
+                  {isSingleArm ? (
+                    <MaterialCommunityIcons
+                      name={'checkbox-marked'}
+                      size={36}
+                      color={'#000'}
+                    />
+                  ) : (
+                    <MaterialCommunityIcons
+                      name={'checkbox-blank-outline'}
+                      size={36}
+                      color={'#000'}
+                    />
+                  )}
+                </Pressable>
               </View>
             </View>
           </View>
@@ -228,6 +261,14 @@ const styles = StyleSheet.create({
   dropdown1RowTxtStyle: {
     color: '#444',
     textAlign: 'left',
+  },
+  checkbox: {
+    flex: 1,
+    minWidth: 36,
+    maxWidth: 36,
+    justifyContent: 'center',
+    alignSelf: 'flex-end',
+    marginRight: 20,
   },
   fullWidthButton: {
     minWidth: '100%',

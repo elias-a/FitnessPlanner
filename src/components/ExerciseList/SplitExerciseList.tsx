@@ -25,7 +25,10 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
             >
               <View style={styles.exerciseDetails}>
                 <Text style={styles.exerciseName}>
-                  {`${exercise.exercise.name} (${exercise.sets} x ${exercise.reps})`}
+                  {exercise.isSingleArm
+                    ? `Single Arm ${exercise.exercise.name}`
+                    : `${exercise.exercise.name}`}
+                  {` (${exercise.sets} x ${exercise.reps})`}
                 </Text>
               </View>
               <View style={styles.editSection}>
