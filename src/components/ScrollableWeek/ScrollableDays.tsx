@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
   item: {
     width: dayWidth,
     height: 70,
-    borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,

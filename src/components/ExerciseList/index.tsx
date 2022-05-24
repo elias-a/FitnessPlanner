@@ -24,13 +24,13 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
               >
                 {exercise.isCompleted ? (
                   <MaterialCommunityIcons
-                    name={'checkbox-marked-circle'}
+                    name={'checkbox-marked'}
                     size={50}
                     color={'#000'}
                   />
                 ) : (
                   <MaterialCommunityIcons
-                    name={'checkbox-blank-circle-outline'}
+                    name={'checkbox-blank-outline'}
                     size={50}
                     color={'#000'}
                   />
@@ -59,8 +59,7 @@ const styles = StyleSheet.create({
   },
   exercise: {
     width: 340,
-    height: 90,
-    borderRadius: 30,
+    height: 70,
     justifyContent: 'center',
     alignItems: 'center',
     display: 'flex',
