@@ -4,14 +4,14 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useAppSelector } from '../../hooks';
 import { selectExercises } from '../../algorithms/buildSplit';
 import Modal from './Modal';
-import Calendar from '../Calendar/CalendarRange';
+import Calendar from '../Calendar';
 import ScrollableDays, { dayWidth } from '../ScrollableWeek/ScrollableDays';
 import ExerciseList from '../ExerciseList/SplitExerciseList';
 import ColorPickerModal from '../Modals/ColorPicker';
 import RandomizeExercises from '../Modals/RandomizeExercises';
 import AddSplitExerciseModal from '../Modals/AddSplitExercise';
 import type { Split, SplitExercise } from '../../types/split';
-import type { CalendarRange } from '../../types/calendar';
+import type { CalendarRange, SelectedDates } from '../../types/calendar';
 import uuid from 'react-native-uuid';
 
 const initialColor = '#909090';
@@ -202,6 +202,11 @@ const SplitModal: React.FC<SplitModalProps> = ({
     setIsRandomizeExercisesOpen(false);
   };
 
+  const handleDateSelection = (newDates: SelectedDates) => {
+    setStartDate(newDates[0]);
+    setEndDate(newDates[1]);
+  };
+
   return (
     <Modal isOpen={isOpen} close={onCancel}>
       <View style={styles.modal}>
@@ -242,10 +247,9 @@ const SplitModal: React.FC<SplitModalProps> = ({
           {page === 1 && (
             <View style={styles.viewContainer}>
               <Calendar
-                startDate={startDate}
-                endDate={endDate}
-                setStartDate={setStartDate}
-                setEndDate={setEndDate}
+                isRangeSelectable={true}
+                selectedDates={[startDate, endDate]}
+                setSelectedDates={handleDateSelection}
                 ranges={ranges}
                 color={color}
               />

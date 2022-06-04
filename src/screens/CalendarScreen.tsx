@@ -13,7 +13,9 @@ import type { CalendarRange } from '../types/calendar';
 type CalendarScreenProps = BottomTabScreenProps<Tab, 'Calendar'>;
 
 const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
+    new Date(),
+  );
   const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
   const [formattedStartDate, setFormattedStartDate] = React.useState('');
   const [formattedEndDate, setFormattedEndDate] = React.useState('');
@@ -52,6 +54,11 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
   }, [currentSplit]);
 
   React.useEffect(() => {
+    if (!selectedDate) {
+      setDayCategories([]);
+      return;
+    }
+
     const split = isDateInSplit(selectedDate, splits);
 
     if (!split) {
@@ -80,9 +87,11 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
         <Calendar
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
+          isRangeSelectable={false}
+          selectedDates={[selectedDate, undefined]}
+          setSelectedDates={newDate => setSelectedDate(newDate[0])}
           ranges={ranges}
+          color={currentSplit.color}
         />
       </View>
       <View style={styles.exercisesContainer}>
@@ -95,12 +104,14 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
             </Text>
           )}
           <Pressable
-            onPress={() =>
-              navigation.navigate({
-                name: 'Exercises',
-                params: { selectedDate: selectedDate.toString() },
-              })
-            }
+            onPress={() => {
+              if (selectedDate) {
+                navigation.navigate({
+                  name: 'Exercises',
+                  params: { selectedDate: selectedDate.toString() },
+                });
+              }
+            }}
             style={styles.navButton}
           >
             <MaterialCommunityIcons
@@ -113,7 +124,12 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
       </View>
       {!!currentSplit.startDate && (
         <View style={styles.splitContainer}>
-          <View style={[styles.splitDetails, styles.splitLength]}>
+          <View
+            style={[
+              styles.splitDetails,
+              { backgroundColor: currentSplit.color },
+            ]}
+          >
             <Text style={styles.splitDetailsText}>
               {`Current Split: ${splitLength} weeks`}
             </Text>
@@ -134,13 +150,20 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 64,
     padding: 8,
+    backgroundColor: '#fff',
   },
   calendarContainer: {
+    flex: 1,
+    minHeight: 500,
+    maxHeight: 500,
     justifyContent: 'center',
     alignItems: 'center',
   },
   exercisesContainer: {
-    marginTop: 50,
+    flex: 2,
+    minHeight: 70,
+    maxHeight: 70,
+    paddingVertical: 20,
   },
   exercises: {
     flexDirection: 'row',
@@ -154,15 +177,12 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   splitContainer: {
-    marginTop: 50,
+    flex: 3,
   },
   splitDetails: {
     justifyContent: 'center',
     alignItems: 'center',
     height: 50,
-  },
-  splitLength: {
-    backgroundColor: '#909090',
   },
   splitDetailsText: {
     fontSize: 26,

@@ -1,46 +1,41 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  FlatList,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 import uuid from 'react-native-uuid';
-import type { CalendarRange } from '../../types/calendar';
+import type {
+  CalendarRange,
+  SelectedDates,
+  CalendarData,
+} from '../../types/calendar';
 import { checkDateEquality } from '../../utils/checkDateEquality';
-import { isDateInRange } from '../../utils/isDateInRange';
+import DaysOfWeekHeader from './DaysOfWeekHeader';
+import Filler from './Filler';
+import MonthYearSection from './MonthYearSection';
+import Day from './Day';
 
-interface CalendarData {
-  key: string;
-  type: string;
-  data: string | Date;
-}
+const dayWidth = 45;
 
 interface CalendarProps {
-  selectedDate: Date;
-  setSelectedDate: (date: Date) => void;
+  isRangeSelectable: boolean;
+  selectedDates: SelectedDates;
+  setSelectedDates: (dates: SelectedDates) => void;
   ranges: CalendarRange[];
+  color: string;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
-  selectedDate,
+  isRangeSelectable,
+  selectedDates,
+  setSelectedDates,
   ranges,
-  setSelectedDate,
+  color,
 }) => {
   const [today, setToday] = React.useState<Date>(new Date());
   const [calendar, setCalendar] = React.useState<CalendarData[]>([]);
   const [initialScrollIndex, setInitialScrollIndex] = React.useState(0);
-  const daysOfWeek: CalendarData[] = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(
-    day => {
-      return {
-        key: uuid.v4().toString(),
-        type: 'header',
-        data: day,
-      };
-    },
-  );
+  const flatListRef:
+    | React.RefObject<FlatList<CalendarData>>
+    | undefined
+    | null = React.createRef();
 
   React.useEffect(() => {
     setToday(new Date());
@@ -48,6 +43,7 @@ const Calendar: React.FC<CalendarProps> = ({
 
   React.useEffect(() => {
     const data: CalendarData[] = [];
+    let index = 0;
     let todayIndex = 0;
 
     for (let i = -4; i <= 4; i++) {
@@ -60,12 +56,14 @@ const Calendar: React.FC<CalendarProps> = ({
         key: uuid.v4().toString(),
         type: 'monthYear',
         data: firstOfMonth,
+        index: index++,
       });
       for (let j = 0; j < 6; j++) {
         data.push({
           key: uuid.v4().toString(),
           type: 'monthYearFiller',
           data: '',
+          index: index++,
         });
       }
 
@@ -74,6 +72,7 @@ const Calendar: React.FC<CalendarProps> = ({
           key: uuid.v4().toString(),
           type: 'filler',
           data: '',
+          index: index++,
         });
       }
 
@@ -93,7 +92,12 @@ const Calendar: React.FC<CalendarProps> = ({
           key: uuid.v4().toString(),
           type: 'date',
           data: day,
+          index: index++,
         });
+
+        if (checkDateEquality(today, day)) {
+          todayIndex = Math.floor(Math.max(index / 7 - 5, 0));
+        }
       }
 
       let endDay = endOfMonth.getDay();
@@ -103,11 +107,8 @@ const Calendar: React.FC<CalendarProps> = ({
           key: uuid.v4().toString(),
           type: 'filler',
           data: '',
+          index: index++,
         });
-      }
-
-      if (i >= 0) {
-        todayIndex++;
       }
     }
 
@@ -116,57 +117,23 @@ const Calendar: React.FC<CalendarProps> = ({
   }, [today]);
 
   const renderItem = ({ item }: { item: CalendarData }) => {
-    if (item.type === 'header') {
-      return (
-        <View style={[styles.item]}>
-          <Text>{item.data}</Text>
-        </View>
-      );
-    } else if (item.type === 'filler') {
-      return <View style={[styles.item]} />;
+    if (item.type === 'filler') {
+      return <Filler />;
     } else if (item.type === 'monthYear') {
-      const monthName = item.data.toLocaleString('default', { month: 'long' });
-      const year = item.data.toLocaleString('default', { year: 'numeric' });
-
-      return (
-        <View style={styles.monthYear}>
-          <Text style={styles.monthYearText}>{`${monthName} ${year}`}</Text>
-        </View>
-      );
+      return <MonthYearSection item={item} />;
     } else if (item.type === 'monthYearFiller') {
       return <View style={{ width: 0 }} />;
     } else {
-      const itemData = item.data as Date;
-      const isToday = checkDateEquality(today, itemData);
-      const isSelected = checkDateEquality(selectedDate, itemData);
-
-      let splitColor = isDateInRange(itemData, ranges);
-      let isInRange = false;
-      if (splitColor) {
-        isInRange = true;
-      }
-
       return (
-        <Pressable
-          onPress={() => setSelectedDate(itemData)}
-          style={[
-            styles.item,
-            isInRange && { backgroundColor: splitColor },
-            isSelected && {
-              backgroundColor: '#484848',
-              borderRadius: 30,
-            },
-          ]}
-        >
-          <Text
-            style={[
-              isSelected && { color: '#fff' },
-              isToday && { fontWeight: '900' },
-            ]}
-          >
-            {itemData.getDate().toString()}
-          </Text>
-        </Pressable>
+        <Day
+          isRangeSelectable={isRangeSelectable}
+          item={item}
+          today={today}
+          selectedDates={selectedDates}
+          setSelectedDates={setSelectedDates}
+          ranges={ranges}
+          color={color}
+        />
       );
     }
   };
@@ -174,56 +141,30 @@ const Calendar: React.FC<CalendarProps> = ({
   return (
     <View style={styles.container}>
       <FlatList
-        data={daysOfWeek}
-        renderItem={renderItem}
-        numColumns={7}
-        getItemLayout={(_, index) => ({
-          length: width * 0.1,
-          offset: (width * 0.24 + 18) * index,
-          index,
-        })}
-        scrollEnabled={false}
-      />
-      <FlatList
         data={calendar}
         renderItem={renderItem}
+        ListHeaderComponent={DaysOfWeekHeader}
+        stickyHeaderIndices={[0]}
         numColumns={7}
         initialScrollIndex={initialScrollIndex}
         getItemLayout={(_, index) => ({
-          length: width * 0.1,
-          offset: (width * 0.24 + 18) * index,
+          length: dayWidth,
+          offset: dayWidth * index,
           index,
         })}
         bounces={false}
-        extraData={selectedDate}
+        extraData={[selectedDates, color]}
+        ref={flatListRef}
       />
     </View>
   );
 };
 
-const { width } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   container: {
-    width: width * 0.95,
-    paddingLeft: width * 0.025,
-    height: 450,
-    backgroundColor: '#d0d0d0',
-  },
-  item: {
-    width: width * 0.1,
-    height: 40,
-    marginRight: 8,
-    marginTop: 8,
-    justifyContent: 'center',
+    flex: 1,
     alignItems: 'center',
-  },
-  monthYear: {
-    width: width,
-    marginLeft: 120,
-  },
-  monthYearText: {
-    fontSize: 18,
+    width: '100%',
   },
 });
 
