@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { TriangleColorPicker, toHsv, fromHsv } from 'react-native-color-picker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from './Modal';
 
 interface HsvColor {
@@ -28,15 +29,27 @@ const ColorPickerModal: React.FC<ColorPickerModalProps> = ({
 
   React.useEffect(() => {
     setSelectedColor(toHsv(color));
-  }, [color]);
+  }, [isOpen, color]);
 
   const handleColorChange = (newColor: HsvColor) => {
     setSelectedColor(newColor);
   };
 
   return (
-    <Modal isOpen={isOpen} close={onCancel} swipeDirection="down">
+    <Modal isOpen={isOpen} close={onCancel}>
       <View style={styles.modal}>
+        <View style={styles.header}>
+          <View style={styles.closeIcon}>
+            <Pressable onPress={onCancel}>
+              <MaterialCommunityIcons
+                name={'window-close'}
+                size={32}
+                color={'#000'}
+              />
+            </Pressable>
+          </View>
+        </View>
+
         <View style={styles.colorPickerSection}>
           <TriangleColorPicker
             color={selectedColor}
@@ -70,13 +83,23 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
     bottom: 0,
-    minHeight: '90%',
-    maxHeight: '90%',
+    minHeight: '100%',
+    maxHeight: '100%',
     minWidth: '100%',
     maxWidth: '100%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
+  },
+  header: {
+    flex: 1,
+    minHeight: '10%',
+    maxHeight: '10%',
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: 45,
+    right: 20,
   },
   container: {
     flex: 1,
