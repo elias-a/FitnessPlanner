@@ -6,7 +6,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { deleteSplit } from '../../slices/split';
 import { createSplit } from '../../slices/split';
-import { buildSplit } from '../../algorithms/buildSplit';
+import {
+  buildSplitTemplate,
+  templateToSchedule,
+} from '../../algorithms/buildSplit';
 import ScrollableList from '../ScrollableList';
 import SplitModal from '../Modals/Split';
 import { formatDate } from '../../utils/formatDate';
@@ -27,10 +30,16 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
   };
 
   const saveSplit = (split: Split, editing: boolean) => {
-    if (Object.keys(split.exercises).length === 0) {
-      const selectedExercises = buildSplit(split, exercises);
-      split.exercises = selectedExercises;
+    if (Object.keys(split.exerciseTemplate).length === 0) {
+      const selectedExercises = buildSplitTemplate(split, exercises);
+      split.exerciseTemplate = selectedExercises;
     }
+
+    split.exerciseSchedule = templateToSchedule(
+      split.exerciseTemplate,
+      split.startDate,
+      split.endDate,
+    );
 
     dispatch(
       createSplit({

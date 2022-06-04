@@ -14,14 +14,16 @@ export const getSplits = (): Split[] => {
   const splitObjects: SplitObject[] = parseJson(realm.objects('Split'));
   const splits: Split[] = [];
   splitObjects.forEach(split => {
-    const { categories, exercises } = convertSplit(split);
+    const { categories, exerciseTemplate, exerciseSchedule } =
+      convertSplit(split);
 
     splits.push({
       id: split.id,
       startDate: split.startDate,
       endDate: split.endDate,
       categories: categories,
-      exercises: exercises,
+      exerciseTemplate: exerciseTemplate,
+      exerciseSchedule: exerciseSchedule,
       color: split.color,
     });
   });
@@ -40,7 +42,12 @@ export const createSplit = (split: Split, editing: boolean): Split => {
       },
     );
 
-    const splitExerciseArrayMap = createSplitExerciseArray(split.exercises);
+    const exerciseTemplateArrayMap = createSplitExerciseArray(
+      split.exerciseTemplate,
+    );
+    const exerciseScheduleArrayMap = createSplitExerciseArray(
+      split.exerciseSchedule,
+    );
 
     const createdSplit: SplitObject = realm.create(
       // This seems to be an issue with `realm.create` types.
@@ -51,7 +58,8 @@ export const createSplit = (split: Split, editing: boolean): Split => {
         startDate: split.startDate,
         endDate: split.endDate,
         categories: stringArrayMap,
-        exercises: splitExerciseArrayMap,
+        exerciseTemplate: exerciseTemplateArrayMap,
+        exerciseSchedule: exerciseScheduleArrayMap,
         color: split.color,
       },
       editing ? Realm.UpdateMode.Modified : Realm.UpdateMode.Never,
@@ -60,14 +68,16 @@ export const createSplit = (split: Split, editing: boolean): Split => {
     return createdSplit;
   });
 
-  const { categories, exercises } = convertSplit(newSplit);
+  const { categories, exerciseTemplate, exerciseSchedule } =
+    convertSplit(newSplit);
 
   return {
     id: newSplit.id,
     startDate: newSplit.startDate,
     endDate: newSplit.endDate,
     categories: categories,
-    exercises: exercises,
+    exerciseTemplate: exerciseTemplate,
+    exerciseSchedule: exerciseSchedule,
     color: newSplit.color,
   };
 };
@@ -93,7 +103,7 @@ export const updateSplitExercises = (
       'Split',
       {
         id: id,
-        exercises: splitExerciseArray,
+        exerciseSchedule: splitExerciseArray,
       },
       Realm.UpdateMode.Modified,
     );
@@ -101,9 +111,9 @@ export const updateSplitExercises = (
     return split;
   });
 
-  const { exercises } = convertSplit(updatedSplit);
+  const { exerciseSchedule } = convertSplit(updatedSplit);
 
-  return exercises;
+  return exerciseSchedule;
 };
 
 const createSplitExerciseArray = (
@@ -138,13 +148,21 @@ const convertSplit = (split: SplitObject) => {
     categories[key] = value;
   });
 
-  const exercises: SplitExercises = {};
-  const newSplitExerciseArrayMap: SplitExerciseArrayMap[] = parseJson(
-    split.exercises,
+  const exerciseTemplate: SplitExercises = {};
+  const exerciseTemplateArrayMap: SplitExerciseArrayMap[] = parseJson(
+    split.exerciseTemplate,
   );
-  newSplitExerciseArrayMap.forEach(({ key, value }) => {
-    exercises[key] = [...value];
+  exerciseTemplateArrayMap.forEach(({ key, value }) => {
+    exerciseTemplate[key] = [...value];
   });
 
-  return { categories, exercises };
+  const exerciseSchedule: SplitExercises = {};
+  const exerciseScheduleArrayMap: SplitExerciseArrayMap[] = parseJson(
+    split.exerciseSchedule,
+  );
+  exerciseScheduleArrayMap.forEach(({ key, value }) => {
+    exerciseSchedule[key] = [...value];
+  });
+
+  return { categories, exerciseTemplate, exerciseSchedule };
 };

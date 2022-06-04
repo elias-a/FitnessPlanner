@@ -5,7 +5,8 @@ export interface Split {
   startDate: string;
   endDate: string;
   categories: { [key: string]: string[] };
-  exercises: SplitExercises;
+  exerciseTemplate: SplitExercises;
+  exerciseSchedule: SplitExercises;
   color: string;
 }
 
@@ -37,6 +38,7 @@ export interface SplitObject {
   startDate: string;
   endDate: string;
   categories: StringArrayMap[];
-  exercises: SplitExerciseArrayMap[];
+  exerciseTemplate: SplitExerciseArrayMap[];
+  exerciseSchedule: SplitExerciseArrayMap[];
   color: string;
 }

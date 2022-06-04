@@ -60,7 +60,7 @@ const SplitModal: React.FC<SplitModalProps> = ({
       setStartDate(new Date(selectedSplit.startDate));
       setEndDate(new Date(selectedSplit.endDate));
       setSelectedCategories({ ...selectedSplit.categories });
-      setSplitExercises({ ...selectedSplit.exercises });
+      setSplitExercises({ ...selectedSplit.exerciseTemplate });
       setColor(selectedSplit.color);
     } else {
       setStartDate(undefined);
@@ -130,7 +130,9 @@ const SplitModal: React.FC<SplitModalProps> = ({
       startDate: startDate ? startDate.toString() : '',
       endDate: endDate ? endDate.toString() : '',
       categories: selectedCategories,
-      exercises: Object.keys(splitExercises).length > 0 ? splitExercises : {},
+      exerciseTemplate:
+        Object.keys(splitExercises).length > 0 ? splitExercises : {},
+      exerciseSchedule: {},
       color: color,
     };
     onSave(newSplit, !!selectedSplit);

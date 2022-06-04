@@ -67,7 +67,7 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
     }
 
     const key = getDayKey(selectedDate, new Date(split.startDate));
-    if (!Object.keys(split.exercises).includes(key)) {
+    if (!Object.keys(split.exerciseTemplate).includes(key)) {
       setDayCategories([]);
       return;
     }

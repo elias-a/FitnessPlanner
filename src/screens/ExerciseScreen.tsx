@@ -5,7 +5,6 @@ import ExerciseList from '../components/ExerciseList';
 import { useAppSelector, useAppDispatch } from '../hooks';
 import { updateExercises } from '../slices/split';
 import type { Split, SplitExercise } from '../types/split';
-import { getDayKey } from '../utils/getDayKey';
 import { isDateInSplit } from '../utils/isDateInSplit';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Tab } from '../Navigation';
@@ -13,7 +12,7 @@ import { Tab } from '../Navigation';
 type ExerciseScreenProps = BottomTabScreenProps<Tab, 'Exercises'>;
 
 const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [selectedDate, setSelectedDate] = React.useState<Date>();
   const [dayKey, setDayKey] = React.useState('');
   const [splitId, setSplitId] = React.useState('');
   const [splitExercises, setSplitExercises] = React.useState<SplitExercise[]>(
@@ -25,12 +24,23 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    setSelectedDate(date);
+  }, []);
+
+  React.useEffect(() => {
     if (route.params && Object.keys(route.params).includes('selectedDate')) {
       setSelectedDate(new Date(route.params.selectedDate));
     }
   }, [route.params]);
 
   React.useEffect(() => {
+    if (!selectedDate) {
+      setSplitExercises([]);
+      return;
+    }
+
     const split = isDateInSplit(selectedDate, splits);
     setSelectedDateSplit(split);
 
@@ -39,13 +49,13 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
       return;
     }
 
-    const key = getDayKey(selectedDate, new Date(split.startDate));
-    if (!Object.keys(split.exercises).includes(key)) {
+    const key = selectedDate.toString();
+    if (!Object.keys(split.exerciseSchedule).includes(key)) {
       setSplitExercises([]);
       return;
     }
 
-    setSplitExercises(split.exercises[key]);
+    setSplitExercises(split.exerciseSchedule[key]);
     setDayKey(key);
     setSplitId(split.id);
   }, [splits, exercises, selectedDate]);
@@ -72,7 +82,7 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
       updateExercises({
         id: splitId,
         splitExercises: {
-          ...selectedDateSplit.exercises,
+          ...selectedDateSplit.exerciseSchedule,
           [dayKey]: updatedSplitExercises,
         },
       }),
@@ -82,16 +92,20 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <View>
-        <ScrollableWeek
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-        />
-      </View>
-      <ExerciseList
-        exercises={splitExercises}
-        toggleIsCompleted={toggleIsCompleted}
-      />
+      {selectedDate && (
+        <React.Fragment>
+          <View>
+            <ScrollableWeek
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
+          </View>
+          <ExerciseList
+            exercises={splitExercises}
+            toggleIsCompleted={toggleIsCompleted}
+          />
+        </React.Fragment>
+      )}
     </View>
   );
 };

@@ -12,7 +12,8 @@ const initialCurrentSplit: Split = {
   startDate: '',
   endDate: '',
   categories: {},
-  exercises: {},
+  exerciseTemplate: {},
+  exerciseSchedule: {},
   color: '',
 };
 
@@ -42,14 +43,18 @@ export const splitSplice = createSlice({
         state.currentSplit.startDate = currentSplit.startDate;
         state.currentSplit.endDate = currentSplit.endDate;
         state.currentSplit.categories = currentSplit.categories;
-        state.currentSplit.exercises = currentSplit.exercises;
+        state.currentSplit.exerciseTemplate = currentSplit.exerciseTemplate;
+        state.currentSplit.exerciseSchedule = currentSplit.exerciseSchedule;
         state.currentSplit.color = currentSplit.color;
       } else {
         state.currentSplit.id = initialCurrentSplit.id;
         state.currentSplit.startDate = initialCurrentSplit.startDate;
         state.currentSplit.endDate = initialCurrentSplit.endDate;
         state.currentSplit.categories = initialCurrentSplit.categories;
-        state.currentSplit.exercises = initialCurrentSplit.exercises;
+        state.currentSplit.exerciseTemplate =
+          initialCurrentSplit.exerciseTemplate;
+        state.currentSplit.exerciseSchedule =
+          initialCurrentSplit.exerciseSchedule;
         state.currentSplit.color = initialCurrentSplit.color;
       }
     },
@@ -83,7 +88,8 @@ export const splitSplice = createSlice({
         state.currentSplit.startDate = currentSplit.startDate;
         state.currentSplit.endDate = currentSplit.endDate;
         state.currentSplit.categories = currentSplit.categories;
-        state.currentSplit.exercises = currentSplit.exercises;
+        state.currentSplit.exerciseTemplate = currentSplit.exerciseTemplate;
+        state.currentSplit.exerciseSchedule = currentSplit.exerciseSchedule;
         state.currentSplit.color = currentSplit.color;
       }
     },
@@ -97,8 +103,8 @@ export const splitSplice = createSlice({
       state.splits = state.splits.map(item => {
         if (item.id === id) {
           // Update current split as well.
-          state.currentSplit.exercises = { ...newSplitExercises };
-          return { ...item, exercises: { ...newSplitExercises } };
+          state.currentSplit.exerciseSchedule = { ...newSplitExercises };
+          return { ...item, exerciseSchedule: { ...newSplitExercises } };
         } else {
           return { ...item };
         }
@@ -113,7 +119,10 @@ export const splitSplice = createSlice({
         state.currentSplit.startDate = initialCurrentSplit.startDate;
         state.currentSplit.endDate = initialCurrentSplit.endDate;
         state.currentSplit.categories = initialCurrentSplit.categories;
-        state.currentSplit.exercises = initialCurrentSplit.exercises;
+        state.currentSplit.exerciseTemplate =
+          initialCurrentSplit.exerciseTemplate;
+        state.currentSplit.exerciseSchedule =
+          initialCurrentSplit.exerciseSchedule;
         state.currentSplit.color = initialCurrentSplit.color;
       }
     },

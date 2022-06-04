@@ -1,8 +1,10 @@
-import type { Split, SplitExercise } from '../types/split';
+import type { Split, SplitExercise, SplitExercises } from '../types/split';
 import type { Exercise } from '../types/exercise';
 import uuid from 'react-native-uuid';
+import { getDayKey } from '../utils/getDayKey';
+import { compareDates } from '../utils/compareDates';
 
-export const buildSplit = (
+export const buildSplitTemplate = (
   split: Split,
   exercises: Exercise[],
 ): { [key: string]: SplitExercise[] } => {
@@ -45,6 +47,29 @@ export const buildSplit = (
   });
 
   return splitExercises;
+};
+
+export const templateToSchedule = (
+  template: SplitExercises,
+  startDate: string,
+  endDate: string,
+): SplitExercises => {
+  const schedule: SplitExercises = {};
+  let date = new Date(startDate);
+  date.setHours(0, 0, 0, 0);
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  while (compareDates(date, end) < 1) {
+    const key = getDayKey(date, start);
+    if (Object.keys(template).includes(key)) {
+      schedule[date.toString()] = template[key];
+    }
+
+    date.setDate(date.getDate() + 1);
+  }
+
+  return schedule;
 };
 
 export const selectExercises = (
