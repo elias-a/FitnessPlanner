@@ -4,6 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown';
 import Modal from './Modal';
+import MultiSelect from '../MultiSelect';
 import NumericInput from 'react-native-numeric-input';
 import { useAppSelector } from '../../hooks';
 import type { Exercise } from '../../types/exercise';
@@ -23,11 +24,16 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
   onAdd,
   initialSplitExercise,
 }) => {
+  const { categories } = useAppSelector(state => state.category);
+  const { exercises } = useAppSelector(state => state.exercise);
+  const [selectedCategories, setSelectedCategories] = React.useState<string[]>(
+    [],
+  );
+  const [filteredExercises, setFilteredExercises] = React.useState(exercises);
   const [exercise, setExercise] = React.useState<Exercise | undefined>();
   const [sets, setSets] = React.useState(0);
   const [reps, setReps] = React.useState(0);
   const [isSingleArm, setIsSingleArm] = React.useState(false);
-  const { exercises } = useAppSelector(state => state.exercise);
 
   React.useEffect(() => {
     loadSplitExercise(initialSplitExercise);
@@ -45,6 +51,21 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
       setReps(0);
       setIsSingleArm(false);
     }
+  };
+
+  const handleCategorySelection = (items: string[]) => {
+    setSelectedCategories(items);
+
+    const newFilteredExercises: Exercise[] = [];
+    exercises.forEach(e => {
+      items.forEach(category => {
+        if (e.categories.includes(category)) {
+          newFilteredExercises.push(e);
+        }
+      });
+    });
+
+    setFilteredExercises(newFilteredExercises);
   };
 
   const handleClose = () => {
@@ -75,10 +96,21 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
       <View style={styles.modal}>
         <View style={styles.container}>
           <View style={styles.messageSection}>
+            <View style={styles.categorySelect}>
+              <MultiSelect
+                items={categories}
+                selectedItems={selectedCategories}
+                onSelectedItemsChange={handleCategorySelection}
+                isSingle={false}
+                subKey={'subCategories'}
+                selectText={'Choose categories...'}
+              />
+            </View>
+
             <View style={styles.exerciseDropdown}>
               <SelectDropdown
                 defaultValue={exercise}
-                data={exercises}
+                data={filteredExercises}
                 defaultButtonText={'Select exercise...'}
                 buttonTextAfterSelection={item => item.name}
                 rowTextForSelection={item => item.name}
@@ -209,6 +241,12 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 22,
+  },
+  categorySelect: {
+    flex: 1,
+    marginTop: 20,
+    minHeight: 40,
+    maxHeight: 70,
   },
   exerciseDropdown: {
     flex: 1,
