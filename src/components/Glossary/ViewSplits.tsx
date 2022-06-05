@@ -37,8 +37,10 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
 
     split.exerciseSchedule = templateToSchedule(
       split.exerciseTemplate,
+      split.exerciseSchedule,
       split.startDate,
       split.endDate,
+      editing,
     );
 
     dispatch(

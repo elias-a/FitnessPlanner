@@ -51,25 +51,46 @@ export const buildSplitTemplate = (
 
 export const templateToSchedule = (
   template: SplitExercises,
+  schedule: SplitExercises,
   startDate: string,
   endDate: string,
+  editing: boolean,
 ): SplitExercises => {
-  const schedule: SplitExercises = {};
-  let date = new Date(startDate);
-  date.setHours(0, 0, 0, 0);
+  const newSchedule: SplitExercises = { ...schedule };
   const start = new Date(startDate);
   const end = new Date(endDate);
+
+  let date = new Date(startDate);
+  date.setHours(0, 0, 0, 0);
+
+  // If the split is being edited, do not update
+  // days before today.
+  if (editing) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (compareDates(today, date) === 1) {
+      date = today;
+    }
+  }
 
   while (compareDates(date, end) < 1) {
     const key = getDayKey(date, start);
     if (Object.keys(template).includes(key)) {
-      schedule[date.toString()] = template[key];
+      newSchedule[date.toString()] = template[key].map(e => {
+        return {
+          ...e,
+          id: uuid.v4().toString(),
+          isCompleted: false,
+        };
+      });
     }
+
+    newSchedule[date.toString()] = template[key] ?? [];
 
     date.setDate(date.getDate() + 1);
   }
 
-  return schedule;
+  return newSchedule;
 };
 
 export const selectExercises = (

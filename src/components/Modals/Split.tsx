@@ -132,7 +132,7 @@ const SplitModal: React.FC<SplitModalProps> = ({
       categories: selectedCategories,
       exerciseTemplate:
         Object.keys(splitExercises).length > 0 ? splitExercises : {},
-      exerciseSchedule: {},
+      exerciseSchedule: selectedSplit ? selectedSplit.exerciseSchedule : {},
       color: color,
     };
     onSave(newSplit, !!selectedSplit);
