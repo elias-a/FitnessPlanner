@@ -1,15 +1,18 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import SelectDropdown from 'react-native-select-dropdown';
 import Modal from './Modal';
-import MultiSelect from '../MultiSelect';
-import NumericInput from 'react-native-numeric-input';
-import { useAppSelector } from '../../hooks';
-import type { Exercise } from '../../types/exercise';
-import type { SplitExercise } from '../../types/split';
+import Accordion from '../Accordion';
+import SplitExerciseSection from '../SplitExercise';
+import type { SplitExercise, NewSplitExercise } from '../../types/split';
 import uuid from 'react-native-uuid';
+
+const emptySplitExercise: NewSplitExercise = {
+  id: '',
+  exercise: undefined,
+  sets: 0,
+  reps: 0,
+  isSingleArm: false,
+};
 
 interface AddSplitExerciseProps {
   isOpen: boolean;
@@ -24,48 +27,46 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
   onAdd,
   initialSplitExercise,
 }) => {
-  const { categories } = useAppSelector(state => state.category);
-  const { exercises } = useAppSelector(state => state.exercise);
-  const [selectedCategories, setSelectedCategories] = React.useState<string[]>(
-    [],
-  );
-  const [filteredExercises, setFilteredExercises] = React.useState(exercises);
-  const [exercise, setExercise] = React.useState<Exercise | undefined>();
-  const [sets, setSets] = React.useState(0);
-  const [reps, setReps] = React.useState(0);
-  const [isSingleArm, setIsSingleArm] = React.useState(false);
+  const [splitExercises, setSplitExercises] = React.useState<
+    NewSplitExercise[]
+  >([]);
+  const [openAccordion, setOpenAccordion] = React.useState('');
 
   React.useEffect(() => {
     loadSplitExercise(initialSplitExercise);
   }, [initialSplitExercise]);
 
-  const loadSplitExercise = (splitExercise: SplitExercise | undefined) => {
-    if (splitExercise) {
-      setExercise(splitExercise.exercise);
-      setSets(splitExercise.sets);
-      setReps(splitExercise.reps);
-      setIsSingleArm(splitExercise.isSingleArm);
+  const loadSplitExercise = (e: SplitExercise | undefined) => {
+    if (e) {
+      setSplitExercises([
+        {
+          id: e.id,
+          exercise: e.exercise,
+          sets: e.sets,
+          reps: e.reps,
+          isSingleArm: e.isSingleArm,
+        },
+      ]);
+      setOpenAccordion(e.id);
     } else {
-      setExercise(undefined);
-      setSets(0);
-      setReps(0);
-      setIsSingleArm(false);
+      const id = uuid.v4().toString();
+      setSplitExercises([{ ...emptySplitExercise, id }]);
+      setOpenAccordion(id);
     }
   };
 
-  const handleCategorySelection = (items: string[]) => {
-    setSelectedCategories(items);
+  const handleAddSuperset = () => {
+    const id = uuid.v4().toString();
+    setSplitExercises([...splitExercises, { ...emptySplitExercise, id }]);
+    setOpenAccordion(id);
+  };
 
-    const newFilteredExercises: Exercise[] = [];
-    exercises.forEach(e => {
-      items.forEach(category => {
-        if (e.categories.includes(category)) {
-          newFilteredExercises.push(e);
-        }
-      });
-    });
-
-    setFilteredExercises(newFilteredExercises);
+  const toggleOpenAccordion = (id: string) => {
+    if (openAccordion === id) {
+      setOpenAccordion('');
+    } else {
+      setOpenAccordion(id);
+    }
   };
 
   const handleClose = () => {
@@ -74,130 +75,52 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
   };
 
   const handleAdd = () => {
-    if (exercise) {
-      const splitExercise: SplitExercise = {
+    if (splitExercises.length > 0 && splitExercises[0].exercise) {
+      const newSplitExercise: SplitExercise = {
+        ...splitExercises[0],
         id: initialSplitExercise
           ? initialSplitExercise.id
           : uuid.v4().toString(),
-        exercise: exercise,
-        reps: reps,
-        sets: sets,
-        isSingleArm: isSingleArm,
         isCompleted: false,
+        exercise: splitExercises[0].exercise,
       };
 
-      onAdd(splitExercise);
+      onAdd(newSplitExercise);
       loadSplitExercise(undefined);
     }
+  };
+
+  const handleChange = <T,>(name: string, value: T, index: number) => {
+    setSplitExercises([
+      ...splitExercises.slice(0, index),
+      { ...splitExercises[index], [name]: value },
+      ...splitExercises.slice(index + 1),
+    ]);
   };
 
   return (
     <Modal isOpen={isOpen} close={handleClose}>
       <View style={styles.modal}>
         <View style={styles.container}>
-          <View style={styles.messageSection}>
-            <View style={styles.categorySelect}>
-              <MultiSelect
-                items={categories}
-                selectedItems={selectedCategories}
-                onSelectedItemsChange={handleCategorySelection}
-                isSingle={false}
-                subKey={'subCategories'}
-                selectText={'Choose categories...'}
-              />
-            </View>
-
-            <View style={styles.exerciseDropdown}>
-              <SelectDropdown
-                defaultValue={exercise}
-                data={filteredExercises}
-                defaultButtonText={'Select exercise...'}
-                buttonTextAfterSelection={item => item.name}
-                rowTextForSelection={item => item.name}
-                onSelect={(selectedExercise: Exercise) =>
-                  setExercise(selectedExercise)
-                }
-                buttonStyle={styles.dropdown1BtnStyle}
-                buttonTextStyle={styles.dropdown1BtnTxtStyle}
-                renderDropdownIcon={isOpened => {
-                  return (
-                    <FontAwesome
-                      name={isOpened ? 'chevron-up' : 'chevron-down'}
-                      color={'#444'}
-                      size={18}
-                    />
-                  );
-                }}
-                dropdownIconPosition={'right'}
-                dropdownStyle={styles.dropdown1DropdownStyle}
-                rowStyle={styles.dropdown1RowStyle}
-                rowTextStyle={styles.dropdown1RowTxtStyle}
-              />
-            </View>
-
-            <View style={styles.numericInputSection}>
-              <View style={styles.numericInputLabel}>
-                <Text style={styles.numericInputLabelText}>
-                  {'Number of sets:'}
-                </Text>
-              </View>
-              <View style={styles.numericInput}>
-                <NumericInput
-                  initValue={sets}
-                  value={sets}
-                  minValue={0}
-                  totalWidth={150}
-                  totalHeight={40}
-                  onChange={newSets => setSets(newSets)}
-                />
-              </View>
-            </View>
-
-            <View style={styles.numericInputSection}>
-              <View style={styles.numericInputLabel}>
-                <Text style={styles.numericInputLabelText}>
-                  {'Number of reps:'}
-                </Text>
-              </View>
-              <View style={styles.numericInput}>
-                <NumericInput
-                  initValue={reps}
-                  value={reps}
-                  minValue={0}
-                  totalWidth={150}
-                  totalHeight={40}
-                  onChange={newReps => setReps(newReps)}
-                />
-              </View>
-            </View>
-
-            <View style={styles.numericInputSection}>
-              <View style={styles.numericInputLabel}>
-                <Text style={styles.numericInputLabelText}>
-                  {'Single Arm:'}
-                </Text>
-              </View>
-              <View style={styles.numericInput}>
-                <Pressable
-                  onPress={() => setIsSingleArm(!isSingleArm)}
-                  style={styles.checkbox}
+          <View style={{ flex: 1 }}>
+            {splitExercises.map((splitExercise, index) => {
+              return (
+                <Accordion
+                  key={`accordion-${index}`}
+                  isExpanded={splitExercise.id === openAccordion}
+                  toggleIsExpanded={() => toggleOpenAccordion(splitExercise.id)}
+                  headerText={
+                    splitExercise.exercise?.name ?? 'Choose exercise...'
+                  }
                 >
-                  {isSingleArm ? (
-                    <MaterialCommunityIcons
-                      name={'checkbox-marked'}
-                      size={36}
-                      color={'#000'}
-                    />
-                  ) : (
-                    <MaterialCommunityIcons
-                      name={'checkbox-blank-outline'}
-                      size={36}
-                      color={'#000'}
-                    />
-                  )}
-                </Pressable>
-              </View>
-            </View>
+                  <SplitExerciseSection
+                    splitExercise={splitExercise}
+                    index={index}
+                    handleChange={handleChange}
+                  />
+                </Accordion>
+              );
+            })}
           </View>
 
           <View
@@ -209,6 +132,12 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
               marginBottom: 35,
             }}
           >
+            <Pressable
+              onPress={handleAddSuperset}
+              style={styles.fullWidthButton}
+            >
+              <Text style={{ fontSize: 20 }}>{'Add Superset'}</Text>
+            </Pressable>
             <Pressable onPress={handleAdd} style={styles.fullWidthButton}>
               <Text style={{ fontSize: 20 }}>{'Save'}</Text>
             </Pressable>
@@ -315,6 +244,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#909090',
     marginTop: 1,
+  },
+
+  accordion: {
+    marginTop: 16,
+    backgroundColor: '#fff',
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });
 

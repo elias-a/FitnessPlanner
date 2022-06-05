@@ -23,6 +23,11 @@ export interface SplitExercise {
   isCompleted: boolean;
 }
 
+export interface NewSplitExercise
+  extends Omit<SplitExercise, 'exercise' | 'isCompleted'> {
+  exercise: Exercise | undefined;
+}
+
 export interface StringArrayMap {
   key: string;
   value: string[];
