@@ -1,13 +1,9 @@
 import React from 'react';
-import {
-  View,
-  FlatList,
-  Pressable,
-  Text,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { View, FlatList, Pressable, Text, StyleSheet } from 'react-native';
 import uuid from 'react-native-uuid';
+import { modulo } from '../../utils/modulo';
+
+const dayWidth = 95;
 
 interface WeekData {
   key: string;
@@ -23,7 +19,12 @@ const ScrollableWeek: React.FC<ScrollableWeekProps> = ({
   selectedDate,
   setSelectedDate,
 }) => {
-  const dates: WeekData[] = React.useMemo(() => {
+  const [initialScrollIndex, setInitialScrollIndex] = React.useState(0);
+  const [dates, setDates] = React.useState<WeekData[]>([]);
+  const flatListRef: React.RefObject<FlatList<WeekData>> | undefined | null =
+    React.createRef();
+
+  React.useEffect(() => {
     let week: WeekData[] = [];
     let selectedDayOfWeek = selectedDate.getDay();
     // Change the number for Sunday from 0 to 7.
@@ -39,8 +40,20 @@ const ScrollableWeek: React.FC<ScrollableWeekProps> = ({
       });
     }
 
-    return week;
+    setDates(week);
+    setInitialScrollIndex(modulo(selectedDate.getDay() - 1, 7));
   }, [selectedDate]);
+
+  React.useEffect(() => {
+    if (
+      flatListRef.current?.props.data &&
+      flatListRef.current?.props.data.length > 0
+    ) {
+      flatListRef.current?.scrollToOffset({
+        offset: dayWidth * modulo(selectedDate.getDay() - 1, 7),
+      });
+    }
+  }, [flatListRef, selectedDate, dates]);
 
   const renderItem = ({ item }: { item: WeekData }) => {
     const date = item.date.getDate();
@@ -67,22 +80,21 @@ const ScrollableWeek: React.FC<ScrollableWeekProps> = ({
         renderItem={renderItem}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
+        initialScrollIndex={initialScrollIndex}
         getItemLayout={(_, index) => ({
-          length: itemWidth,
-          offset: (itemWidth + 18) * index,
+          length: dayWidth,
+          offset: (dayWidth + 18) * index,
           index,
         })}
+        ref={flatListRef}
       />
     </View>
   );
 };
 
-const { width } = Dimensions.get('window');
-const itemWidth = width * 0.24;
-
 const styles = StyleSheet.create({
   item: {
-    width: itemWidth,
+    width: dayWidth,
     height: 70,
     justifyContent: 'center',
     alignItems: 'center',
