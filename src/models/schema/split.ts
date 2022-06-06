@@ -20,7 +20,6 @@ export const SplitExerciseArrayMap: Realm.ObjectSchema = {
 
 export const SplitExercise: Realm.ObjectSchema = {
   name: 'SplitExercise',
-  embedded: true,
   properties: {
     id: 'string',
     exercise: 'Exercise',
@@ -28,6 +27,7 @@ export const SplitExercise: Realm.ObjectSchema = {
     reps: 'int',
     isSingleArm: 'bool',
     isCompleted: 'bool',
+    superset: 'SplitExercise[]',
   },
 };
 

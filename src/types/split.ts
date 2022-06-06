@@ -21,6 +21,7 @@ export interface SplitExercise {
   reps: number;
   isSingleArm: boolean;
   isCompleted: boolean;
+  superset?: SplitExercise[];
 }
 
 export interface NewSplitExercise

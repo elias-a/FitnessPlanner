@@ -38,6 +38,19 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
 
   const loadSplitExercise = (e: SplitExercise | undefined) => {
     if (e) {
+      const supersets: NewSplitExercise[] = [];
+      if (e.superset) {
+        e.superset.forEach(superset => {
+          supersets.push({
+            id: superset.id,
+            exercise: superset.exercise,
+            sets: superset.sets,
+            reps: superset.reps,
+            isSingleArm: superset.isSingleArm,
+          });
+        });
+      }
+
       setSplitExercises([
         {
           id: e.id,
@@ -46,6 +59,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
           reps: e.reps,
           isSingleArm: e.isSingleArm,
         },
+        ...supersets,
       ]);
       setOpenAccordion(e.id);
     } else {
@@ -75,18 +89,41 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
   };
 
   const handleAdd = () => {
-    if (splitExercises.length > 0 && splitExercises[0].exercise) {
-      const newSplitExercise: SplitExercise = {
-        ...splitExercises[0],
-        id: initialSplitExercise
-          ? initialSplitExercise.id
-          : uuid.v4().toString(),
-        isCompleted: false,
-        exercise: splitExercises[0].exercise,
-      };
+    if (splitExercises.length > 0) {
+      const primaryExercise = splitExercises[0];
+      const superset = splitExercises.slice(1);
 
-      onAdd(newSplitExercise);
-      loadSplitExercise(undefined);
+      if (primaryExercise.exercise) {
+        const newSplitExercise: SplitExercise = {
+          ...splitExercises[0],
+          id: initialSplitExercise
+            ? initialSplitExercise.id
+            : uuid.v4().toString(),
+          isCompleted: false,
+          exercise: primaryExercise.exercise,
+        };
+
+        if (superset.length > 0) {
+          const supersets: SplitExercise[] = [];
+          superset.map(e => {
+            const exercise = e.exercise;
+
+            if (exercise) {
+              supersets.push({
+                ...e,
+                id: uuid.v4().toString(),
+                isCompleted: false,
+                exercise: exercise,
+              });
+            }
+          });
+
+          newSplitExercise.superset = supersets;
+        }
+
+        onAdd(newSplitExercise);
+        loadSplitExercise(undefined);
+      }
     }
   };
 
