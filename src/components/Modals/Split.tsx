@@ -194,6 +194,13 @@ const SplitModal: React.FC<SplitModalProps> = ({
     }));
   };
 
+  const reorderExercises = (items: SplitExercise[]) => {
+    setSplitExercises(prevState => ({
+      ...prevState,
+      [selectedDay]: items,
+    }));
+  };
+
   const closeAddSplitExerciseModal = () => {
     setIsAddSplitExerciseOpen(false);
     setExerciseToEdit(undefined);
@@ -370,6 +377,7 @@ const SplitModal: React.FC<SplitModalProps> = ({
                     exercises={splitExercises[selectedDay]}
                     editExercise={item => editExercise(item)}
                     removeExercise={item => removeExercise(item)}
+                    reorder={reorderExercises}
                   />
                 )}
               </View>
