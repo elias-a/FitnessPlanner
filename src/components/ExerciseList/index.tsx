@@ -19,7 +19,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
           return (
             <View key={exercise.id} style={styles.exercise}>
               <Pressable
-                onPress={() => toggleIsCompleted(exercise.exercise.id)}
+                onPress={() => toggleIsCompleted(exercise.id)}
                 style={styles.checkbox}
               >
                 {exercise.isCompleted ? (

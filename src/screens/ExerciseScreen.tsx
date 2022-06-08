@@ -68,7 +68,7 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
     const updatedSplitExercises: SplitExercise[] = [];
 
     splitExercises.forEach(exercise => {
-      if (exercise.exercise.id === id) {
+      if (exercise.id === id) {
         updatedSplitExercises.push({
           ...exercise,
           isCompleted: !exercise.isCompleted,
