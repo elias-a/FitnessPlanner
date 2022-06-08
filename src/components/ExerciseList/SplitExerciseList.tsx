@@ -11,6 +11,7 @@ interface ExerciseListProps {
   exercises: SplitExercise[];
   editExercise: (exercise: SplitExercise) => void;
   removeExercise: (exercise: SplitExercise) => void;
+  undoRemove: (exercise: SplitExercise) => void;
   reorder: (exercises: SplitExercise[]) => void;
 }
 
@@ -18,8 +19,21 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   exercises,
   editExercise,
   removeExercise,
+  undoRemove,
   reorder,
 }) => {
+  const [isContextOpen, setIsContextOpen] = React.useState<{
+    [key: string]: boolean;
+  }>({});
+
+  const remove = (exercise: SplitExercise) => {
+    removeExercise({ ...exercise, isDeleted: true });
+  };
+
+  const undo = (exercise: SplitExercise) => {
+    undoRemove({ ...exercise, isDeleted: false });
+  };
+
   const renderItem = ({
     item,
     drag,
@@ -28,7 +42,15 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     drag: () => void;
   }) => {
     return (
-      <View key={item.id} style={[styles.exercise, styles.splitSelection]}>
+      <View
+        key={item.id}
+        style={[
+          styles.exercise,
+          styles.splitSelection,
+          Object.keys(item).includes('isDeleted') &&
+            item.isDeleted && { backgroundColor: '#ffcccb' },
+        ]}
+      >
         <Pressable style={styles.dragButton} onLongPress={drag}>
           <MaterialCommunityIcons
             name={'dots-vertical'}
@@ -51,16 +73,57 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
             {` (${item.sets} x ${item.reps})`}
           </Text>
         </View>
-        <View style={styles.editSection}>
-          <Pressable onPress={() => editExercise(item)}>
-            <MaterialCommunityIcons name={'pencil'} size={32} color={'#000'} />
-          </Pressable>
-        </View>
-        <View style={styles.deleteSection}>
-          <Pressable onPress={() => removeExercise(item)}>
-            <MaterialCommunityIcons name={'delete'} size={32} color={'#000'} />
-          </Pressable>
-        </View>
+        <Pressable
+          style={styles.contextSection}
+          onPress={() =>
+            setIsContextOpen(prevState => ({
+              ...prevState,
+              [item.id]: !isContextOpen[item.id],
+            }))
+          }
+        >
+          {isContextOpen[item.id] ? (
+            <View style={styles.contextButtons}>
+              {Object.keys(item).includes('isDeleted') && item.isDeleted ? (
+                <Pressable onPress={() => undo(item)}>
+                  <MaterialCommunityIcons
+                    name={'undo'}
+                    size={28}
+                    color={'#000'}
+                  />
+                </Pressable>
+              ) : (
+                <React.Fragment>
+                  <Pressable onPress={() => editExercise(item)}>
+                    <MaterialCommunityIcons
+                      name={'pencil'}
+                      size={28}
+                      color={'#000'}
+                    />
+                  </Pressable>
+                  <Pressable onPress={() => remove(item)}>
+                    <MaterialCommunityIcons
+                      name={'delete'}
+                      size={28}
+                      color={'#000'}
+                    />
+                  </Pressable>
+                </React.Fragment>
+              )}
+              <MaterialCommunityIcons
+                name={'dots-vertical'}
+                size={24}
+                color={'#000'}
+              />
+            </View>
+          ) : (
+            <MaterialCommunityIcons
+              name={'dots-horizontal'}
+              size={24}
+              color={'#000'}
+            />
+          )}
+        </Pressable>
       </View>
     );
   };
@@ -135,6 +198,16 @@ const styles = StyleSheet.create({
   dragIcon: {
     position: 'absolute',
     top: 8,
+  },
+  contextSection: {
+    position: 'absolute',
+    top: 8,
+    right: 1,
+  },
+  contextButtons: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

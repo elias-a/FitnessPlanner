@@ -125,13 +125,20 @@ const SplitModal: React.FC<SplitModalProps> = ({
   };
 
   const start = () => {
+    const filteredSplitExercises = { ...splitExercises };
+
+    Object.keys(splitExercises).forEach(day => {
+      let newSplitExercises = [...filteredSplitExercises[day]];
+      newSplitExercises = newSplitExercises.filter(el => !el.isDeleted);
+      filteredSplitExercises[day] = [...newSplitExercises];
+    });
+
     const newSplit: Split = {
       id: selectedSplit ? selectedSplit.id : uuid.v4().toString(),
       startDate: startDate ? startDate.toString() : '',
       endDate: endDate ? endDate.toString() : '',
       categories: selectedCategories,
-      exerciseTemplate:
-        Object.keys(splitExercises).length > 0 ? splitExercises : {},
+      exerciseTemplate: filteredSplitExercises,
       exerciseSchedule: selectedSplit ? selectedSplit.exerciseSchedule : {},
       color: color,
     };
@@ -186,7 +193,29 @@ const SplitModal: React.FC<SplitModalProps> = ({
 
   const removeExercise = (item: SplitExercise) => {
     let newSplitExercises = [...splitExercises[selectedDay]];
-    newSplitExercises = newSplitExercises.filter(el => el.id !== item.id);
+    newSplitExercises = newSplitExercises.map(el => {
+      if (el.id === item.id) {
+        return { ...el, isDeleted: true };
+      } else {
+        return { ...el };
+      }
+    });
+
+    setSplitExercises(prevState => ({
+      ...prevState,
+      [selectedDay]: newSplitExercises,
+    }));
+  };
+
+  const undoRemove = (item: SplitExercise) => {
+    let newSplitExercises = [...splitExercises[selectedDay]];
+    newSplitExercises = newSplitExercises.map(el => {
+      if (el.id === item.id) {
+        return { ...el, isDeleted: false };
+      } else {
+        return { ...el };
+      }
+    });
 
     setSplitExercises(prevState => ({
       ...prevState,
@@ -375,8 +404,9 @@ const SplitModal: React.FC<SplitModalProps> = ({
                 ) && (
                   <ExerciseList
                     exercises={splitExercises[selectedDay]}
-                    editExercise={item => editExercise(item)}
-                    removeExercise={item => removeExercise(item)}
+                    editExercise={editExercise}
+                    removeExercise={removeExercise}
+                    undoRemove={undoRemove}
                     reorder={reorderExercises}
                   />
                 )}

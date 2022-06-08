@@ -22,6 +22,7 @@ export interface SplitExercise {
   isSingleArm: boolean;
   isCompleted: boolean;
   superset?: SplitExercise[];
+  isDeleted?: boolean;
 }
 
 export interface NewSplitExercise
