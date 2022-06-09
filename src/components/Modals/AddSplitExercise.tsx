@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import Modal from './Modal';
 import Accordion from '../Accordion';
 import SplitExerciseSection from '../SplitExercise';
@@ -75,6 +75,11 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
     setOpenAccordion(id);
   };
 
+  const removeSuperset = (id: string) => {
+    const newSplitExercises = splitExercises.filter(el => el.id !== id);
+    setSplitExercises(newSplitExercises);
+  };
+
   const toggleOpenAccordion = (id: string) => {
     if (openAccordion === id) {
       setOpenAccordion('');
@@ -139,7 +144,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
     <Modal isOpen={isOpen} close={handleClose}>
       <View style={styles.modal}>
         <View style={styles.container}>
-          <View style={{ flex: 1 }}>
+          <ScrollView style={{ flex: 1 }}>
             {splitExercises.map((splitExercise, index) => {
               return (
                 <Accordion
@@ -149,6 +154,8 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
                   headerText={
                     splitExercise.exercise?.name ?? 'Choose exercise...'
                   }
+                  removeSuperset={removeSuperset}
+                  splitId={splitExercise.id}
                 >
                   <SplitExerciseSection
                     splitExercise={splitExercise}
@@ -158,7 +165,7 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
                 </Accordion>
               );
             })}
-          </View>
+          </ScrollView>
 
           <View
             style={{
@@ -281,15 +288,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#909090',
     marginTop: 1,
-  },
-
-  accordion: {
-    marginTop: 16,
-    backgroundColor: '#fff',
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
 });
 

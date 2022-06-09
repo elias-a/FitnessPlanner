@@ -7,6 +7,8 @@ interface AccordionProps {
   toggleIsExpanded: (isExpanded: boolean) => void;
   children: any;
   headerText: string;
+  removeSuperset: (id: string) => void;
+  splitId: string;
 }
 
 const Accordion: React.FC<AccordionProps> = ({
@@ -14,6 +16,8 @@ const Accordion: React.FC<AccordionProps> = ({
   toggleIsExpanded,
   children,
   headerText,
+  removeSuperset,
+  splitId,
 }) => {
   return (
     <View
@@ -22,6 +26,16 @@ const Accordion: React.FC<AccordionProps> = ({
         !isExpanded && { minHeight: 50, maxHeight: 50 },
       ]}
     >
+      <Pressable
+        onPress={() => removeSuperset(splitId)}
+        style={styles.removeButton}
+      >
+        <MaterialCommunityIcons
+          name={'window-close'}
+          size={32}
+          color={'#000'}
+        />
+      </Pressable>
       <Pressable
         style={styles.header}
         onPress={() => toggleIsExpanded(!isExpanded)}
@@ -50,11 +64,17 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  removeButton: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+  },
   header: {
     flex: 1,
     flexDirection: 'row',
-    minWidth: '95%',
-    maxWidth: '95%',
+    minWidth: '85%',
+    maxWidth: '85%',
+    marginLeft: '12%',
     minHeight: 40,
     maxHeight: 40,
     marginTop: 5,

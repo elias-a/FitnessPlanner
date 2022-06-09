@@ -44,7 +44,12 @@ const SplitExercise: React.FC<SplitExerciseProps> = ({
 
   return (
     <View style={styles.messageSection}>
-      <View style={styles.categorySelect}>
+      <View
+        style={[
+          styles.categorySelect,
+          selectedCategories.length > 0 && { minHeight: 70, maxHeight: 70 },
+        ]}
+      >
         <MultiSelect
           items={categories}
           selectedItems={selectedCategories}
@@ -158,7 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 20,
     minHeight: 40,
-    maxHeight: 70,
+    maxHeight: 40,
   },
   exerciseDropdown: {
     flex: 1,
