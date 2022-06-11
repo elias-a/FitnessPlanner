@@ -1,13 +1,20 @@
-import realm from '../realm';
+import { openRealm } from '../realm';
 import { Category } from '../../types/category';
 import { parseJson } from '../../utils/parseJson';
 
-export const getCategories = (): Category[] => {
+export const getCategories = async (): Promise<Category[]> => {
+  const realm = await openRealm();
+
   const categories = parseJson(realm.objects('Category'));
   return categories;
 };
 
-export const addCategory = (category: Category, editing: boolean): Category => {
+export const addCategory = async (
+  category: Category,
+  editing: boolean,
+): Promise<Category> => {
+  const realm = await openRealm();
+
   const newCategory = realm.write(() => {
     const createdCategory: Category = realm.create(
       // This seems to be an issue with `realm.create` types.
@@ -31,7 +38,9 @@ export const addCategory = (category: Category, editing: boolean): Category => {
   };
 };
 
-export const deleteCategory = (category: Category): Category => {
+export const deleteCategory = async (category: Category): Promise<Category> => {
+  const realm = await openRealm();
+
   realm.write(() => {
     const categoryObject = realm.objectForPrimaryKey('Category', category.id);
     realm.delete(categoryObject);

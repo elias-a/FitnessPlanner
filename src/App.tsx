@@ -1,8 +1,9 @@
 import React from 'react';
-import { Provider } from 'react-redux';
-import { store } from './store';
+import { QueryClientProvider, QueryClient } from 'react-query';
 import Base from './Base';
 import { LogBox } from 'react-native';
+
+export const queryClient = new QueryClient();
 
 LogBox.ignoreLogs([
   "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
@@ -10,9 +11,9 @@ LogBox.ignoreLogs([
 
 const App = () => {
   return (
-    <Provider store={store}>
+    <QueryClientProvider client={queryClient}>
       <Base />
-    </Provider>
+    </QueryClientProvider>
   );
 };
 

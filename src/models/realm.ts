@@ -8,13 +8,20 @@ import {
   SplitExerciseArrayMap,
 } from './schema/split';
 
-export default new Realm({
-  schema: [
-    Category,
-    Exercise,
-    Split,
-    SplitExercise,
-    StringArrayMap,
-    SplitExerciseArrayMap,
-  ],
-});
+export const openRealm = async () => {
+  Realm.copyBundledRealmFiles();
+
+  const realm = await Realm.open({
+    schema: [
+      Category,
+      Exercise,
+      Split,
+      SplitExercise,
+      StringArrayMap,
+      SplitExerciseArrayMap,
+    ],
+    path: 'app.realm',
+  });
+
+  return realm;
+};

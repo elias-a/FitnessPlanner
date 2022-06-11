@@ -1,4 +1,4 @@
-import realm from '../realm';
+import { openRealm } from '../realm';
 import type {
   Split,
   SplitExercises,
@@ -10,7 +10,9 @@ import type {
 import type { Exercise } from '../../types/exercise';
 import { parseJson } from '../../utils/parseJson';
 
-export const getSplits = (): Split[] => {
+export const getSplits = async (): Promise<Split[]> => {
+  const realm = await openRealm();
+
   const splitObjects: SplitObject[] = parseJson(realm.objects('Split'));
   const splits: Split[] = [];
   splitObjects.forEach(split => {
@@ -31,7 +33,12 @@ export const getSplits = (): Split[] => {
   return splits;
 };
 
-export const createSplit = (split: Split, editing: boolean): Split => {
+export const createSplit = async (
+  split: Split,
+  editing: boolean,
+): Promise<Split> => {
+  const realm = await openRealm();
+
   const newSplit = realm.write(() => {
     const stringArrayMap: StringArrayMap[] = Object.keys(split.categories).map(
       day => {
@@ -44,9 +51,11 @@ export const createSplit = (split: Split, editing: boolean): Split => {
 
     const exerciseTemplateArrayMap = createSplitExerciseArray(
       split.exerciseTemplate,
+      realm,
     );
     const exerciseScheduleArrayMap = createSplitExerciseArray(
       split.exerciseSchedule,
+      realm,
     );
 
     const createdSplit: SplitObject = realm.create(
@@ -82,7 +91,9 @@ export const createSplit = (split: Split, editing: boolean): Split => {
   };
 };
 
-export const deleteSplit = (split: Split): Split => {
+export const deleteSplit = async (split: Split): Promise<Split> => {
+  const realm = await openRealm();
+
   realm.write(() => {
     const splitObject = realm.objectForPrimaryKey('Split', split.id);
     realm.delete(splitObject);
@@ -92,12 +103,14 @@ export const deleteSplit = (split: Split): Split => {
   return split;
 };
 
-export const updateSplitExercises = (
+export const updateSplitExercises = async (
   id: string,
   splitExercises: SplitExercises,
 ) => {
+  const realm = await openRealm();
+
   const updatedSplit: any = realm.write(() => {
-    const splitExerciseArray = createSplitExerciseArray(splitExercises);
+    const splitExerciseArray = createSplitExerciseArray(splitExercises, realm);
 
     const split = realm.create(
       'Split',
@@ -118,6 +131,7 @@ export const updateSplitExercises = (
 
 const createSplitExerciseArray = (
   splitExercises: SplitExercises,
+  realm: Realm,
 ): SplitExerciseArrayMap[] => {
   return Object.keys(splitExercises).map(day => {
     const splitExercisesArray: SplitExercise[] = [];

@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useQuery } from 'react-query';
+import { getExercises } from '../../models/tasks/exercise';
+import { getCategories } from '../../models/tasks/category';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown';
 import MultiSelect from '../MultiSelect';
 import NumericInput from 'react-native-numeric-input';
-import { useAppSelector } from '../../hooks';
 import type { Exercise } from '../../types/exercise';
 import type { NewSplitExercise } from '../../types/split';
 
@@ -20,18 +22,25 @@ const SplitExercise: React.FC<SplitExerciseProps> = ({
   index,
   handleChange,
 }) => {
-  const { categories } = useAppSelector(state => state.category);
-  const { exercises } = useAppSelector(state => state.exercise);
+  const categories = useQuery('categories', getCategories);
+  const exercises = useQuery('exercises', getExercises);
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>(
     [],
   );
-  const [filteredExercises, setFilteredExercises] = React.useState(exercises);
+  const [filteredExercises, setFilteredExercises] = React.useState(
+    exercises.data ?? [],
+  );
 
   const handleCategorySelection = (items: string[]) => {
+    if (!exercises.isSuccess) {
+      setFilteredExercises([]);
+      return;
+    }
+
     setSelectedCategories(items);
 
     const newFilteredExercises: Exercise[] = [];
-    exercises.forEach(e => {
+    exercises.data.forEach(e => {
       items.forEach(category => {
         if (e.categories.includes(category)) {
           newFilteredExercises.push(e);
@@ -51,7 +60,7 @@ const SplitExercise: React.FC<SplitExerciseProps> = ({
         ]}
       >
         <MultiSelect
-          items={categories}
+          items={categories.data ?? []}
           selectedItems={selectedCategories}
           onSelectedItemsChange={handleCategorySelection}
           isSingle={false}

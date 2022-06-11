@@ -19,7 +19,7 @@ const Tab = createBottomTabNavigator();
 const Navigation = () => {
   return (
     <NavigationContainer>
-      <Tab.Navigator initialRouteName="Exercises">
+      <Tab.Navigator initialRouteName="Calendar">
         <Tab.Screen
           name="Calendar"
           component={CalendarScreen}

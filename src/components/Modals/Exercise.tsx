@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
+import { useQuery } from 'react-query';
+import { getCategories } from '../../models/tasks/category';
 import Modal from './Modal';
 import MultiSelect from '../MultiSelect';
-import { useAppSelector } from '../../hooks';
 import type { Exercise } from '../../types/exercise';
 
 const initialExercise: Exercise = {
@@ -25,7 +26,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({
   selectedExercise,
 }) => {
   const [exercise, setExercise] = React.useState(initialExercise);
-  const { categories } = useAppSelector(state => state.category);
+  const categories = useQuery('categories', getCategories);
 
   React.useEffect(() => {
     if (selectedExercise) {
@@ -67,7 +68,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({
 
           <View style={styles.multiSelectSection}>
             <MultiSelect
-              items={categories}
+              items={categories.data ?? []}
               selectedItems={exercise.categories}
               onSelectedItemsChange={newCategories =>
                 updateExercise('categories', newCategories)

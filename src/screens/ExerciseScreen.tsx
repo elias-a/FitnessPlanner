@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useQuery } from 'react-query';
+import { useUpdateExercises } from '../hooks/split';
+import { getExercises } from '../models/tasks/exercise';
+import { getSplits } from '../models/tasks/split';
 import ScrollableWeek from '../components/ScrollableWeek';
 import ExerciseList from '../components/ExerciseList';
-import { useAppSelector, useAppDispatch } from '../hooks';
-import { updateExercises } from '../slices/split';
 import type { Split, SplitExercise } from '../types/split';
 import { isDateInSplit } from '../utils/isDateInSplit';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -19,9 +21,9 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
     [],
   );
   const [selectedDateSplit, setSelectedDateSplit] = React.useState<Split>();
-  const { splits } = useAppSelector(state => state.split);
-  const { exercises } = useAppSelector(state => state.exercise);
-  const dispatch = useAppDispatch();
+  const exercises = useQuery('exercises', getExercises);
+  const splits = useQuery('splits', getSplits);
+  const mutation = useUpdateExercises();
 
   React.useEffect(() => {
     const date = new Date();
@@ -36,12 +38,12 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
   }, [route.params]);
 
   React.useEffect(() => {
-    if (!selectedDate) {
+    if (!selectedDate || !splits.isSuccess) {
       setSplitExercises([]);
       return;
     }
 
-    const split = isDateInSplit(selectedDate, splits);
+    const split = isDateInSplit(selectedDate, splits.data);
     setSelectedDateSplit(split);
 
     if (!split) {
@@ -58,7 +60,13 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
     setSplitExercises(split.exerciseSchedule[key]);
     setDayKey(key);
     setSplitId(split.id);
-  }, [splits, exercises, selectedDate]);
+  }, [
+    splits.isSuccess,
+    splits.data,
+    exercises.isSuccess,
+    exercises.data,
+    selectedDate,
+  ]);
 
   const toggleIsCompleted = (id: string) => {
     if (!selectedDateSplit) {
@@ -78,15 +86,13 @@ const ExerciseScreen: React.FC<ExerciseScreenProps> = ({ route }) => {
       }
     });
 
-    dispatch(
-      updateExercises({
-        id: splitId,
-        splitExercises: {
-          ...selectedDateSplit.exerciseSchedule,
-          [dayKey]: updatedSplitExercises,
-        },
-      }),
-    );
+    mutation.mutate({
+      id: splitId,
+      splitExercises: {
+        ...selectedDateSplit.exerciseSchedule,
+        [dayKey]: updatedSplitExercises,
+      },
+    });
     setSplitExercises(updatedSplitExercises);
   };
 

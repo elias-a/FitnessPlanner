@@ -3,9 +3,12 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useAppSelector, useAppDispatch } from '../../hooks';
-import { addCategory } from '../../slices/category';
-import { deleteCategory } from '../../slices/category';
+import { useQuery } from 'react-query';
+import {
+  useAddCategoryMutation,
+  useDeleteCategoryMutation,
+} from '../../hooks/category';
+import { getCategories } from '../../models/tasks/category';
 import ScrollableList from '../ScrollableList';
 import CategoryModal from '../Modals/Category';
 import type { Category } from '../../types/category';
@@ -16,8 +19,9 @@ type ViewCategoriesProps = NativeStackScreenProps<Stack, 'ViewExercises'>;
 const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
   const [isCategoryOpen, setIsCategoryOpen] = React.useState(false);
   const [selectedCategory, setSelectedCategory] = React.useState<Category>();
-  const { categories } = useAppSelector(state => state.category);
-  const dispatch = useAppDispatch();
+  const categories = useQuery('categories', getCategories);
+  const addMutation = useAddCategoryMutation();
+  const deleteMutation = useDeleteCategoryMutation();
 
   const handleEdit = (category: Category) => {
     setSelectedCategory(category);
@@ -25,16 +29,13 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
   };
 
   const saveCategory = (category: Category, editing: boolean) => {
-    dispatch(
-      addCategory({
-        category: {
-          id: editing ? category.id : uuid.v4().toString(),
-          name: category.name,
-          subCategories: category.subCategories,
-        },
-        editing: editing,
-      }),
-    );
+    addMutation.mutate({
+      category: {
+        ...category,
+        id: editing ? category.id : uuid.v4().toString(),
+      },
+      editing: editing,
+    });
 
     closeCategoryModal();
   };
@@ -58,33 +59,34 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
         />
       }
     >
-      {categories.map(category => {
-        return (
-          <View key={category.id} style={styles.category}>
-            <View style={styles.categoryDetails}>
-              <Text style={styles.categoryName}>{category.name}</Text>
+      {categories.isSuccess &&
+        categories.data.map(category => {
+          return (
+            <View key={category.id} style={styles.category}>
+              <View style={styles.categoryDetails}>
+                <Text style={styles.categoryName}>{category.name}</Text>
+              </View>
+              <View style={styles.editSection}>
+                <Pressable onPress={() => handleEdit(category)}>
+                  <MaterialCommunityIcons
+                    name={'pencil'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
+              </View>
+              <View style={styles.deleteSection}>
+                <Pressable onPress={() => deleteMutation.mutate({ category })}>
+                  <MaterialCommunityIcons
+                    name={'delete'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
+              </View>
             </View>
-            <View style={styles.editSection}>
-              <Pressable onPress={() => handleEdit(category)}>
-                <MaterialCommunityIcons
-                  name={'pencil'}
-                  size={32}
-                  color={'#000'}
-                />
-              </Pressable>
-            </View>
-            <View style={styles.deleteSection}>
-              <Pressable onPress={() => dispatch(deleteCategory(category))}>
-                <MaterialCommunityIcons
-                  name={'delete'}
-                  size={32}
-                  color={'#000'}
-                />
-              </Pressable>
-            </View>
-          </View>
-        );
-      })}
+          );
+        })}
     </ScrollableList>
   );
 };

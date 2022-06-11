@@ -3,9 +3,10 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useAppSelector, useAppDispatch } from '../../hooks';
-import { deleteSplit } from '../../slices/split';
-import { createSplit } from '../../slices/split';
+import { useQuery } from 'react-query';
+import { useAddSplitMutation, useDeleteSplitMutation } from '../../hooks/split';
+import { getExercises } from '../../models/tasks/exercise';
+import { getSplits } from '../../models/tasks/split';
 import {
   buildSplitTemplate,
   templateToSchedule,
@@ -20,9 +21,10 @@ type ViewSplitsProps = NativeStackScreenProps<Stack, 'ViewSplits'>;
 const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
   const [isSplitOpen, setIsSplitOpen] = React.useState(false);
   const [selectedSplit, setSelectedSplit] = React.useState<Split>();
-  const { splits } = useAppSelector(state => state.split);
-  const { exercises } = useAppSelector(state => state.exercise);
-  const dispatch = useAppDispatch();
+  const exercises = useQuery('exercises', getExercises);
+  const splits = useQuery('splits', getSplits);
+  const addMutation = useAddSplitMutation();
+  const deleteMutation = useDeleteSplitMutation();
 
   const handleEdit = (split: Split) => {
     setSelectedSplit(split);
@@ -30,8 +32,11 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
   };
 
   const saveSplit = (split: Split, editing: boolean) => {
-    if (Object.keys(split.exerciseTemplate).length === 0) {
-      const selectedExercises = buildSplitTemplate(split, exercises);
+    if (
+      Object.keys(split.exerciseTemplate).length === 0 &&
+      exercises.isSuccess
+    ) {
+      const selectedExercises = buildSplitTemplate(split, exercises.data);
       split.exerciseTemplate = selectedExercises;
     }
 
@@ -43,12 +48,7 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
       editing,
     );
 
-    dispatch(
-      createSplit({
-        split: split,
-        editing: editing,
-      }),
-    );
+    addMutation.mutate({ split, editing });
 
     closeSplitModal();
   };
@@ -72,37 +72,38 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
         />
       }
     >
-      {splits.map(split => {
-        return (
-          <View key={split.id} style={styles.split}>
-            <View style={styles.splitDetails}>
-              <Text style={styles.splitDetailsText}>
-                {`${formatDate(new Date(split.startDate))} - ${formatDate(
-                  new Date(split.endDate),
-                )}`}
-              </Text>
+      {splits.isSuccess &&
+        splits.data.map(split => {
+          return (
+            <View key={split.id} style={styles.split}>
+              <View style={styles.splitDetails}>
+                <Text style={styles.splitDetailsText}>
+                  {`${formatDate(new Date(split.startDate))} - ${formatDate(
+                    new Date(split.endDate),
+                  )}`}
+                </Text>
+              </View>
+              <View style={styles.editSection}>
+                <Pressable onPress={() => handleEdit(split)}>
+                  <MaterialCommunityIcons
+                    name={'pencil'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
+              </View>
+              <View style={styles.deleteSection}>
+                <Pressable onPress={() => deleteMutation.mutate({ split })}>
+                  <MaterialCommunityIcons
+                    name={'delete'}
+                    size={32}
+                    color={'#000'}
+                  />
+                </Pressable>
+              </View>
             </View>
-            <View style={styles.editSection}>
-              <Pressable onPress={() => handleEdit(split)}>
-                <MaterialCommunityIcons
-                  name={'pencil'}
-                  size={32}
-                  color={'#000'}
-                />
-              </Pressable>
-            </View>
-            <View style={styles.deleteSection}>
-              <Pressable onPress={() => dispatch(deleteSplit(split))}>
-                <MaterialCommunityIcons
-                  name={'delete'}
-                  size={32}
-                  color={'#000'}
-                />
-              </Pressable>
-            </View>
-          </View>
-        );
-      })}
+          );
+        })}
     </ScrollableList>
   );
 };

@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useQuery } from 'react-query';
+import { getCategories } from '../../models/tasks/category';
 import Modal from './Modal';
 import MultiSelect from '../MultiSelect';
-import { useAppSelector } from '../../hooks';
 
 interface RandomizeExercisesProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ const RandomizeExercises: React.FC<RandomizeExercisesProps> = ({
   onCategoriesSelection,
   selectedCategories,
 }) => {
-  const { categories } = useAppSelector(state => state.category);
+  const categories = useQuery('categories', getCategories);
 
   return (
     <Modal isOpen={isOpen} close={onCancel}>
@@ -28,7 +29,7 @@ const RandomizeExercises: React.FC<RandomizeExercisesProps> = ({
           <View style={styles.messageSection}>
             <View style={styles.categorySelect}>
               <MultiSelect
-                items={categories}
+                items={categories.data ?? []}
                 selectedItems={selectedCategories}
                 onSelectedItemsChange={onCategoriesSelection}
                 isSingle={false}

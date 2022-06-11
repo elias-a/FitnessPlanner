@@ -1,13 +1,20 @@
-import realm from '../realm';
+import { openRealm } from '../realm';
 import { Exercise } from '../../types/exercise';
 import { parseJson } from '../../utils/parseJson';
 
-export const getExercises = (): Exercise[] => {
+export const getExercises = async (): Promise<Exercise[]> => {
+  const realm = await openRealm();
+
   const exercises = parseJson(realm.objects('Exercise'));
   return exercises;
 };
 
-export const addExercise = (exercise: Exercise, editing: boolean): Exercise => {
+export const addExercise = async (
+  exercise: Exercise,
+  editing: boolean,
+): Promise<Exercise> => {
+  const realm = await openRealm();
+
   const newExercise = realm.write(() => {
     const createdExercise: Exercise = realm.create(
       // This seems to be an issue with `realm.create` types.
@@ -31,7 +38,9 @@ export const addExercise = (exercise: Exercise, editing: boolean): Exercise => {
   };
 };
 
-export const deleteExercise = (exercise: Exercise): Exercise => {
+export const deleteExercise = async (exercise: Exercise): Promise<Exercise> => {
+  const realm = await openRealm();
+
   realm.write(() => {
     const exerciseObject = realm.objectForPrimaryKey('Exercise', exercise.id);
     realm.delete(exerciseObject);

@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, FlatList } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useAppSelector } from '../../hooks';
+import { useQuery } from 'react-query';
+import { getExercises } from '../../models/tasks/exercise';
+import { getSplits } from '../../models/tasks/split';
 import { selectExercises } from '../../algorithms/buildSplit';
 import Modal from './Modal';
 import Calendar from '../Calendar';
@@ -50,8 +52,8 @@ const SplitModal: React.FC<SplitModalProps> = ({
     React.useState(false);
   const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
   const [exerciseToEdit, setExerciseToEdit] = React.useState<SplitExercise>();
-  const { exercises } = useAppSelector(state => state.exercise);
-  const { splits } = useAppSelector(state => state.split);
+  const exercises = useQuery('exercises', getExercises);
+  const splits = useQuery('splits', getSplits);
   const flatListRef: React.RefObject<FlatList<number>> | undefined | null =
     React.createRef();
 
@@ -76,9 +78,14 @@ const SplitModal: React.FC<SplitModalProps> = ({
   }, [isOpen, selectedSplit]);
 
   React.useEffect(() => {
+    if (!splits.isSuccess) {
+      setRanges([]);
+      return;
+    }
+
     const id = selectedSplit ? selectedSplit.id : '';
     const newRanges: CalendarRange[] = [];
-    splits.forEach(split => {
+    splits.data.forEach(split => {
       if (id !== split.id) {
         newRanges.push({
           startRange: new Date(split.startDate),
@@ -89,7 +96,7 @@ const SplitModal: React.FC<SplitModalProps> = ({
     });
 
     setRanges(newRanges);
-  }, [selectedSplit, splits]);
+  }, [selectedSplit, splits.isSuccess, splits.data]);
 
   const initializeCategories = () => {
     const newCategories: { [key: string]: string[] } = {};
@@ -151,9 +158,13 @@ const SplitModal: React.FC<SplitModalProps> = ({
   };
 
   const selectDayExercises = () => {
+    if (!exercises.isSuccess) {
+      return;
+    }
+
     const dayExercises = selectExercises(
       selectedCategories[selectedDay],
-      exercises,
+      exercises.data,
     );
 
     setSplitExercises(prevState => ({
