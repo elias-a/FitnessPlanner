@@ -33,10 +33,7 @@ export const getSplits = async (): Promise<Split[]> => {
   return splits;
 };
 
-export const createSplit = async (
-  split: Split,
-  editing: boolean,
-): Promise<Split> => {
+export const createSplit = async (split: Split): Promise<Split> => {
   const realm = await openRealm();
 
   const newSplit = realm.write(() => {
@@ -71,7 +68,7 @@ export const createSplit = async (
         exerciseSchedule: exerciseScheduleArrayMap,
         color: split.color,
       },
-      editing ? Realm.UpdateMode.Modified : Realm.UpdateMode.Never,
+      Realm.UpdateMode.Modified,
     );
 
     return createdSplit;

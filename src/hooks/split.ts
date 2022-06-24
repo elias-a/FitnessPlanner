@@ -10,7 +10,7 @@ import type { Split, SplitExercises } from '../types/split';
 export const useAddSplitMutation = () =>
   useMutation<Split, unknown, { split: Split; editing: boolean }, unknown>(
     data => {
-      return createSplit(data.split, data.editing);
+      return createSplit(data.split);
     },
     {
       onSuccess: () => {

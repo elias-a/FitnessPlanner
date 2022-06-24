@@ -124,6 +124,8 @@ const AddSplitExercise: React.FC<AddSplitExerciseProps> = ({
           });
 
           newSplitExercise.superset = supersets;
+        } else {
+          newSplitExercise.superset = [];
         }
 
         onAdd(newSplitExercise);
