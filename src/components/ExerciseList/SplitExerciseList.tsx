@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import type { SplitExercise } from '../../types/split';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   NestableScrollContainer,
   NestableDraggableFlatList,
 } from 'react-native-draggable-flatlist';
+import ExerciseDetails from './ExerciseDetails';
 
 interface ExerciseListProps {
   exercises: SplitExercise[];
@@ -46,7 +47,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
         key={item.id}
         style={[
           styles.exercise,
-          styles.splitSelection,
           Object.keys(item).includes('isDeleted') &&
             item.isDeleted && { backgroundColor: '#ffcccb' },
         ]}
@@ -65,14 +65,15 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
             style={[styles.dragIcon, { left: 7 }]}
           />
         </Pressable>
-        <View style={styles.exerciseDetails}>
-          <Text style={styles.exerciseName}>
-            {item.isSingleArm
-              ? `Single Arm ${item.exercise.name}`
-              : `${item.exercise.name}`}
-            {` (${item.sets} x ${item.reps})`}
-          </Text>
+
+        <View style={styles.exerciseDetailsSection}>
+          <ExerciseDetails exercise={item} />
+          {item.superset &&
+            item.superset.map(superset => {
+              return <ExerciseDetails key={superset.id} exercise={superset} />;
+            })}
         </View>
+
         <Pressable
           style={styles.contextSection}
           onPress={() =>
@@ -148,25 +149,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   exercise: {
-    width: 340,
-    height: 90,
+    minWidth: 340,
+    maxWidth: 340,
+    minHeight: 40,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 8,
-    marginTop: 20,
+    marginTop: 10,
     borderBottomWidth: 2,
   },
-  splitSelection: {
-    height: 40,
-    marginTop: 10,
-  },
-  exerciseDetails: {
+  exerciseDetailsSection: {
     flex: 1,
-    justifyContent: 'center',
-    minHeight: '100%',
-    maxHeight: '100%',
-    marginLeft: 5,
+    flexDirection: 'column',
   },
   editSection: {
     flex: 2,
@@ -186,14 +182,10 @@ const styles = StyleSheet.create({
     marginRight: 5,
     marginTop: 3,
   },
-  exerciseName: {
-    color: '#000',
-    fontSize: 22,
-  },
   dragButton: {
     flex: 1,
-    flexDirection: 'row',
     maxWidth: 25,
+    minHeight: 40,
   },
   dragIcon: {
     position: 'absolute',
@@ -201,7 +193,6 @@ const styles = StyleSheet.create({
   },
   contextSection: {
     position: 'absolute',
-    top: 8,
     right: 1,
   },
   contextButtons: {
