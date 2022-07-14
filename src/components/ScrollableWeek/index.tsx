@@ -19,7 +19,6 @@ const ScrollableWeek: React.FC<ScrollableWeekProps> = ({
   selectedDate,
   setSelectedDate,
 }) => {
-  const [initialScrollIndex, setInitialScrollIndex] = React.useState(0);
   const [dates, setDates] = React.useState<WeekData[]>([]);
   const flatListRef: React.RefObject<FlatList<WeekData>> | undefined | null =
     React.createRef();
@@ -41,7 +40,6 @@ const ScrollableWeek: React.FC<ScrollableWeekProps> = ({
     }
 
     setDates(week);
-    setInitialScrollIndex(modulo(selectedDate.getDay() - 1, 7));
   }, [selectedDate]);
 
   React.useEffect(() => {
@@ -80,7 +78,6 @@ const ScrollableWeek: React.FC<ScrollableWeekProps> = ({
         renderItem={renderItem}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        initialScrollIndex={initialScrollIndex}
         getItemLayout={(_, index) => ({
           length: dayWidth,
           offset: (dayWidth + 18) * index,
