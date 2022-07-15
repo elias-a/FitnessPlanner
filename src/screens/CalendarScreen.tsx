@@ -22,8 +22,7 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
   const [ranges, setRanges] = React.useState<CalendarRange[]>([]);
   const [formattedStartDate, setFormattedStartDate] = React.useState('');
   const [formattedEndDate, setFormattedEndDate] = React.useState('');
-  const [splitLength, setSplitLength] = React.useState(0);
-  const [currentSplit, setCurrentSplit] = React.useState<Split>();
+  const [selectedSplit, setSelectedSplit] = React.useState<Split>();
   const [dayCategories, setDayCategories] = React.useState<string[]>([]);
   const splits = useQuery('splits', getSplits);
   const categories = useQuery('categories', getCategories);
@@ -46,38 +45,31 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
   }, [splits.isSuccess, splits.data]);
 
   React.useEffect(() => {
-    if (!splits.isSuccess) {
+    if (!splits.isSuccess || !selectedDate) {
       setFormattedStartDate('');
       setFormattedEndDate('');
-      setSplitLength(0);
-      setCurrentSplit(undefined);
+      setSelectedSplit(undefined);
       return;
     }
 
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
-    const newCurrentSplit = splits.data.find(
+    const newSelectedSplit = splits.data.find(
       split =>
-        today >= new Date(split.startDate) && today <= new Date(split.endDate),
+        selectedDate >= new Date(split.startDate) &&
+        selectedDate <= new Date(split.endDate),
     );
 
-    if (newCurrentSplit) {
-      const newStartDate = new Date(newCurrentSplit.startDate);
+    if (newSelectedSplit) {
+      const newStartDate = new Date(newSelectedSplit.startDate);
       setFormattedStartDate(formatDate(newStartDate));
 
-      const newEndDate = new Date(newCurrentSplit.endDate);
+      const newEndDate = new Date(newSelectedSplit.endDate);
       setFormattedEndDate(formatDate(newEndDate));
-
-      const numWeeks = Math.ceil(
-        (newEndDate.getTime() - newStartDate.getTime()) / 86400 / 1000 / 7,
-      );
-      setSplitLength(numWeeks);
     } else {
       setFormattedEndDate('');
     }
 
-    setCurrentSplit(newCurrentSplit);
-  }, [splits.isSuccess, splits.data]);
+    setSelectedSplit(newSelectedSplit);
+  }, [splits.isSuccess, splits.data, selectedDate]);
 
   React.useEffect(() => {
     if (!splits.isSuccess || !categories.isSuccess) {
@@ -128,7 +120,7 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
           selectedDates={[selectedDate, undefined]}
           setSelectedDates={newDate => setSelectedDate(newDate[0])}
           ranges={ranges}
-          color={currentSplit ? currentSplit.color : ''}
+          color={selectedSplit ? selectedSplit.color : ''}
         />
       </View>
       <View style={styles.exercisesContainer}>
@@ -159,22 +151,17 @@ const CalendarScreen: React.FC<CalendarScreenProps> = ({ navigation }) => {
           </Pressable>
         </View>
       </View>
-      {currentSplit && (
+      {selectedSplit && (
         <View style={styles.splitContainer}>
           <View
             style={[
               styles.splitDetails,
-              { backgroundColor: currentSplit.color },
+              { backgroundColor: selectedSplit.color },
             ]}
           >
             <Text style={styles.splitDetailsText}>
-              {`Current Split: ${splitLength} weeks`}
+              {`${formattedStartDate} - ${formattedEndDate}`}
             </Text>
-          </View>
-          <View style={styles.splitDetails}>
-            <Text
-              style={styles.splitDetailsText}
-            >{`${formattedStartDate} - ${formattedEndDate}`}</Text>
           </View>
         </View>
       )}
