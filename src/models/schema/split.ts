@@ -42,5 +42,6 @@ export const Split: Realm.ObjectSchema = {
     exerciseTemplate: 'SplitExerciseArrayMap[]',
     exerciseSchedule: 'SplitExerciseArrayMap[]',
     color: 'string',
+    isDeleted: 'bool',
   },
 };

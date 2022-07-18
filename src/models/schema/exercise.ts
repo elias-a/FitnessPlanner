@@ -13,6 +13,7 @@ class Exercise extends Realm.Object {
       id: 'string',
       name: 'string',
       categories: 'string[]',
+      isDeleted: 'bool',
     },
   };
 }

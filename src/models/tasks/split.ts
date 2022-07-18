@@ -27,6 +27,7 @@ export const getSplits = async (): Promise<Split[]> => {
       exerciseTemplate: exerciseTemplate,
       exerciseSchedule: exerciseSchedule,
       color: split.color,
+      isDeleted: split.isDeleted,
     });
   });
 
@@ -67,6 +68,7 @@ export const createSplit = async (split: Split): Promise<Split> => {
         exerciseTemplate: exerciseTemplateArrayMap,
         exerciseSchedule: exerciseScheduleArrayMap,
         color: split.color,
+        isDeleted: split.isDeleted ?? false,
       },
       Realm.UpdateMode.Modified,
     );
@@ -85,6 +87,7 @@ export const createSplit = async (split: Split): Promise<Split> => {
     exerciseTemplate: exerciseTemplate,
     exerciseSchedule: exerciseSchedule,
     color: newSplit.color,
+    isDeleted: newSplit.isDeleted ?? false,
   };
 };
 

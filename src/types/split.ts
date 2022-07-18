@@ -8,6 +8,7 @@ export interface Split {
   exerciseTemplate: SplitExercises;
   exerciseSchedule: SplitExercises;
   color: string;
+  isDeleted?: boolean;
 }
 
 export interface SplitExercises {
@@ -48,4 +49,5 @@ export interface SplitObject {
   exerciseTemplate: SplitExerciseArrayMap[];
   exerciseSchedule: SplitExerciseArrayMap[];
   color: string;
+  isDeleted?: boolean;
 }

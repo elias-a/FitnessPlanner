@@ -12,6 +12,7 @@ class Category extends Realm.Object {
       id: 'string',
       name: 'string',
       subCategories: 'Category[]',
+      isDeleted: 'bool',
     },
   };
 }

@@ -92,6 +92,7 @@ Realm.open({
         id: category.id,
         name: category.name,
         subCategories: [],
+        isDeleted: false,
       });
     });
 
@@ -100,6 +101,7 @@ Realm.open({
         id: exercise.id,
         name: exercise.name,
         categories: exercise.categories,
+        isDeleted: false,
       });
     });
   });

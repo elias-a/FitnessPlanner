@@ -24,6 +24,7 @@ export const addCategory = async (
         id: category.id,
         name: category.name,
         subCategories: category.subCategories,
+        isDeleted: category.isDeleted ?? false,
       },
       editing ? Realm.UpdateMode.Modified : Realm.UpdateMode.Never,
     );
@@ -35,6 +36,7 @@ export const addCategory = async (
     id: newCategory.id,
     name: newCategory.name,
     subCategories: parseJson(newCategory.subCategories),
+    isDeleted: newCategory.isDeleted ?? false,
   };
 };
 

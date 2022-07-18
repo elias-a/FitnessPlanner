@@ -24,6 +24,7 @@ export const addExercise = async (
         id: exercise.id,
         name: exercise.name,
         categories: exercise.categories,
+        isDeleted: exercise.isDeleted ?? false,
       },
       editing ? Realm.UpdateMode.Modified : Realm.UpdateMode.Never,
     );
@@ -35,6 +36,7 @@ export const addExercise = async (
     id: newExercise.id,
     name: newExercise.name,
     categories: parseJson(newExercise.categories),
+    isDeleted: newExercise.isDeleted ?? false,
   };
 };
 

@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import type { Exercise } from '../../types/exercise';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useQuery } from 'react-query';
 import {
   useAddExerciseMutation,
@@ -12,6 +11,7 @@ import {
 import { getExercises } from '../../models/tasks/exercise';
 import ScrollableList from '../ScrollableList';
 import ExerciseModal from '../Modals/Exercise';
+import ContextMenu from '../ContextMenu';
 import uuid from 'react-native-uuid';
 
 type ViewExercisesProps = NativeStackScreenProps<Stack, 'ViewExercises'>;
@@ -26,6 +26,26 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
   const handleEdit = (exercise: Exercise) => {
     setSelectedExercise(exercise);
     setIsExerciseOpen(true);
+  };
+
+  const handleRemove = (exercise: Exercise) => {
+    addMutation.mutate({
+      exercise: {
+        ...exercise,
+        isDeleted: true,
+      },
+      editing: true,
+    });
+  };
+
+  const handleUndoRemove = (exercise: Exercise) => {
+    addMutation.mutate({
+      exercise: {
+        ...exercise,
+        isDeleted: false,
+      },
+      editing: true,
+    });
   };
 
   const saveExercise = (exercise: Exercise, editing: boolean) => {
@@ -63,28 +83,24 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
       {exercises.isSuccess &&
         exercises.data.map(exercise => {
           return (
-            <View key={exercise.id} style={styles.exercise}>
+            <View
+              key={exercise.id}
+              style={[
+                styles.exercise,
+                Object.keys(exercise).includes('isDeleted') &&
+                  exercise.isDeleted && { backgroundColor: '#ffcccb' },
+              ]}
+            >
               <View style={styles.exerciseDetails}>
                 <Text style={styles.exerciseName}>{exercise.name}</Text>
               </View>
-              <View style={styles.editSection}>
-                <Pressable onPress={() => handleEdit(exercise)}>
-                  <MaterialCommunityIcons
-                    name={'pencil'}
-                    size={32}
-                    color={'#000'}
-                  />
-                </Pressable>
-              </View>
-              <View style={styles.deleteSection}>
-                <Pressable onPress={() => deleteMutation.mutate({ exercise })}>
-                  <MaterialCommunityIcons
-                    name={'delete'}
-                    size={32}
-                    color={'#000'}
-                  />
-                </Pressable>
-              </View>
+
+              <ContextMenu
+                item={exercise}
+                edit={handleEdit}
+                remove={handleRemove}
+                undoRemove={handleUndoRemove}
+              />
             </View>
           );
         })}

@@ -2,4 +2,5 @@ export interface Exercise {
   id: string;
   name: string;
   categories: string[];
+  isDeleted?: boolean;
 }

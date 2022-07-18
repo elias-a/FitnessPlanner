@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useQuery } from 'react-query';
 import { useAddSplitMutation, useDeleteSplitMutation } from '../../hooks/split';
 import { getExercises } from '../../models/tasks/exercise';
@@ -13,6 +12,7 @@ import {
 } from '../../algorithms/buildSplit';
 import ScrollableList from '../ScrollableList';
 import SplitModal from '../Modals/Split';
+import ContextMenu from '../ContextMenu';
 import { formatDate } from '../../utils/formatDate';
 import type { Split } from '../../types/split';
 
@@ -29,6 +29,26 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
   const handleEdit = (split: Split) => {
     setSelectedSplit(split);
     setIsSplitOpen(true);
+  };
+
+  const handleRemove = (split: Split) => {
+    addMutation.mutate({
+      split: {
+        ...split,
+        isDeleted: true,
+      },
+      editing: true,
+    });
+  };
+
+  const handleUndoRemove = (split: Split) => {
+    addMutation.mutate({
+      split: {
+        ...split,
+        isDeleted: false,
+      },
+      editing: true,
+    });
   };
 
   const saveSplit = (split: Split, editing: boolean) => {
@@ -75,7 +95,14 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
       {splits.isSuccess &&
         splits.data.map(split => {
           return (
-            <View key={split.id} style={styles.split}>
+            <View
+              key={split.id}
+              style={[
+                styles.split,
+                Object.keys(split).includes('isDeleted') &&
+                  split.isDeleted && { backgroundColor: '#ffcccb' },
+              ]}
+            >
               <View style={styles.splitDetails}>
                 <Text style={styles.splitDetailsText}>
                   {`${formatDate(new Date(split.startDate))} - ${formatDate(
@@ -83,24 +110,13 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
                   )}`}
                 </Text>
               </View>
-              <View style={styles.editSection}>
-                <Pressable onPress={() => handleEdit(split)}>
-                  <MaterialCommunityIcons
-                    name={'pencil'}
-                    size={32}
-                    color={'#000'}
-                  />
-                </Pressable>
-              </View>
-              <View style={styles.deleteSection}>
-                <Pressable onPress={() => deleteMutation.mutate({ split })}>
-                  <MaterialCommunityIcons
-                    name={'delete'}
-                    size={32}
-                    color={'#000'}
-                  />
-                </Pressable>
-              </View>
+
+              <ContextMenu
+                item={split}
+                edit={handleEdit}
+                remove={handleRemove}
+                undoRemove={handleUndoRemove}
+              />
             </View>
           );
         })}

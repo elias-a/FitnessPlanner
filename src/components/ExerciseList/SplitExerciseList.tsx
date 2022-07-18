@@ -7,6 +7,7 @@ import {
   NestableDraggableFlatList,
 } from 'react-native-draggable-flatlist';
 import ExerciseDetails from './ExerciseDetails';
+import ContextMenu from '../ContextMenu';
 
 interface ExerciseListProps {
   exercises: SplitExercise[];
@@ -23,10 +24,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   undoRemove,
   reorder,
 }) => {
-  const [isContextOpen, setIsContextOpen] = React.useState<{
-    [key: string]: boolean;
-  }>({});
-
   const remove = (exercise: SplitExercise) => {
     removeExercise({ ...exercise, isDeleted: true });
   };
@@ -74,57 +71,12 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
             })}
         </View>
 
-        <Pressable
-          style={styles.contextSection}
-          onPress={() =>
-            setIsContextOpen(prevState => ({
-              ...prevState,
-              [item.id]: !isContextOpen[item.id],
-            }))
-          }
-        >
-          {isContextOpen[item.id] ? (
-            <View style={styles.contextButtons}>
-              {Object.keys(item).includes('isDeleted') && item.isDeleted ? (
-                <Pressable onPress={() => undo(item)}>
-                  <MaterialCommunityIcons
-                    name={'undo'}
-                    size={28}
-                    color={'#000'}
-                  />
-                </Pressable>
-              ) : (
-                <React.Fragment>
-                  <Pressable onPress={() => editExercise(item)}>
-                    <MaterialCommunityIcons
-                      name={'pencil'}
-                      size={28}
-                      color={'#000'}
-                    />
-                  </Pressable>
-                  <Pressable onPress={() => remove(item)}>
-                    <MaterialCommunityIcons
-                      name={'delete'}
-                      size={28}
-                      color={'#000'}
-                    />
-                  </Pressable>
-                </React.Fragment>
-              )}
-              <MaterialCommunityIcons
-                name={'dots-vertical'}
-                size={24}
-                color={'#000'}
-              />
-            </View>
-          ) : (
-            <MaterialCommunityIcons
-              name={'dots-horizontal'}
-              size={24}
-              color={'#000'}
-            />
-          )}
-        </Pressable>
+        <ContextMenu
+          item={item}
+          edit={editExercise}
+          remove={remove}
+          undoRemove={undo}
+        />
       </View>
     );
   };
