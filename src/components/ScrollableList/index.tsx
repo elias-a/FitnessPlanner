@@ -1,12 +1,10 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import Header from './Header';
-import AddButton from './AddButton';
 
 interface ScrollableListProps {
   title: string;
   goBack: () => void;
-  clickAddButton: () => void;
   children: any;
   modal: any;
 }
@@ -14,7 +12,6 @@ interface ScrollableListProps {
 const ScrollableList: React.FC<ScrollableListProps> = ({
   title,
   goBack,
-  clickAddButton,
   children,
   modal,
 }) => {
@@ -26,10 +23,6 @@ const ScrollableList: React.FC<ScrollableListProps> = ({
         <View style={styles.viewContainer}>
           <View style={styles.listContainer}>
             <ScrollView>{children}</ScrollView>
-          </View>
-
-          <View style={styles.addButtonSection}>
-            <AddButton add={clickAddButton} />
           </View>
         </View>
       </View>

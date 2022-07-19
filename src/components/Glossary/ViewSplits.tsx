@@ -13,6 +13,7 @@ import {
 import ScrollableList from '../ScrollableList';
 import SplitModal from '../Modals/Split';
 import ContextMenu from '../ContextMenu';
+import Header from './Header';
 import { formatDate } from '../../utils/formatDate';
 import type { Split } from '../../types/split';
 
@@ -82,7 +83,6 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
     <ScrollableList
       title={'Splits'}
       goBack={() => navigation.goBack()}
-      clickAddButton={() => setIsSplitOpen(true)}
       modal={
         <SplitModal
           isOpen={isSplitOpen}
@@ -92,34 +92,37 @@ const ViewSplits: React.FC<ViewSplitsProps> = ({ navigation }) => {
         />
       }
     >
-      {splits.isSuccess &&
-        splits.data.map(split => {
-          return (
-            <View
-              key={split.id}
-              style={[
-                styles.split,
-                Object.keys(split).includes('isDeleted') &&
-                  split.isDeleted && { backgroundColor: '#ffcccb' },
-              ]}
-            >
-              <View style={styles.splitDetails}>
-                <Text style={styles.splitDetailsText}>
-                  {`${formatDate(new Date(split.startDate))} - ${formatDate(
-                    new Date(split.endDate),
-                  )}`}
-                </Text>
-              </View>
+      <Header add={() => setIsSplitOpen(true)} />
+      <View style={{ flex: 2, minWidth: '100%', alignItems: 'center' }}>
+        {splits.isSuccess &&
+          splits.data.map(split => {
+            return (
+              <View
+                key={split.id}
+                style={[
+                  styles.split,
+                  Object.keys(split).includes('isDeleted') &&
+                    split.isDeleted && { backgroundColor: '#ffcccb' },
+                ]}
+              >
+                <View style={styles.splitDetails}>
+                  <Text style={styles.splitDetailsText}>
+                    {`${formatDate(new Date(split.startDate))} - ${formatDate(
+                      new Date(split.endDate),
+                    )}`}
+                  </Text>
+                </View>
 
-              <ContextMenu
-                item={split}
-                edit={handleEdit}
-                remove={handleRemove}
-                undoRemove={handleUndoRemove}
-              />
-            </View>
-          );
-        })}
+                <ContextMenu
+                  item={split}
+                  edit={handleEdit}
+                  remove={handleRemove}
+                  undoRemove={handleUndoRemove}
+                />
+              </View>
+            );
+          })}
+      </View>
     </ScrollableList>
   );
 };

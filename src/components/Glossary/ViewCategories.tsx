@@ -11,6 +11,7 @@ import { getCategories } from '../../models/tasks/category';
 import ScrollableList from '../ScrollableList';
 import CategoryModal from '../Modals/Category';
 import ContextMenu from '../ContextMenu';
+import Header from './Header';
 import type { Category } from '../../types/category';
 import uuid from 'react-native-uuid';
 
@@ -71,7 +72,6 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
     <ScrollableList
       title={'Categories'}
       goBack={() => navigation.goBack()}
-      clickAddButton={() => setIsCategoryOpen(true)}
       modal={
         <CategoryModal
           isOpen={isCategoryOpen}
@@ -81,6 +81,7 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
         />
       }
     >
+      <Header add={() => setIsCategoryOpen(true)} />
       <View style={{ flex: 2, minWidth: '100%', alignItems: 'center' }}>
         {categories.isSuccess &&
           categories.data.map(category => {

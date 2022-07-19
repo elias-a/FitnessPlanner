@@ -12,6 +12,7 @@ import { getExercises } from '../../models/tasks/exercise';
 import ScrollableList from '../ScrollableList';
 import ExerciseModal from '../Modals/Exercise';
 import ContextMenu from '../ContextMenu';
+import Header from './Header';
 import uuid from 'react-native-uuid';
 
 type ViewExercisesProps = NativeStackScreenProps<Stack, 'ViewExercises'>;
@@ -70,7 +71,6 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
     <ScrollableList
       title={'Exercises'}
       goBack={() => navigation.goBack()}
-      clickAddButton={() => setIsExerciseOpen(true)}
       modal={
         <ExerciseModal
           isOpen={isExerciseOpen}
@@ -80,30 +80,33 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
         />
       }
     >
-      {exercises.isSuccess &&
-        exercises.data.map(exercise => {
-          return (
-            <View
-              key={exercise.id}
-              style={[
-                styles.exercise,
-                Object.keys(exercise).includes('isDeleted') &&
-                  exercise.isDeleted && { backgroundColor: '#ffcccb' },
-              ]}
-            >
-              <View style={styles.exerciseDetails}>
-                <Text style={styles.exerciseName}>{exercise.name}</Text>
-              </View>
+      <Header add={() => setIsExerciseOpen(true)} />
+      <View style={{ flex: 2, minWidth: '100%', alignItems: 'center' }}>
+        {exercises.isSuccess &&
+          exercises.data.map(exercise => {
+            return (
+              <View
+                key={exercise.id}
+                style={[
+                  styles.exercise,
+                  Object.keys(exercise).includes('isDeleted') &&
+                    exercise.isDeleted && { backgroundColor: '#ffcccb' },
+                ]}
+              >
+                <View style={styles.exerciseDetails}>
+                  <Text style={styles.exerciseName}>{exercise.name}</Text>
+                </View>
 
-              <ContextMenu
-                item={exercise}
-                edit={handleEdit}
-                remove={handleRemove}
-                undoRemove={handleUndoRemove}
-              />
-            </View>
-          );
-        })}
+                <ContextMenu
+                  item={exercise}
+                  edit={handleEdit}
+                  remove={handleRemove}
+                  undoRemove={handleUndoRemove}
+                />
+              </View>
+            );
+          })}
+      </View>
     </ScrollableList>
   );
 };
