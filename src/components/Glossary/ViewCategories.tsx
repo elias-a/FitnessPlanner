@@ -1,5 +1,4 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import { useQuery } from 'react-query';
@@ -8,10 +7,8 @@ import {
   useDeleteCategoryMutation,
 } from '../../hooks/category';
 import { getCategories } from '../../models/tasks/category';
-import ScrollableList from '../ScrollableList';
 import CategoryModal from '../Modals/Category';
-import ContextMenu from '../ContextMenu';
-import Header from './Header';
+import Glossary from './Glossary';
 import type { Category } from '../../types/category';
 import uuid from 'react-native-uuid';
 
@@ -69,9 +66,8 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
   };
 
   return (
-    <ScrollableList
-      title={'Categories'}
-      goBack={() => navigation.goBack()}
+    <Glossary
+      items={categories}
       modal={
         <CategoryModal
           isOpen={isCategoryOpen}
@@ -80,88 +76,15 @@ const ViewCategories: React.FC<ViewCategoriesProps> = ({ navigation }) => {
           selectedCategory={selectedCategory}
         />
       }
-    >
-      <Header add={() => setIsCategoryOpen(true)} />
-      <View style={{ flex: 2, minWidth: '100%', alignItems: 'center' }}>
-        {categories.isSuccess &&
-          categories.data.map(category => {
-            return (
-              <View
-                key={category.id}
-                style={[
-                  styles.category,
-                  Object.keys(category).includes('isDeleted') &&
-                    category.isDeleted && { backgroundColor: '#ffcccb' },
-                ]}
-              >
-                <View style={styles.categoryDetails}>
-                  <Text style={styles.categoryName}>{category.name}</Text>
-                </View>
-
-                <ContextMenu
-                  item={category}
-                  edit={handleEdit}
-                  remove={handleRemove}
-                  undoRemove={handleUndoRemove}
-                />
-              </View>
-            );
-          })}
-      </View>
-    </ScrollableList>
+      title={'Categories'}
+      textExtractor={item => item.name}
+      goBack={() => navigation.goBack()}
+      clickAdd={() => setIsCategoryOpen(true)}
+      handleEdit={handleEdit}
+      handleRemove={handleRemove}
+      handleUndoRemove={handleUndoRemove}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  category: {
-    minWidth: 340,
-    maxWidth: 340,
-    minHeight: 40,
-    maxHeight: 40,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-    borderBottomWidth: 2,
-  },
-  categoryDetails: {
-    flex: 1,
-    justifyContent: 'center',
-    minHeight: '100%',
-    maxHeight: '100%',
-    marginLeft: 5,
-  },
-  editSection: {
-    flex: 2,
-    minWidth: 32,
-    maxWidth: 32,
-    minHeight: '100%',
-    maxHeight: '100%',
-    marginRight: 5,
-    marginTop: 3,
-  },
-  deleteSection: {
-    flex: 3,
-    minWidth: 32,
-    maxWidth: 32,
-    minHeight: '100%',
-    maxHeight: '100%',
-    marginRight: 5,
-    marginTop: 3,
-  },
-  categoryName: {
-    color: '#000',
-    fontSize: 22,
-  },
-  contextSection: {
-    position: 'absolute',
-    right: 1,
-  },
-  contextButtons: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-});
 
 export default ViewCategories;

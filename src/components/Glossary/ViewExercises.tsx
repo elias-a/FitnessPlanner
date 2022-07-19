@@ -1,5 +1,4 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { Stack } from './index';
 import type { Exercise } from '../../types/exercise';
@@ -9,10 +8,8 @@ import {
   useDeleteExerciseMutation,
 } from '../../hooks/exercise';
 import { getExercises } from '../../models/tasks/exercise';
-import ScrollableList from '../ScrollableList';
 import ExerciseModal from '../Modals/Exercise';
-import ContextMenu from '../ContextMenu';
-import Header from './Header';
+import Glossary from './Glossary';
 import uuid from 'react-native-uuid';
 
 type ViewExercisesProps = NativeStackScreenProps<Stack, 'ViewExercises'>;
@@ -68,9 +65,8 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
   };
 
   return (
-    <ScrollableList
-      title={'Exercises'}
-      goBack={() => navigation.goBack()}
+    <Glossary
+      items={exercises}
       modal={
         <ExerciseModal
           isOpen={isExerciseOpen}
@@ -79,79 +75,15 @@ const ViewExercises: React.FC<ViewExercisesProps> = ({ navigation }) => {
           selectedExercise={selectedExercise}
         />
       }
-    >
-      <Header add={() => setIsExerciseOpen(true)} />
-      <View style={{ flex: 2, minWidth: '100%', alignItems: 'center' }}>
-        {exercises.isSuccess &&
-          exercises.data.map(exercise => {
-            return (
-              <View
-                key={exercise.id}
-                style={[
-                  styles.exercise,
-                  Object.keys(exercise).includes('isDeleted') &&
-                    exercise.isDeleted && { backgroundColor: '#ffcccb' },
-                ]}
-              >
-                <View style={styles.exerciseDetails}>
-                  <Text style={styles.exerciseName}>{exercise.name}</Text>
-                </View>
-
-                <ContextMenu
-                  item={exercise}
-                  edit={handleEdit}
-                  remove={handleRemove}
-                  undoRemove={handleUndoRemove}
-                />
-              </View>
-            );
-          })}
-      </View>
-    </ScrollableList>
+      title={'Exercises'}
+      textExtractor={item => item.name}
+      goBack={() => navigation.goBack()}
+      clickAdd={() => setIsExerciseOpen(true)}
+      handleEdit={handleEdit}
+      handleRemove={handleRemove}
+      handleUndoRemove={handleUndoRemove}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  exercise: {
-    width: 340,
-    minHeight: 40,
-    maxHeight: 40,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginRight: 8,
-    marginTop: 20,
-    borderBottomWidth: 2,
-  },
-  exerciseDetails: {
-    flex: 1,
-    justifyContent: 'center',
-    minHeight: '100%',
-    maxHeight: '100%',
-    marginLeft: 5,
-  },
-  editSection: {
-    flex: 2,
-    minWidth: 32,
-    maxWidth: 32,
-    minHeight: '100%',
-    maxHeight: '100%',
-    marginRight: 5,
-    marginTop: 3,
-  },
-  deleteSection: {
-    flex: 3,
-    minWidth: 32,
-    maxWidth: 32,
-    minHeight: '100%',
-    maxHeight: '100%',
-    marginRight: 5,
-    marginTop: 3,
-  },
-  exerciseName: {
-    color: '#000',
-    fontSize: 22,
-  },
-});
 
 export default ViewExercises;
