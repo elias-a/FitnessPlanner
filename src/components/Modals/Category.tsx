@@ -2,60 +2,61 @@ import React from 'react';
 import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
 import Modal from './Modal';
 import type { Category } from '../../types/category';
+import type { Exercise } from '../../types/exercise';
+import type { Split } from '../../types/split';
 
-const initialCategory: Category = {
-  id: '',
-  name: '',
-  subCategories: [],
-};
+type Item = Category | Exercise | Split;
 
-interface CategoryModalProps {
+interface GlossaryModalProps {
   isOpen: boolean;
   onCancel: () => void;
-  onSave: (category: Category, editing: boolean) => void;
-  selectedCategory?: Category;
+  onSave: (item: Item, editing: boolean) => void;
+  selectedItem: Item;
+  children: Element;
 }
 
-const CategoryModal: React.FC<CategoryModalProps> = ({
+const GlossaryModal: React.FC<GlossaryModalProps> = ({
   isOpen,
   onCancel,
   onSave,
-  selectedCategory,
+  selectedItem,
+  children,
 }) => {
-  const [category, setCategory] = React.useState(initialCategory);
+  const [item, setItem] = React.useState<Item>(selectedItem);
 
   React.useEffect(() => {
-    if (selectedCategory) {
-      setCategory({ ...selectedCategory });
+    if (selectedItem) {
+      setItem({ ...selectedItem });
     } else {
-      setCategory({ ...initialCategory });
+      setItem(selectedItem);
     }
-  }, [isOpen, selectedCategory]);
+  }, [isOpen, selectedItem]);
 
   const updateCategory = <T,>(name: string, value: T) => {
-    setCategory(prevState => ({
+    setItem(prevState => ({
       ...prevState,
       [name]: value,
     }));
   };
 
   const handleCancel = () => {
-    setCategory(initialCategory);
+    setItem(selectedItem);
     onCancel();
   };
 
   const handleSave = () => {
-    onSave(category, !!selectedCategory);
-    setCategory(initialCategory);
+    onSave(item, !!selectedItem);
+    setItem(selectedItem);
   };
 
   return (
     <Modal isOpen={isOpen} close={handleCancel} swipeDirection={'down'}>
       <View style={styles.modal}>
         <View style={styles.container}>
+          {children}
           <View style={styles.textInputSection}>
             <TextInput
-              value={category.name}
+              value={item.name}
               onChangeText={name => updateCategory('name', name)}
               placeholder={'Enter category name...'}
               style={styles.textInput}
@@ -171,4 +172,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CategoryModal;
+export default GlossaryModal;
