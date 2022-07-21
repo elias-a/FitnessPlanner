@@ -1,6 +1,6 @@
 import React from 'react';
 import { QueryClientProvider, QueryClient } from 'react-query';
-import Base from './Base';
+import Navigation from './Navigation';
 import { LogBox } from 'react-native';
 
 export const queryClient = new QueryClient();
@@ -12,7 +12,7 @@ LogBox.ignoreLogs([
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <Base />
+      <Navigation />
     </QueryClientProvider>
   );
 };
