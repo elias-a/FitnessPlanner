@@ -8,9 +8,9 @@ import {
 import type { Split, SplitExercises } from '../types/split';
 
 export const useAddSplitMutation = () =>
-  useMutation<Split, unknown, { split: Split; editing: boolean }, unknown>(
+  useMutation<Split, unknown, { item: Split; editing: boolean }, unknown>(
     data => {
-      return createSplit(data.split);
+      return createSplit(data.item);
     },
     {
       onSuccess: () => {
@@ -20,9 +20,9 @@ export const useAddSplitMutation = () =>
   );
 
 export const useDeleteSplitMutation = () =>
-  useMutation<Split, unknown, { split: Split }, unknown>(
+  useMutation<Split, unknown, { item: Split }, unknown>(
     data => {
-      return deleteSplit(data.split);
+      return deleteSplit(data.item);
     },
     {
       onSuccess: () => {

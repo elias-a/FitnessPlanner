@@ -4,8 +4,6 @@ import type { QueryObserverResult } from 'react-query';
 import ScrollableList from '../ScrollableList';
 import ContextMenu from '../ContextMenu';
 import Header from './Header';
-import Modal from './Modal';
-import uuid from 'react-native-uuid';
 import type {
   Item,
   FormProps,
@@ -17,24 +15,27 @@ interface GlossaryProps<T> {
   initialItem: T;
   items: QueryObserverResult<T[], unknown>;
   title: string;
-  modalForm: React.FC<FormProps<T>>;
+  form: React.FC<FormProps<T>>;
   textExtractor: (item: T) => string;
   goBack: () => void;
   addMutation: AddMutation<T>;
   deleteMutation: DeleteMutation<T>;
+  save: (item: T, editing: boolean) => void;
 }
 
 const Glossary = <T extends Item>({
   initialItem,
   items,
   title,
-  modalForm,
+  form,
   textExtractor,
   goBack,
   addMutation,
+  save,
 }: GlossaryProps<T>) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState<T>(initialItem);
+  const [isEditing, setIsEditing] = React.useState(false);
 
   const update = <P,>(name: string, value: P) => {
     setSelectedItem(prevState => ({
@@ -45,6 +46,7 @@ const Glossary = <T extends Item>({
 
   const handleEdit = (item: T) => {
     setSelectedItem(item);
+    setIsEditing(true);
     setIsModalOpen(true);
   };
 
@@ -68,22 +70,15 @@ const Glossary = <T extends Item>({
     });
   };
 
-  const save = (item: T, editing: boolean) => {
-    addMutation.mutate({
-      item: {
-        ...item,
-        id: editing ? item.id : uuid.v4().toString(),
-        isDeleted: false,
-      },
-      editing: editing,
-    });
-
-    closeModal();
-  };
-
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedItem(initialItem);
+    setIsEditing(false);
+  };
+
+  const handleSave = (item: T, editing: boolean) => {
+    save(item, editing);
+    closeModal();
   };
 
   return (
@@ -91,14 +86,14 @@ const Glossary = <T extends Item>({
       title={title}
       goBack={goBack}
       modal={
-        <Modal
-          isOpen={isModalOpen}
-          onCancel={closeModal}
-          onSave={save}
-          selectedItem={selectedItem}
-        >
-          {modalForm({ item: selectedItem, update: update }) ?? <></>}
-        </Modal>
+        form({
+          isOpen: isModalOpen,
+          onCancel: closeModal,
+          onSave: handleSave,
+          item: selectedItem,
+          isEditing: isEditing,
+          update: update,
+        }) ?? <></>
       }
     >
       <Header add={() => setIsModalOpen(true)} />

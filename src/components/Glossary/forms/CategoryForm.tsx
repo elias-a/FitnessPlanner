@@ -1,48 +1,35 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import Modal from '../Modals/Modal';
-import type { Item } from '../../types/glossary';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
+import type { FormProps } from '../../../types/glossary';
+import type { Category } from '../../../types/category';
+import Modal from '../../Modals/Modal';
 
-interface GlossaryModalProps<T> {
-  isOpen: boolean;
-  onCancel: () => void;
-  onSave: (item: T, editing: boolean) => void;
-  selectedItem: T;
-  children: React.ReactElement;
-}
-
-const GlossaryModal = <T extends Item>({
+const CategoryForm: React.FC<FormProps<Category>> = ({
   isOpen,
   onCancel,
   onSave,
-  selectedItem,
-  children,
-}: GlossaryModalProps<T>) => {
-  const [item, setItem] = React.useState<T>(selectedItem);
-
-  React.useEffect(() => {
-    if (selectedItem) {
-      setItem({ ...selectedItem });
-    } else {
-      setItem(selectedItem);
-    }
-  }, [isOpen, selectedItem]);
-
-  const handleCancel = () => {
-    setItem(selectedItem);
-    onCancel();
-  };
-
-  const handleSave = () => {
-    onSave(item, !!selectedItem);
-    setItem(selectedItem);
+  item,
+  isEditing,
+  update,
+}) => {
+  const handleSave = (event: GestureResponderEvent) => {
+    event.preventDefault();
+    onSave(item, isEditing);
   };
 
   return (
-    <Modal isOpen={isOpen} close={handleCancel} swipeDirection={'down'}>
+    <Modal isOpen={isOpen} close={onCancel} swipeDirection={'down'}>
       <View style={styles.modal}>
         <View style={styles.container}>
-          {children}
+          <View style={styles.textInputSection}>
+            <TextInput
+              value={item.name}
+              onChangeText={name => update('name', name)}
+              placeholder={'Enter category name...'}
+              style={styles.textInput}
+            />
+          </View>
 
           <View style={styles.saveButtonSection}>
             <Pressable onPress={handleSave} style={styles.fullWidthButton}>
@@ -102,4 +89,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GlossaryModal;
+export default CategoryForm;

@@ -1,66 +1,36 @@
 import React from 'react';
-import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
 import { useQuery } from 'react-query';
-import { getCategories } from '../../models/tasks/category';
-import Modal from './Modal';
-import MultiSelect from '../MultiSelect';
-import type { Exercise } from '../../types/exercise';
+import { getCategories } from '../../../models/tasks/category';
+import type { FormProps } from '../../../types/glossary';
+import type { Exercise } from '../../../types/exercise';
+import MultiSelect from '../../MultiSelect';
+import Modal from '../../Modals/Modal';
 
-const initialExercise: Exercise = {
-  id: '',
-  name: '',
-  categories: [],
-};
-
-interface ExerciseModalProps {
-  isOpen: boolean;
-  onCancel: () => void;
-  onSave: (exercise: Exercise, editing: boolean) => void;
-  selectedExercise?: Exercise;
-}
-
-const ExerciseModal: React.FC<ExerciseModalProps> = ({
+const ExerciseForm: React.FC<FormProps<Exercise>> = ({
   isOpen,
   onCancel,
   onSave,
-  selectedExercise,
+  item,
+  isEditing,
+  update,
 }) => {
-  const [exercise, setExercise] = React.useState(initialExercise);
   const categories = useQuery('categories', getCategories);
 
-  React.useEffect(() => {
-    if (selectedExercise) {
-      setExercise({ ...selectedExercise });
-    } else {
-      setExercise({ ...initialExercise });
-    }
-  }, [isOpen, selectedExercise]);
-
-  const updateExercise = <T,>(name: string, value: T) => {
-    setExercise(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleCancel = () => {
-    setExercise(initialExercise);
-    onCancel();
-  };
-
-  const handleSave = () => {
-    onSave(exercise, !!selectedExercise);
-    setExercise(initialExercise);
+  const handleSave = (event: GestureResponderEvent) => {
+    event.preventDefault();
+    onSave(item, isEditing);
   };
 
   return (
-    <Modal isOpen={isOpen} close={handleCancel} swipeDirection="down">
+    <Modal isOpen={isOpen} close={onCancel} swipeDirection={'down'}>
       <View style={styles.modal}>
         <View style={styles.container}>
           <View style={styles.textInputSection}>
             <TextInput
-              value={exercise.name}
-              onChangeText={name => updateExercise('name', name)}
+              value={item.name}
+              onChangeText={name => update('name', name)}
               placeholder={'Enter exercise name...'}
               style={styles.textInput}
             />
@@ -69,9 +39,9 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({
           <View style={styles.multiSelectSection}>
             <MultiSelect
               items={categories.data ?? []}
-              selectedItems={exercise.categories}
+              selectedItems={item.categories}
               onSelectedItemsChange={newCategories =>
-                updateExercise('categories', newCategories)
+                update('categories', newCategories)
               }
               isSingle={false}
               subKey={'subCategories'}
@@ -79,15 +49,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({
             />
           </View>
 
-          <View
-            style={{
-              flex: 5,
-              justifyContent: 'flex-end',
-              minHeight: 102,
-              maxHeight: 102,
-              marginBottom: 35,
-            }}
-          >
+          <View style={styles.saveButtonSection}>
             <Pressable onPress={handleSave} style={styles.fullWidthButton}>
               <Text style={{ fontSize: 20 }}>{'Save'}</Text>
             </Pressable>
@@ -134,6 +96,13 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     minHeight: 135,
   },
+  saveButtonSection: {
+    flex: 5,
+    justifyContent: 'flex-end',
+    minHeight: 102,
+    maxHeight: 102,
+    marginBottom: 35,
+  },
   fullWidthButton: {
     minWidth: '100%',
     height: 50,
@@ -144,4 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExerciseModal;
+export default ExerciseForm;

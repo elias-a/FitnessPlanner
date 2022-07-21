@@ -4,14 +4,9 @@ import { addExercise, deleteExercise } from '../models/tasks/exercise';
 import type { Exercise } from '../types/exercise';
 
 export const useAddExerciseMutation = () =>
-  useMutation<
-    Exercise,
-    unknown,
-    { exercise: Exercise; editing: boolean },
-    unknown
-  >(
+  useMutation<Exercise, unknown, { item: Exercise; editing: boolean }, unknown>(
     data => {
-      return addExercise(data.exercise, data.editing);
+      return addExercise(data.item, data.editing);
     },
     {
       onSuccess: () => {
@@ -21,9 +16,9 @@ export const useAddExerciseMutation = () =>
   );
 
 export const useDeleteExerciseMutation = () =>
-  useMutation<Exercise, unknown, { exercise: Exercise }, unknown>(
+  useMutation<Exercise, unknown, { item: Exercise }, unknown>(
     data => {
-      return deleteExercise(data.exercise);
+      return deleteExercise(data.item);
     },
     {
       onSuccess: () => {

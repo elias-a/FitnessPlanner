@@ -2,34 +2,27 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet, FlatList } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useQuery } from 'react-query';
-import { getExercises } from '../../models/tasks/exercise';
-import { getSplits } from '../../models/tasks/split';
-import { selectExercises } from '../../algorithms/buildSplit';
-import Modal from './Modal';
-import Calendar from '../Calendar';
-import ScrollableDays, { dayWidth } from '../ScrollableWeek/ScrollableDays';
-import ExerciseList from '../ExerciseList/SplitExerciseList';
-import ColorPickerModal from '../Modals/ColorPicker';
-import RandomizeExercises from '../Modals/RandomizeExercises';
-import AddSplitExerciseModal from '../Modals/AddSplitExercise';
-import type { Split, SplitExercise } from '../../types/split';
-import type { CalendarRange, SelectedDates } from '../../types/calendar';
+import { getExercises } from '../../../models/tasks/exercise';
+import { getSplits } from '../../../models/tasks/split';
+import { selectExercises } from '../../../algorithms/buildSplit';
+import Calendar from '../../Calendar';
+import Modal from '../../Modals/Modal';
+import ScrollableDays, { dayWidth } from '../../ScrollableWeek/ScrollableDays';
+import ExerciseList from '../../ExerciseList/SplitExerciseList';
+import ColorPickerModal from '../../Modals/ColorPicker';
+import RandomizeExercises from '../../Modals/RandomizeExercises';
+import AddSplitExerciseModal from '../../Modals/AddSplitExercise';
+import type { Split, SplitExercise } from '../../../types/split';
+import type { CalendarRange, SelectedDates } from '../../../types/calendar';
+import type { FormProps } from '../../../types/glossary';
 import uuid from 'react-native-uuid';
 
-const initialColor = '#909090';
-
-interface SplitModalProps {
-  isOpen: boolean;
-  onCancel: () => void;
-  onSave: (split: Split, editing: boolean) => void;
-  selectedSplit?: Split;
-}
-
-const SplitModal: React.FC<SplitModalProps> = ({
+const SplitForm: React.FC<FormProps<Split>> = ({
   isOpen,
   onCancel,
   onSave,
-  selectedSplit,
+  item,
+  isEditing,
 }) => {
   const [page, setPage] = React.useState(1);
   const [startDate, setStartDate] = React.useState<Date | undefined>();
@@ -41,7 +34,7 @@ const SplitModal: React.FC<SplitModalProps> = ({
   const [splitExercises, setSplitExercises] = React.useState<{
     [key: string]: SplitExercise[];
   }>({});
-  const [color, setColor] = React.useState(initialColor);
+  const [color, setColor] = React.useState(item.color);
   const [isColorPickerOpen, setIsColorPickerOpen] = React.useState(false);
   const [finalizedDays, setFinalizedDays] = React.useState<{
     [key: string]: string;
@@ -58,24 +51,16 @@ const SplitModal: React.FC<SplitModalProps> = ({
     React.createRef();
 
   React.useEffect(() => {
-    if (selectedSplit) {
-      setStartDate(new Date(selectedSplit.startDate));
-      setEndDate(new Date(selectedSplit.endDate));
-      setSelectedCategories({ ...selectedSplit.categories });
-      setSplitExercises({ ...selectedSplit.exerciseTemplate });
-      setColor(selectedSplit.color);
-    } else {
-      setStartDate(undefined);
-      setEndDate(undefined);
-      setSelectedCategories({});
-      setSplitExercises({});
-      setColor(initialColor);
-    }
+    setStartDate(new Date(item.startDate));
+    setEndDate(new Date(item.endDate));
+    setSelectedCategories({ ...item.categories });
+    setSplitExercises({ ...item.exerciseTemplate });
+    setColor(item.color);
 
     setPage(1);
     setSelectedDay(1);
     setFinalizedDays({});
-  }, [isOpen, selectedSplit]);
+  }, [isOpen, item]);
 
   React.useEffect(() => {
     if (!splits.isSuccess) {
@@ -83,10 +68,9 @@ const SplitModal: React.FC<SplitModalProps> = ({
       return;
     }
 
-    const id = selectedSplit ? selectedSplit.id : '';
     const newRanges: CalendarRange[] = [];
     splits.data.forEach(split => {
-      if (id !== split.id) {
+      if (item.id !== split.id) {
         newRanges.push({
           startRange: new Date(split.startDate),
           endRange: new Date(split.endDate),
@@ -96,7 +80,7 @@ const SplitModal: React.FC<SplitModalProps> = ({
     });
 
     setRanges(newRanges);
-  }, [selectedSplit, splits.isSuccess, splits.data]);
+  }, [item.id, splits.isSuccess, splits.data]);
 
   const initializeCategories = () => {
     const newCategories: { [key: string]: string[] } = {};
@@ -141,15 +125,15 @@ const SplitModal: React.FC<SplitModalProps> = ({
     });
 
     const newSplit: Split = {
-      id: selectedSplit ? selectedSplit.id : uuid.v4().toString(),
+      id: item.id ? item.id : uuid.v4().toString(),
       startDate: startDate ? startDate.toString() : '',
       endDate: endDate ? endDate.toString() : '',
       categories: selectedCategories,
       exerciseTemplate: filteredSplitExercises,
-      exerciseSchedule: selectedSplit ? selectedSplit.exerciseSchedule : {},
+      exerciseSchedule: item.exerciseSchedule,
       color: color,
     };
-    onSave(newSplit, !!selectedSplit);
+    onSave(newSplit, isEditing);
   };
 
   const selectColor = (newColor: string) => {
@@ -176,11 +160,11 @@ const SplitModal: React.FC<SplitModalProps> = ({
   const chooseExercise = (newSplitExercise: SplitExercise) => {
     let newSplitExercises: SplitExercise[];
     if (exerciseToEdit) {
-      newSplitExercises = splitExercises[selectedDay].map(item => {
-        if (item.id === newSplitExercise.id) {
+      newSplitExercises = splitExercises[selectedDay].map(e => {
+        if (e.id === newSplitExercise.id) {
           return { ...newSplitExercise };
         } else {
-          return { ...item };
+          return { ...e };
         }
       });
     } else if (Object.keys(splitExercises).includes(selectedDay.toString())) {
@@ -197,15 +181,15 @@ const SplitModal: React.FC<SplitModalProps> = ({
     setExerciseToEdit(undefined);
   };
 
-  const editExercise = (item: SplitExercise) => {
-    setExerciseToEdit(item);
+  const editExercise = (e: SplitExercise) => {
+    setExerciseToEdit(e);
     setIsAddSplitExerciseOpen(true);
   };
 
-  const removeExercise = (item: SplitExercise) => {
+  const removeExercise = (e: SplitExercise) => {
     let newSplitExercises = [...splitExercises[selectedDay]];
     newSplitExercises = newSplitExercises.map(el => {
-      if (el.id === item.id) {
+      if (el.id === e.id) {
         return { ...el, isDeleted: true };
       } else {
         return { ...el };
@@ -218,10 +202,10 @@ const SplitModal: React.FC<SplitModalProps> = ({
     }));
   };
 
-  const undoRemove = (item: SplitExercise) => {
+  const undoRemove = (e: SplitExercise) => {
     let newSplitExercises = [...splitExercises[selectedDay]];
     newSplitExercises = newSplitExercises.map(el => {
-      if (el.id === item.id) {
+      if (el.id === e.id) {
         return { ...el, isDeleted: false };
       } else {
         return { ...el };
@@ -579,4 +563,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SplitModal;
+export default SplitForm;

@@ -1,9 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Landing from './Landing';
-import ViewExercises from './ViewExercises';
-import ViewCategories from './ViewCategories';
-import ViewSplits from './ViewSplits';
+import ViewExercises from './views/ViewExercises';
+import ViewCategories from './views/ViewCategories';
+import ViewSplits from './views/ViewSplits';
 
 export type Stack = {
   Landing: undefined;
